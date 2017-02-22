@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\color-v11\\abc_background_cache_hint_selector_material_light.xml",
+        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\color-v11\\abc_background_cache_hint_selector_material_light.xml"
+    },
+    {
+        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\color-v11\\abc_background_cache_hint_selector_material_dark.xml",
+        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\color-v11\\abc_background_cache_hint_selector_material_dark.xml"
+    }
+]

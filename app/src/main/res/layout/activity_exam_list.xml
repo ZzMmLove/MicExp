@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ProgressWheel="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <!--<RelativeLayout
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@mipmap/title_bar" >
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:onClick="back"
+            android:paddingBottom="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/top_bar_back" />
+
+        <View
+            android:id="@+id/view_temp"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@id/iv_back"
+            android:background="#14191A" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="考评系统"
+            android:textColor="#ffffff"
+            android:textSize="18sp" />
+    </RelativeLayout>-->
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#e0000000" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/ll_layout"
+                android:layout_width="match_parent"
+                android:layout_height="40dip"
+                android:background="#FFFFFF"
+                android:orientation="horizontal" >
+
+                <LinearLayout
+                    android:id="@+id/ll_grade"
+                    android:layout_width="0dip"
+                    android:layout_height="40dip"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:orientation="horizontal"
+                    android:paddingLeft="10dip" >
+
+                    <TextView
+                        android:id="@+id/tv_grade"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:text="@string/pxcategory"
+                        android:textColor="#4d4d4d" />
+
+                    <ImageView
+                        android:id="@+id/icon1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@mipmap/icon_down" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dip"
+                android:layout_below="@id/ll_layout"
+                android:background="#e6e6e6" />
+
+            <RelativeLayout
+                android:id="@+id/layout_progress_wheel"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:orientation="vertical" >
+
+                <!--
+                     <ProgressBar
+                    android:id="@+id/progress_bar"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:indeterminateBehavior="repeat"
+                    android:indeterminateDrawable="@drawable/venvy_video_sdk_ijk_progress_bar_bg"
+                    android:indeterminateOnly="true" />
+                -->
+
+                <cn.gdgst.palmtest.rewrite.ProgressWheel
+                    android:id="@+id/progress_bar"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerInParent="true"
+                    android:layout_centerVertical="true"
+                    
+                     ProgressWheel:matProg_progressIndeterminate="true" 
+                     ProgressWheel:matProg_fillRadius="true"/>
+
+                <TextView
+                    android:id="@+id/tv_loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/progress_bar"
+                    android:layout_centerInParent="true"
+                    android:text="加载中……" />
+                <!-- The PullToRefreshListView replaces a standard ListView widget. -->
+
+                <com.handmark.pulltorefresh.library.PullToRefreshListView
+                    xmlns:ptr="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/exp_display"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:cacheColorHint="@android:color/transparent"
+                    android:divider="@drawable/liner"
+                    android:dividerHeight="1px"
+                    android:fadingEdge="none"
+                    android:orientation="vertical"
+                    android:scrollbars="none"
+                    ptr:ptrAnimationStyle="rotate"
+                    ptr:ptrDrawable="@drawable/default_ptr_rotate"
+                    ptr:ptrHeaderTextColor="@color/black" />
+            </RelativeLayout>
+            <!-- Here is the view to show if the list is emtpy -->
+
+            <ScrollView
+                android:id="@+id/empty"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:fillViewport="true" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/emptyText"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center"
+                        android:lineSpacingMultiplier="0.92"
+                        android:paddingLeft="10dip"
+                        android:paddingRight="10dip"
+                        android:paddingTop="10dip"
+                        android:text="暂无内容"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:textSize="20sp" />
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

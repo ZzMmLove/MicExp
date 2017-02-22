@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\videoJjlibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\venvy_slide_in_top.xml",
+        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\videoJjlibrary\\build\\intermediates\\bundles\\debug\\res\\anim\\venvy_slide_in_top.xml"
+    },
+    {
+        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\videoJjlibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\venvy_slide_in_bottom.xml",
+        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\videoJjlibrary\\build\\intermediates\\bundles\\debug\\res\\anim\\venvy_slide_in_bottom.xml"
+    },
+    {
+        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\videoJjlibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\venvy_slide_out_top.xml",
+        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\videoJjlibrary\\build\\intermediates\\bundles\\debug\\res\\anim\\venvy_slide_out_top.xml"
+    },
+    {
+        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\videoJjlibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\venvy_slide_out_bottom.xml",
+        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\videoJjlibrary\\build\\intermediates\\bundles\\debug\\res\\anim\\venvy_slide_out_bottom.xml"
+    }
+]

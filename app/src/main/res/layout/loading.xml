@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_progress_wheel"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center"
+    android:orientation="vertical" >
+
+   <!--  <ProgressWheel
+        android:id="@+id/pw_spinner"
+        android:layout_width="92dp"
+        android:layout_height="93dp"
+        android:layout_centerInParent="true"
+        ProgressWheel:barColor="#0097D6"
+        ProgressWheel:barLength="160dp"
+        ProgressWheel:barWidth="15dp"
+        ProgressWheel:rimColor="#330097D6"
+        ProgressWheel:rimWidth="9dp"
+        ProgressWheel:text="加载中..."
+        ProgressWheel:textSize="10sp"
+        ProgressWheel:textColor="#222" /> -->
+
+</RelativeLayout >

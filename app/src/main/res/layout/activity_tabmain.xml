@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <!--<include layout="@layout/comm_title" />-->
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/main_viewpage"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1" />
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="49dip"
+        android:background="@mipmap/main_bottom_bg" >
+
+        <ImageView
+            android:id="@+id/main_bottom_select"
+            android:layout_width="120dip"
+            android:layout_height="@dimen/main_bottom_tab_selected_height"
+            android:background="@mipmap/main_bottom_selecte"
+            android:contentDescription="@string/app_name_tab_failed"
+            android:scaleType="matrix" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="fill_parent"
+            android:layout_height="45dip"
+            android:baselineAligned="false"
+            android:orientation="horizontal" >
+
+            <RelativeLayout
+                android:id="@+id/main_load_first"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:background="#00000000"
+                android:gravity="center_horizontal" >
+
+                <ImageView
+                    android:id="@+id/main_first_image"
+                    android:layout_width="31dip"
+                    android:layout_height="31dip"
+                    android:layout_centerHorizontal="true"
+                    android:background="@mipmap/icon_home_sel"
+                    android:contentDescription="@string/app_name_tab_failed" />
+
+                <TextView
+                    android:id="@+id/first_page_text"
+                    style="@style/MainBottomTextStyle"
+                    android:layout_below="@+id/main_first_image"
+                    android:text="@string/layout_activitymain_query"
+                    android:textColor="@color/homepage_bottomtextcolorh"
+                    android:textSize="@dimen/alter_text_size" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/main_load_sell_car"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:background="#00000000"
+                android:gravity="center_horizontal" >
+
+                <ImageView
+                    android:id="@+id/main_sell_car_image"
+                    android:layout_width="31dip"
+                    android:layout_height="31dip"
+                    android:layout_centerHorizontal="true"
+                    android:background="@mipmap/icon_video"
+                    android:contentDescription="@string/app_name_tab_failed" />
+
+                <TextView
+                    android:id="@+id/publish_car_page_text"
+                    style="@style/MainBottomTextStyle"
+                    android:layout_below="@+id/main_sell_car_image"
+                    android:text="@string/layout_activitymain_course"
+                    android:textSize="@dimen/alter_text_size" />
+            </RelativeLayout>
+
+              <RelativeLayout
+                android:id="@+id/main_load_search"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:background="#00000000"
+                android:gravity="center_horizontal" >
+
+                <ImageView
+                    android:id="@+id/main_search_image"
+                    android:layout_width="31dip"
+                    android:layout_height="31dip"
+                    android:layout_centerHorizontal="true"
+                    android:background="@mipmap/icon_experiment"
+                    android:contentDescription="@string/app_name_tab_failed" />
+
+                <TextView
+                    android:id="@+id/search_page_text"
+                    style="@style/MainBottomTextStyle"
+                    android:layout_below="@+id/main_search_image"
+                    android:text="@string/layout_activitymain_profile"
+                    android:textSize="@dimen/alter_text_size" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/main_load_collect"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:background="#00000000"
+                android:gravity="center_horizontal" >
+
+                <ImageView
+                    android:id="@+id/main_collect_image"
+                    android:layout_width="31dip"
+                    android:layout_height="31dip"
+                    android:layout_centerHorizontal="true"
+                    android:background="@mipmap/icon_setting"
+                    android:contentDescription="@string/app_name_tab_failed" />
+
+                <TextView
+                    android:id="@+id/my_car_page_text"
+                    style="@style/MainBottomTextStyle"
+                    android:layout_below="@+id/main_collect_image"
+                    android:text="@string/layout_activitymain_more"
+                    android:textSize="@dimen/alter_text_size" />
+            </RelativeLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="homepage_bottomtextcolorh">#4696d3</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="rippelColor">#FFFFFF</color>
+    <color name="basic_text">#ffFF3C6E</color>
+    <color name="red">#ff2020</color>
+    <color name="yellow">#ffff00</color>
+    <color name="green">#008000</color>
+    <color name="blue">#0000ff</color>
+    <color name="text_color">#7c7c7c</color>
+    <color name="green_color">#4cc05f</color>
+    <color name="transparent">#00000000</color>
+    <color name="mediacontroller_bg_pressed">#ff53c1bd</color>
+    <color name="mediacontroller_bg">#99000000</color>
+    <color name="click">#F5F5F5</color>
+    <color name="defult">#ffffff</color>
+    
+     
+    
+
+    
+    
+    
+    
+        <drawable name="brackground">#ffffff</drawable>
+    <color name="yin">#BCBBBB</color>
+    <color name="transparency">#00000000</color>
+    <color name="shadow">#1e000000</color>
+    <color name="grey">#ff5b5a5a</color>
+    <color name="light_gray">#ffebebeb</color>
+    <color name="deep_gray">#ff3b3b3b</color>
+         <color name="common_top_bar_blue">#22292c</color>
+         
+         <color name="btn_nomol">#70d0f8</color>
+         <color name="btn_press">#26bbf9</color>
+
+         
+</resources>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:fitsSystemWindows="true"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="170dp"
+            android:textSize="15sp"
+            android:paddingLeft="10dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp"
+            android:textColor="#353535"
+            android:text="您的皮肤在不知不觉中会出现青紫瘀斑、皮下出血吗?（指皮肤在没有外伤的情况下出现青一块紫一块的情况）"
+            android:id="@+id/tv_question" />
+
+        <ImageView
+            android:layout_width="300dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:id="@+id/viewflipper_imageView" />
+
+        <TextView
+            android:text="已选:(  )"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/viewflipper_child_selected"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/black"
+            android:background="@color/red" />
+
+        <View
+           android:layout_width="match_parent"
+           android:layout_height="1dp"
+           android:visibility="gone"
+           android:background="#eeff"></View>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/lv_question_answer"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+</RelativeLayout>

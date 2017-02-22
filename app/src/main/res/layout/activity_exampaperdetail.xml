@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <FrameLayout
+        android:id="@+id/activity_exampaperdetail_FramLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0.1">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="28dp">
+
+                <TextView
+                    android:text="已用时间:"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/activity_main_TextView_time"
+                    android:paddingLeft="8dp"
+                    android:paddingBottom="6dp"
+                    android:paddingTop="6dp"
+                    android:layout_weight="1" />
+
+                <Chronometer
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/chronometer2"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <FrameLayout
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1.0"
+                tools:context=".tab1.examsystem.ExamPaperDetailActivity">
+
+                <cn.gdgst.palmtest.tab1.examsystem.ReaderViewPager
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:id="@+id/activity_exampaperdetail_ReaderViewPager"/>
+
+                <ImageView
+                    android:id="@+id/activity_exampaperdetail_shadowView"
+                    android:layout_width="20dp"
+                    android:layout_height="match_parent"
+                    android:background="@mipmap/shadow_right"/>
+            </FrameLayout>
+
+            <!--<ViewFlipper
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_weight="1.0"
+                android:id="@+id/activity_main_ViewFlipper" />-->
+
+            <RelativeLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="60dp">
+                <ImageButton
+                    android:src="@drawable/ic_last"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:id="@+id/activity_exampaperdetail_imageButton_previous"
+                    android:background="@drawable/bg_special_disease_circle" />
+
+                <Button
+                    android:text="提交"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:id="@+id/activity_exampaperdetail_button_submit"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/bg_special_disease_circle"
+                    android:visibility="gone" />
+
+                <ImageButton
+                    android:src="@drawable/ic_next"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/activity_exampaperdetail_imageButton_next"
+                    android:background="@drawable/bg_special_disease_circle" />
+            </RelativeLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+</LinearLayout>

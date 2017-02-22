@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="cn.gdgst.palmtest">
+
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" /><!-- change_network_state -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/><!-- change_wifi_state -->
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/><!-- manage_accounts -->
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/><!-- mount_unmount_filesystems -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /><!-- receive_boot_completed -->
+    <uses-permission android:name="android.permission.BROADCAST_STICKY" /><!-- broadcast_sticky -->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" /><!-- write_settings -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /><!-- read_phone_state -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /><!-- access_network_state -->
+    <uses-permission android:name="android.permission.VIBRATE" /><!-- vibrate -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /><!-- write_external_storage -->
+    <uses-permission android:name="android.permission.ACCESS_DOWNLOAD_MANAGER" /><!-- access_download_manager -->
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" /><!-- download_without_notification -->
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" /><!-- disable_keyguard -->
+    <!-- 允许程序改变WiFi多播状态 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" /><!-- change_wifi_multicast_state -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" /><!-- wake_lock -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /><!-- access_coarse_location -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /><!-- access_wifi_state -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" /><!-- read_contacts -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /><!-- read_external_storage -->
+    <uses-permission android:name="android.permission.INTERNET" /><!-- internet -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" /><!-- receive_sms -->
+    <uses-permission android:name="android.permission.GET_TASKS" /><!-- get_tasks -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /><!-- access_fine_location -->
+    <uses-permission android:name="android.permission.CAMERA" /><!-- camera -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" /><!-- record_audio -->
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <application
+        android:name=".base.BaseApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/logo"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+
+        <!-- 友盟统计 -->
+        <meta-data android:value="58a3fc4c1c5dd0092900035b" android:name="UMENG_APPKEY"/>
+        <meta-data android:value="Channel ID" android:name="UMENG_CHANNEL"/>
+
+        <activity
+            android:name=".main.SplashActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".main.TabMainActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".main.Tab1Activity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.Dialog"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".main.Tab2Activity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".main.Tab4Activity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.Dialog"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab3.Tab5Activity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".search.SearchActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
+            android:parentActivityName=".main.TabMainActivity"/>
+        <activity
+            android:name=".tab1.PlayVideoActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab1.PlayListActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab4.LoginActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
+            android:parentActivityName=".main.Tab4Activity"/>
+        <activity
+            android:name=".tab4.ResetPass"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab4.ResetPasswordActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab4.ChangePassActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab4.AboutActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
+            android:parentActivityName=".main.Tab4Activity"/>
+        <activity
+            android:name=".tab4.FeedBackActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
+            android:parentActivityName=".main.Tab4Activity"/>
+        <activity
+            android:name=".tab4.CreateUserActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
+            android:parentActivityName=".tab4.SendCodeActivity"/>
+        <activity
+            android:name="cn.palmtest.tab4.RegisterActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab4.SendCodeActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
+            android:parentActivityName=".tab4.LoginActivity"/>
+        <activity
+            android:name=".tab4.UserInfoActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
+            android:parentActivityName=".main.Tab4Activity"/>
+        <activity
+            android:name=".tab4.shoucang.GetCollectListActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
+            android:parentActivityName=".main.Tab4Activity"/>
+        <activity
+            android:name=".main.Tab3Activity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name="cn.com.video.venvy.activity.VenvyVideoActivity"
+            android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity
+            android:name=".tab2.Vid_Play_Activity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/app_name"
+            android:screenOrientation="sensorLandscape"/>
+        <activity
+            android:name=".tab2.Video_Album_List"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab1.mingshi.MingShiList"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab1.chuangke.ChuangKeList"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab1.kaoshi.KaoShiList"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab1.wenku.WenKuList"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab1.wenku.WenKuDetail"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab1.zixun.ZiXunList"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab1.zixun.ZiXunDetail"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab1.huizhan.HuiZhanListActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab1.xueke.XueKeList"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab1.examsystem.ExamListActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
+            android:parentActivityName=".main.Tab1Activity"/>
+        <activity
+            android:name=".tab1.zhuangbei.ZhuangBeiList"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
+            android:parentActivityName=".main.Tab1Activity"/>
+        <activity
+            android:name=".tab4.history.HistoryList"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".tab4.ChangeProfileActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".main.CeShi"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".main.mediarecorder"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name="com.mob.tools.MobUIShell"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:windowSoftInputMode="stateHidden|adjustResize">
+
+            <!--
+            	AuthorizeAdapter表示一个继承自cn.sharesdk.framework.authorize.AuthorizeAdapter
+            	的类，这个类可以监听到页面的生命周期，也可以获取授权页面的各种UI控件。
+            	开发者可以通过继承AuthorizeAdapter，重写其方法，并获取各种UI来自定义这个页面的行为。
+            -->
+            <meta-data
+                android:name="AuthorizeAdapter"
+                android:value="cn.sharesdk.demo.MyAdapter" />
+            <!--
+            	Dropbox的SSO功能需要在此处添加一个对ACTION_VIEW事件的过滤器，其中的scheme是
+            	“db-”前缀再开发者应用的加上appKey。如果此过滤器不设置，则不能完成SSO功能授权
+            -->
+            <!--
+            如果集成QQ分享，或者使用QQ客户端来进行QQ空间的分享，须要在此处添加一个对ACTION_VIEW事件的过滤器，
+            其中的scheme是“tencent”前缀再开发者应用的加上appId。如 果此过滤器不设置，则分享结束以后不能得到正确的回调
+            -->
+            <intent-filter>
+                <data android:scheme="tencent1105302165" />
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <!-- 调用新浪原生SDK，需要注册的回调activity -->
+            <intent-filter>
+                <action android:name="com.sina.weibo.sdk.action.ACTION_SDK_REQ_ACTIVITY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".main.wxapi.WXEntryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <!-- smssdk写入配置 -->
+        <activity
+            android:name="cn.smssdk.SMSSDKUIShell"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+
+        <!-- 百度地图设置 -->
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote">
+            <intent-filter>
+                <action android:name="com.baidu.location.service_v2.2"></action>
+            </intent-filter>
+        </service>
+
+        <!-- meta-data需要写在application中 -->
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="7nbrpkNUKtid92zNHBh0tEVH" />
+        <!-- 百度推送的配置 -->
+        <!-- push富媒体，不使用富媒体推送不需要 -->
+        <activity
+            android:name="com.baidu.android.pushservice.richmedia.MediaListActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="MediaListActivity"
+            android:launchMode="singleTask"/>
+        <!-- push富媒体结束 -->
+
+
+        <!-- push应用定义消息receiver声明 -->
+        <receiver android:name="cn.baidu.push.example.MyPushMessageReceiver">
+            <intent-filter>
+
+                <!-- 接收push消息 -->
+                <action android:name="com.baidu.android.pushservice.action.MESSAGE" />
+                <!-- 接收bind,unbind,fetch,delete等反馈消息 -->
+                <action android:name="com.baidu.android.pushservice.action.RECEIVE" />
+                <action android:name="com.baidu.android.pushservice.action.notification.CLICK" />
+            </intent-filter>
+        </receiver>
+
+        <!-- push必须的receviver和service声明 -->
+        <receiver
+            android:name="com.baidu.android.pushservice.PushServiceReceiver"
+            android:process=":bdservice_v1">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="com.baidu.android.pushservice.action.notification.SHOW" />
+                <action android:name="com.baidu.android.pushservice.action.media.CLICK" />
+                <!-- 以下四项为可选的action声明，可大大提高service存活率和消息到达速度 -->
+                <action android:name="android.intent.action.MEDIA_MOUNTED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.baidu.android.pushservice.RegistrationReceiver"
+            android:process=":bdservice_v1">
+            <intent-filter>
+                <action android:name="com.baidu.android.pushservice.action.METHOD" />
+                <action android:name="com.baidu.android.pushservice.action.BIND_SYNC" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.baidu.android.pushservice.PushService"
+            android:exported="true"
+            android:process=":bdservice_v1">
+            <intent-filter>
+                <action android:name="com.baidu.android.pushservice.action.PUSH_SERVICE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.baidu.android.pushservice.CommandService"
+            android:exported="true" />
+        <!-- push结束 -->
+        <!-- 在百度开发者中心查询应用的API Key -->
+
+        <meta-data
+            android:name="api_key"
+            android:value="7nbrpkNUKtid92zNHBh0tEVH" />
+
+        <activity android:name=".tab4.ExaminationActivity"/>
+        <activity android:name=".tab1.examsystem.ExamPaperResultActivity" android:parentActivityName=".tab1.examsystem.ExamListActivity"/>
+        <activity android:name=".tab1.examsystem.ExamPaperDetailActivity" android:parentActivityName=".tab1.examsystem.ExamListActivity"/>
+    </application>
+
+</manifest>

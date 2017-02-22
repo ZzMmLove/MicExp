@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/layout_head"
+                layout="@layout/view_head_ad"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="#ffffff"
+                android:gravity="center_vertical"
+                android:layout_weight="0.5">
+
+                <Button
+                    android:text="同步视频"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/tab1_button_sync_video"
+                    android:drawableTop="@mipmap/tab1_grid_sync_video"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_selector"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#d39aa2"/>
+
+                <Button
+                    android:text="仿真实验"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/tab1_button_simulation_test"
+                    android:drawableTop="@mipmap/tab1_grid_simulation_test"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_selector"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#d39aa2"/>
+
+                <Button
+                    android:text="创新实验"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/tab1_button_innovate"
+                    android:drawableTop="@mipmap/tab1_grid_innovate"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_selector"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:background="#d39aa2"
+                android:layout_height="1dp"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="#ffffff"
+                android:gravity="center_vertical"
+                android:layout_weight="0.5">
+
+                <Button
+                    android:text="备考视频"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/tab1_button_examine_system"
+                    android:drawableTop="@mipmap/tab1_grid_examine_system"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_selector"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#d39aa2"/>
+
+                <Button
+                    android:text="实验文库"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/tab1_button_test_library"
+                    android:drawableTop="@mipmap/tab1_grid_test_library"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_selector"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#d39aa2"/>
+
+                <Button
+                    android:text="名师讲堂"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/tab1_button_lecture"
+                    android:drawableTop="@mipmap/tab1_grid_lecture"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_selector"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:background="#d39aa2"
+                android:layout_height="1dp"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="#ffffff"
+                android:gravity="center_vertical"
+                android:layout_weight="0.5">
+
+                <Button
+                    android:text="考评系统"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/tab1_button_train_college"
+                    android:drawableTop="@mipmap/tab1_grid_train_college"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_selector"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#d39aa2"/>
+
+                <Button
+                    android:text="实验装备"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/tab1_button_test_equepment"
+                    android:drawableTop="@mipmap/tab1_grid_test_equepment"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_selector"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#d39aa2"/>
+
+                <Button
+                    android:text="会展中心"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/tab1_button_exhibition_center"
+                    android:drawableTop="@mipmap/tab1_grid_exhibition_centerr"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_selector"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+
+            <!--<GridView
+                android:id="@+id/main_grid"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                android:background="#CCCCCC"
+                android:gravity="center"
+                android:horizontalSpacing="1dp"
+                android:numColumns="3"
+                android:stretchMode="columnWidth"
+                android:verticalSpacing="0.8dp" />-->
+        </LinearLayout>
+    </android.support.v4.widget.DrawerLayout>
+</LinearLayout>

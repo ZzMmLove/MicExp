@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="sub_grade">
+        <item>不限</item>
+        <item>高三</item>
+        <item>高二</item>
+        <item>高一</item>
+        <item>初三</item>
+        <item>初二</item>
+        <item>初一</item>
+        <item>小六</item>
+        <item>小五</item>
+        <item>小四</item>
+        <item>小三</item>
+    </string-array>
+    <string-array name="sub_grade2">
+        <item>不限</item>
+        <item>选修6</item>
+        <item>选修5</item>
+        <item>选修4</item>
+        <item>选修3</item>
+        <item>选修2</item>
+        <item>选修1</item>
+        <item>必修三</item>
+        <item>必修二</item>
+        <item>必修一</item>
+        <item>初三</item>
+        <item>初二</item>
+        <item>初一</item>
+        <item>小六</item>
+        <item>小五</item>
+        <item>小四</item>
+        <item>小三</item>
+    </string-array>
+    <string-array name="sub_category">
+        <item>不限</item>
+        <item>高中</item>
+        <item>初中</item>
+        <item>小学</item>
+    </string-array>
+    <string-array name="sub_sorting_latest">
+        <item>不限</item>
+       <item>按访问记录</item>
+        <item>按最多评论</item>
+    </string-array>
+
+    <string-array name="sub_highcate">
+        <item>不限</item>
+        <item>高中物理</item>
+        <item>高中化学</item>
+        <item>高中生物</item>
+        <item>通用技术</item>
+        <item>……</item>
+    </string-array>
+
+    <string-array name="sub_exphighcate">
+        <item>不限</item>
+        <item>高中物理</item>
+        <item>高中化学</item>
+        <item>高中生物</item>
+        <item>……</item>
+    </string-array>
+    
+    <string-array name="sub_junicate">
+        <item>不限</item>
+        <item>初中物理</item>
+        <item>初中化学</item>
+        <item>初中生物</item>
+        <item>……</item>
+    </string-array>
+    <string-array name="sub_msjunicate">
+        <item>不限</item>
+        <item>初中物理</item>
+        <item>初中化学</item>
+        <item>初中生物</item>
+        <item>初中科学</item>
+        <item>信息技术</item>
+        <item>……</item>
+    </string-array>
+    
+    <string-array name="sub_primcate">
+        <item>不限</item>
+        <item>小学科学</item>
+        <item>……</item>
+    </string-array>
+    <string-array name="sub_msprimcate">
+        <item>不限</item>
+        <item>小学科学</item>
+        <item>小学数学</item>
+        <item>信息技术</item>
+        <item>……</item>
+    </string-array>
+
+	<string-array name="sub_chuangke">
+        <item>不限</item>
+        <item>创新教具</item>
+        <item>创客活动</item>
+        <item>教师专区</item>
+        <item>学生专区</item>
+    </string-array>
+    
+	<string-array name="sub_wenku">
+        <item>不限</item>
+        <item>高中物理实验文库</item>
+        <item>高中化学实验文库</item>
+        <item>高中生物实验文库</item>
+        <item>高中通用技术实验文库</item>
+        <item>初中物理实验文库</item>
+        <item>初中化学实验文库</item>
+        <item>初中生物实验文库</item>
+        <item>初中通用技术实验文库</item>
+        <item>小学数学实验文库</item>
+        <item>小学科学实验文库</item>
+        <item>小学信息技术实验文库</item>
+        <item>名师讲堂实验报告</item>
+    </string-array>
+    
+	<string-array name="sub_peixun">
+        <item>不限</item>
+        <item>初中</item>
+        <item>高中</item>
+        <!--<item>装备培训</item>-->
+    </string-array>
+    
+	<string-array name="sub_zhuangbei">
+        <item>不限</item>
+        <item>物理实验设备</item>
+        <item>化学实验设备</item>
+        <item>生物实验设备</item>
+        <item>通用技术实验设备</item>
+        <item>信息化装备</item>
+        <item>常规教学仪器</item>
+        <item>其他实验设备</item>
+    </string-array>
+	
+    
+	<string-array name="sub_shoucang">
+        <item>同步视频</item>
+        <item>视频专辑</item>
+        <item>名师视频</item>
+        <item>考试视频</item>
+        <item>仿真实验</item>
+        <item>创客活动</item>
+    </string-array>
+	
+     <string-array name="sub_kaoshi">
+        <item>不限</item>
+        <item>高考视频</item>
+        <item>中考视频</item>
+    </string-array>
+    <string-array name="sub_gkshipin">
+        <item>不限</item>
+        <item>物理</item>
+        <item>化学</item>
+        <item>生物</item>
+    </string-array>
+    <string-array name="sub_zkshipin">
+        <item>不限</item>
+        <item>物理</item>
+        <item>化学</item>
+        <item>生物</item>
+    </string-array>
+
+    <string-array name="exam_paper_junior_subject">
+        <!-- 初中物理:386,初中化学:387,初中生物:388,初中科学:404,信息技术:393 -->
+        <!-- 高中物理:371,高中化学:373,高中生物:375,通用技术:406, -->
+        <item>初中物理</item>
+        <item>初中化学</item>
+        <item>初中生物</item>
+        <item>初中科学</item>
+        <item>信息技术</item>
+    </string-array>
+
+    <string-array name="exam_paper_height_subject">
+        <item>高中物理</item>
+        <item>高中化学</item>
+        <item>高中生物</item>
+        <item>通用技术</item>
+    </string-array>
+</resources>
