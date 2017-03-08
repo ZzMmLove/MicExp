@@ -8,18 +8,53 @@ import java.io.Serializable;
  */
 public class UserEntity implements Serializable{
 	private static final long serialVersionUID = -540126402116610455L;
+	/**
+	 * 用户ID
+	 */
 	private String  id;
+	/**
+	 * 用户昵称
+	 */
 	private String  nickname;
+	/**
+	 * 用户真实姓名
+	 */
 	private String  name;
+	/**
+	 * 用户头像的路径
+	 */
 	private String  avatar;
+	/**
+	 * 性别
+	 */
 	private int  sex;
+	/**
+	 * 用户的身份(老师，学生，家长)
+	 */
 	private String  type;
+	/**
+	 * 用户所在学校
+	 */
 	private String  school;
+	/**
+	 * 用户状态
+	 */
 	private int   status;
+	/**
+	 * 用户访问服务器数据的令牌
+	 */
 	private String  accessToken;
+	/**
+	 * 学生所在班级
+	 */
+	private String banji;
+	/**
+	 * 学生所属老师
+	 */
+	private String teacher;
 
 	public UserEntity(String id, String nickname, String name, String avatar, int sex, String type, String school,
-					  int status, String accessToken) {
+					  int status, String accessToken, String banji, String teacher) {
 		super();
 		this.id = id;
 		this.nickname = nickname;
@@ -30,6 +65,8 @@ public class UserEntity implements Serializable{
 		this.school = school;
 		this.status = status;
 		this.accessToken = accessToken;
+		this.banji = banji;
+		this.teacher = teacher;
 	}
 	public UserEntity(){
 
@@ -91,11 +128,18 @@ public class UserEntity implements Serializable{
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+	public void setBanji(String banji) { this.banji = banji;}
+	public String getBanji() { return banji;}
+	public void setTeacher(String teacher) { this.teacher = teacher;}
+	public String getTeacher() {
+		return teacher;
+	}
 
 	@Override
 	public String toString() {
 		return "UserEntity{" +
-				"id='" + id + '\'' +
+				"accessToken='" + accessToken + '\'' +
+				", id='" + id + '\'' +
 				", nickname='" + nickname + '\'' +
 				", name='" + name + '\'' +
 				", avatar='" + avatar + '\'' +
@@ -103,7 +147,8 @@ public class UserEntity implements Serializable{
 				", type='" + type + '\'' +
 				", school='" + school + '\'' +
 				", status=" + status +
-				", accessToken='" + accessToken + '\'' +
+				", banji='" + banji + '\'' +
+				", teacher='" + teacher + '\'' +
 				'}';
 	}
 }

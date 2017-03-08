@@ -13,10 +13,15 @@
         android:layout_height="fill_parent"
         android:layout_weight="1" />
 
+    <LinearLayout
+        android:background="#eeeeee"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+
+    <!-- android:layout_height="45dip -->
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="49dip"
-        android:background="@mipmap/main_bottom_bg" >
+        android:layout_height="50dip">
 
         <ImageView
             android:id="@+id/main_bottom_select"
@@ -29,16 +34,18 @@
         <LinearLayout
             android:id="@+id/linearLayout1"
             android:layout_width="fill_parent"
-            android:layout_height="45dip"
+            android:layout_height="50dip"
             android:baselineAligned="false"
+            android:background="#ffffff"
             android:orientation="horizontal" >
 
             <RelativeLayout
-                android:id="@+id/main_load_first"
+                android:id="@+id/activity_tabmain_RelativeLayout_One"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1.0"
-                android:background="#00000000"
+                android:background="#ffffff"
+                android:layout_marginTop="5dp"
                 android:gravity="center_horizontal" >
 
                 <ImageView
@@ -59,11 +66,12 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/main_load_sell_car"
+                android:id="@+id/activity_tabmain_RelativeLayout_Two"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1.0"
-                android:background="#00000000"
+                android:background="#ffffff"
+                android:layout_marginTop="5dp"
                 android:gravity="center_horizontal" >
 
                 <ImageView
@@ -82,12 +90,13 @@
                     android:textSize="@dimen/alter_text_size" />
             </RelativeLayout>
 
-              <RelativeLayout
-                android:id="@+id/main_load_search"
+            <RelativeLayout
+                android:id="@+id/activity_tabmain_RelativeLayout_Three"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1.0"
-                android:background="#00000000"
+                android:background="#ffffff"
+                  android:layout_marginTop="5dp"
                 android:gravity="center_horizontal" >
 
                 <ImageView
@@ -107,11 +116,12 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/main_load_collect"
+                android:id="@+id/activity_tabmain_RelativeLayout_Four"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1.0"
-                android:background="#00000000"
+                android:background="#ffffff"
+                android:layout_marginTop="5dp"
                 android:gravity="center_horizontal" >
 
                 <ImageView

@@ -26,13 +26,12 @@ public class SlideImageLayout {
 	private int pageIndex = 0;
 	private int imageWidth = 0;
 	private int imageHeight = 0;
+
 	public SlideImageLayout(Activity activity) {
-		// TODO Auto-generated constructor stub
 		this.activity = activity;
 		imageWidth = activity.getResources().getDisplayMetrics().widthPixels;
 		imageHeight = imageWidth / 2;
 		imageList = new ArrayList<ImageView>();
-		
 	}
 	
 	/**
@@ -107,6 +106,7 @@ public class SlideImageLayout {
 	public void setPageIndex(int index){
 		pageIndex = index;
 	}
+
     private class ImageOnClickListener implements OnClickListener{
     	@Override
     	public void onClick(View v) {

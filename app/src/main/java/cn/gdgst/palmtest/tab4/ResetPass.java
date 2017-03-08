@@ -17,6 +17,8 @@ import android.os.Bundle;
 
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,8 +27,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class ResetPass extends Activity implements OnClickListener {
-	private ImageView register_back;
+public class ResetPass extends AppCompatActivity implements OnClickListener {
 
 	private Button btnSub;
 	private EditText password_edit;
@@ -35,20 +36,18 @@ public class ResetPass extends Activity implements OnClickListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.resetpass);
+		ActionBar actionBar = getSupportActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setTitle("重置密码");
 		InitView();
-
 	}
 
 	private void InitView() {
-		// TODO Auto-generated method stub
-		register_back = (ImageView) findViewById(R.id.iv_back);
 		btnSub = (Button) findViewById(R.id.new_btn_submit);
 		password_edit = (EditText) findViewById(R.id.new_password);
 
-		register_back.setOnClickListener(this);
 		btnSub.setOnClickListener(this);
 
 		Bundle bundle = new Bundle();
@@ -63,10 +62,6 @@ public class ResetPass extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-			case R.id.iv_back:
-				this.finish();
-				break;
-
 			case R.id.new_btn_submit:
 				if (!TextUtils.isEmpty(password_edit.getText().toString())) {
 					// SMSSDK.submitVerificationCode("86", phoneNums,
@@ -89,10 +84,7 @@ public class ResetPass extends Activity implements OnClickListener {
 		public void run() {
 
 			String password = Encrypt.md5(password_edit.getText().toString());
-			//
 			boolean registerValidate = registerServer(password);
-			// System.out.println("----------------------------bool is
-			// :"+registerValidate+"----------response:"+responseMsg);
 
 			Message msg = handler.obtainMessage();
 			if (registerValidate) {

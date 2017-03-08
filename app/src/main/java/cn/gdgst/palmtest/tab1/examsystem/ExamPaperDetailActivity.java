@@ -1,8 +1,10 @@
 package cn.gdgst.palmtest.tab1.examsystem;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -38,7 +40,9 @@ import java.util.Map;
 import cn.gdgst.entity.ExamTopic;
 import cn.gdgst.palmtest.R;
 import cn.gdgst.palmtest.API.APIWrapper;
+import cn.gdgst.palmtest.base.AppConstant;
 import cn.gdgst.palmtest.bean.HttpResult;
+import cn.gdgst.palmtest.bean.TExamTopic;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -57,6 +61,8 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
     private MessageHandler messageHandler;
     private int int_ExamPaperId;
     private ArrayList<ExamTopic> ArrayList_ExamTopic = new ArrayList<>();
+    private ArrayList<TExamTopic> ArrayList_TExamTopic = new ArrayList<>();
+    private ArrayList<TExamTopic> ArrayList_JExamTopic = new ArrayList<>();
     private Chronometer chronometer;
     private ProgressDialog progressDialog;
     private ImageButton imageButton_previous;
@@ -90,7 +96,6 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
 
         imageView_Shadow = (ImageView) findViewById(R.id.activity_exampaperdetail_shadowView);
         readerViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
 
             @Override
             public void onPageScrolled(int i, float v, int i1) {
@@ -127,7 +132,6 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
         imageButton_previous.setOnClickListener(this);
         imageButton_next = (ImageButton) findViewById(R.id.activity_exampaperdetail_imageButton_next);
         imageButton_next.setOnClickListener(this);
-
     }
 
     @Override
@@ -150,6 +154,15 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
                 readerViewPager.setCurrentItem(currentItemId1, true);
                 break;
             case R.id.activity_exampaperdetail_button_submit:
+                SharedPreferences sharedPreferences = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
+                String school = sharedPreferences.getString("school", null);
+                String banji = sharedPreferences.getString("banji", null);
+                String teacher = sharedPreferences.getString("teacher", null);
+                if (school == null || banji == null || teacher == null) {
+                    Toast.makeText(ExamPaperDetailActivity.this, "请完善个人信息", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 ReadFragment readFragment_end = hashMap_ReadFragment.get(ArrayList_ExamTopic.size() - 1);
                 hashmap_selected_result.put(hashMap_ReadFragment.size(),readFragment_end.geSelected_result());
 
@@ -176,74 +189,126 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case THREAD_GET_PAPER_DETAIL_SUCCESS:
-                    JSONObject jsonObject_ExamTopic = (JSONObject) msg.obj;
-                    /**
-                     * 次部分代码为手动解析json数据
-                     * 循环创建10道题的对象,并把每个对象加入到ArrayList_ExamTopic
-                     */
+                case THREAD_GET_PAPER_DETAIL_SUCCESS://请求试卷内容
+                    JSONObject jsonObjectExamPaper = (JSONObject) msg.obj;
                     try {
-                        for (int i = 1; i <= jsonObject_ExamTopic.length(); i++) {
-                            ExamTopic examTopic = new ExamTopic();
-                            JSONObject jsonObject_Topic = jsonObject_ExamTopic.getJSONObject(String.valueOf(i));
-                            Map<Integer, String> map_Answer = new HashMap<>();
+                        boolean success = jsonObjectExamPaper.getBoolean("success");
+                        int error_code = jsonObjectExamPaper.getInt("error_code");
+                        String message = jsonObjectExamPaper.getString("message");
+                        /**
+                         * 如果获取试卷详细内容不成功，则提示用户，终止剩余操作
+                         */
+                        if (success == false) {
+                            Toast.makeText(ExamPaperDetailActivity.this, message, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        JSONObject jsonObjectXExamTopic = jsonObjectExamPaper.optJSONObject("xcontent");
+                        JSONObject jSONObjectTExamTopic = jsonObjectExamPaper.optJSONObject("tcontent");
+                        JSONObject jSONObjectJExamTopic = jsonObjectExamPaper.optJSONObject("jcontent");
+                        if (jsonObjectXExamTopic != null) {
                             /**
-                             * 选项A
+                             * 此部分代码为手动解析选择题json数据
+                             * 循环创建10道题的对象,并把每个对象加入到ArrayList_ExamTopic
                              */
-                            String string_optionA = jsonObject_Topic.getString("0");
-                            examTopic.setOptionA(string_optionA);
-                            map_Answer.put(0, string_optionA);
-                            /**
-                             * 选项B
-                             */
-                            String string_optionB = jsonObject_Topic.getString("1");
-                            examTopic.setOptionB(string_optionB);
-                            map_Answer.put(1, string_optionB);
-                            /**
-                             * 选项C
-                             */
-                            String string_optionC = jsonObject_Topic.getString("2");
-                            examTopic.setOptionC(string_optionC);
-                            map_Answer.put(2, string_optionC);
-                            /**
-                             * 选项D
-                             */
-                            String string_optionD = jsonObject_Topic.getString("3");
-                            examTopic.setOptionD(string_optionD);
-                            map_Answer.put(3, string_optionD);
-                            /**
-                             * 题目
-                             */
-                            String string_title= jsonObject_Topic.getString("title");
-                            examTopic.setTitle(string_title);
-                            /**
-                             * 题目的图片的路径
-                             */
-                            String string_img = jsonObject_Topic.getString("img");
-                            examTopic.setImg(string_img);
-                            /**
-                             * 题目的正确答案
-                             */
-                            String string_right = jsonObject_Topic.getString("right");
-                            examTopic.setRight(string_right);
+                            for (int i = 1; i <= jsonObjectXExamTopic.length(); i++) {
+                                ExamTopic examTopic = new ExamTopic();
+                                JSONObject jsonObject_Topic = jsonObjectXExamTopic.getJSONObject(String.valueOf(i));
+                                Map<Integer, String> map_Answer = new HashMap<>();
+                                /**
+                                 * 选项A
+                                 */
+                                String string_optionA = jsonObject_Topic.getString("0");
+                                examTopic.setOptionA(string_optionA);
+                                map_Answer.put(0, string_optionA);
+                                /**
+                                 * 选项B
+                                 */
+                                String string_optionB = jsonObject_Topic.getString("1");
+                                examTopic.setOptionB(string_optionB);
+                                map_Answer.put(1, string_optionB);
+                                /**
+                                 * 选项C
+                                 */
+                                String string_optionC = jsonObject_Topic.getString("2");
+                                examTopic.setOptionC(string_optionC);
+                                map_Answer.put(2, string_optionC);
+                                /**
+                                 * 选项D
+                                 */
+                                String string_optionD = jsonObject_Topic.getString("3");
+                                examTopic.setOptionD(string_optionD);
+                                map_Answer.put(3, string_optionD);
+                                /**
+                                 * 题目
+                                 */
+                                String string_title= jsonObject_Topic.getString("title");
+                                examTopic.setTitle(string_title);
+                                /**
+                                 * 题目的图片的路径
+                                 */
+                                String string_img = jsonObject_Topic.getString("img");
+                                examTopic.setImg(string_img);
+                                /**
+                                 * 题目的正确答案
+                                 */
+                                String string_right = jsonObject_Topic.getString("right");
+                                examTopic.setRight(string_right);
 
+                                /**
+                                 * 该题的正确的答案的解析
+                                 */
+                                String string_analysis = jsonObject_Topic.getString("jiexi");
+                                examTopic.setAnalysis(string_analysis);
+                                /**
+                                 * 题目的序号
+                                 */
+                                examTopic.setId(i);
+                                /**
+                                 * 把ABCD四个选项的文本加入到examTopic对象中
+                                 */
+                                examTopic.setMap_Answer(map_Answer);
+                                /**
+                                 * 当一道题的对象创建完毕之后，把这道题加入到examTopList中
+                                 */
+                                ArrayList_ExamTopic.add(examTopic);
+                            }
+                        }else {
+                            Log.d("ExamPaperDetailActivity", "没有选择题");
+                        }
+                        if (jSONObjectTExamTopic != null) {
                             /**
-                             * 该题的正确的答案的解析
+                             * 此部分代码为手动解析填空题json数据
                              */
-                            String string_analysis = jsonObject_Topic.getString("jiexi");
-                            examTopic.setAnalysis(string_analysis);
+                            for (int a = 1; a <= jSONObjectTExamTopic.length(); a ++) {
+                                TExamTopic tExamTopic = new TExamTopic();
+                                /**
+                                 * 根据填空题的数量把填空题的JSON字符串解析成对象
+                                 */
+                                JSONObject jSONObject_TNumber = jSONObjectTExamTopic.getJSONObject(String.valueOf(a));
+                                tExamTopic.setTitle(jSONObject_TNumber.getString("title"));
+                                tExamTopic.setImg(jSONObject_TNumber.getString("img"));
+                                tExamTopic.setRight(jSONObject_TNumber.getString("right"));
+                                tExamTopic.setJiexi(jSONObject_TNumber.getString("jiexi"));
+                                ArrayList_TExamTopic.add(tExamTopic);
+                            }
+                        }else {
+                            Log.d("ExamPaperDetailActivity", "没有填空题");
+                        }
+                        if (jSONObjectJExamTopic != null) {
                             /**
-                             * 题目的序号
+                             * 此部分代码为手动解析解答题json数据
                              */
-                            examTopic.setId(i);
-                            /**
-                             * 把ABCD四个选项的文本加入到examTopic对象中
-                             */
-                            examTopic.setMap_Answer(map_Answer);
-                            /**
-                             * 当一道题的对象创建完毕之后，把这道题加入到examTopList中
-                             */
-                            ArrayList_ExamTopic.add(examTopic);
+                            for (int b = 1; b <= jSONObjectJExamTopic.length(); b ++) {
+                                TExamTopic jExamTopic = new TExamTopic();
+                                JSONObject jSONObject_JNumber = jSONObjectJExamTopic.getJSONObject(String.valueOf(b));
+                                jExamTopic.setTitle(jSONObject_JNumber.getString("title"));
+                                jExamTopic.setImg(jSONObject_JNumber.getString("img"));
+                                jExamTopic.setRight(jSONObject_JNumber.getString("right"));
+                                jExamTopic.setJiexi(jSONObject_JNumber.getString("jiexi"));
+                                ArrayList_JExamTopic.add(jExamTopic);
+                            }
+                        }else {
+                            Log.d("ExamPaperDetailActivity", "没有解答题");
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -253,10 +318,10 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
                     }
                     chronometer.start();
                     long_spend_time = System.currentTimeMillis();
-                    readerViewPagerAdapter = new ReaderViewPagerAdapter(getSupportFragmentManager(), ArrayList_ExamTopic);
+                    readerViewPagerAdapter = new ReaderViewPagerAdapter(getSupportFragmentManager(), ArrayList_ExamTopic, ArrayList_TExamTopic, ArrayList_JExamTopic);
                     readerViewPager.setAdapter(readerViewPagerAdapter);
                     break;
-                case THREAD_SUBMIT_PAPER_JSON_DATA:
+                case THREAD_SUBMIT_PAPER_JSON_DATA://把用户作答的试卷答案提交到服务器
                     Intent intent_ExamPaperResultActivity = new Intent(ExamPaperDetailActivity.this, ExamPaperResultActivity.class);
                     if (ArrayList_ExamTopic != null) {
                         intent_ExamPaperResultActivity.putExtra("examTopicList", ArrayList_ExamTopic);
@@ -301,17 +366,9 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
                     /**
                      * 创建试卷JSON对象
                      */
-                    JSONObject jsonObject_ExamPaper = new JSONObject(result);
-                    boolean success = jsonObject_ExamPaper.getBoolean("success");
-                    int error_code = jsonObject_ExamPaper.getInt("error_code");
-                    String message = jsonObject_ExamPaper.getString("message");
-                    Log.v("jenfee", "是否成功:"+String.valueOf(success)+"错误代码:"+String.valueOf(error_code)+"消息:"+message);
-                    /**
-                     * 创建题目JSON对象
-                     */
-                    JSONObject jsonObject_ExamTopic = jsonObject_ExamPaper.getJSONObject("data");
+                    JSONObject jsonObjectExamPaper = new JSONObject(result);
                     Message message1 = new Message();
-                    message1.obj = jsonObject_ExamTopic;
+                    message1.obj = jsonObjectExamPaper;
                     message1.what = THREAD_GET_PAPER_DETAIL_SUCCESS;
                     messageHandler.sendMessage(message1);
 
@@ -323,7 +380,6 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } finally {
                 if(connection!=null){

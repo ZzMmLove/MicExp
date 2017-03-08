@@ -17,6 +17,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -24,26 +25,31 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bigkoo.svprogresshud.SVProgressHUD;
-import com.bumptech.glide.Glide;
 import com.orhanobut.logger.Logger;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 
 import cn.gdgst.palmtest.API.APIWrapper;
 import cn.gdgst.palmtest.Entitys.UserEntity;
 import cn.gdgst.palmtest.R;
 import cn.gdgst.palmtest.base.AppConstant;
-import cn.gdgst.palmtest.utils.ImageUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -51,6 +57,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.POST;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -63,6 +70,19 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
     private String accessToken;
     private RelativeLayout rl_avatar, rl_nickname, rl_name, rl_sex, rl_identity, rl_school, rl_phone, rl_pass;
     private SVProgressHUD progressDialog;
+    private RelativeLayout relativeLayout_cl,relativeLayout_teacher;
+    /**
+     * 用户所在学校
+     */
+    private TextView tv_school;
+    /**
+     * 用户所在班级
+     */
+    private TextView textView_cl;
+    /**
+     * 用户所属老师
+     */
+    private TextView textView_teacher;
 
     Dialog dialog;
     /* 请求码 */
@@ -76,6 +96,7 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
     private static final String IMAGE_FILE_NAME_TEMP = "temp_faceImage.jpg";
     /* 头像名称 */
     private static final String IMAGE_FILE_NAME = "faceImage.jpg";
+    private UserEntity user;
 
     /**
      * 初始化sharedPreferences
@@ -85,6 +106,7 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
     private String Identity = null;
     private String avatar_file_name;
     private boolean isExceptionForSDCard = false;
+    private SharedPreferences sharedPreferences_UserInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +116,7 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("用户信息");
+        sharedPreferences_UserInfo = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
         InitView();
     }
 
@@ -102,9 +125,13 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
         tv_nickname = (TextView) findViewById(R.id.tv_nickname);
         tv_name = (TextView) findViewById(R.id.tv_name);
         tv_sex = (TextView) findViewById(R.id.tv_sex);
-        tv_identity = (TextView) findViewById(R.id.tv_identity);
+        tv_identity = (TextView) findViewById(R.id.activity_user_info_tvType);
         iv_avatar = (ImageView) findViewById(R.id.iv_avatar);
         btn_loginout = (Button) findViewById(R.id.btn_loginout);
+        textView_cl = (TextView) findViewById(R.id.activity_user_info_tv_classss);
+        textView_teacher = (TextView) findViewById(R.id.activity_user_info_tv_teacher);
+        tv_school = (TextView) findViewById(R.id.activity_user_info_tvSchool);
+        //-----------------------------------------------------------------------
         rl_avatar = (RelativeLayout) findViewById(R.id.rl_avatar);
         rl_avatar.setOnClickListener(this);
         rl_nickname = (RelativeLayout) findViewById(R.id.rl_nikname);
@@ -122,27 +149,30 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
         rl_pass = (RelativeLayout) findViewById(R.id.rl_pass);
         rl_pass.setOnClickListener(this);
         btn_loginout.setOnClickListener(this);
+        relativeLayout_cl = (RelativeLayout) findViewById(R.id.activity_user_info_rl_classss);
+        relativeLayout_cl.setOnClickListener(this);
+        relativeLayout_teacher = (RelativeLayout) findViewById(R.id.activity_user_info_rl_teacher);
+        relativeLayout_teacher.setOnClickListener(this);
 
-        sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
-        accessToken = sp.getString("accessToken", "");
+        //获取头像的路径
+        String avatar = sharedPreferences_UserInfo.getString("avatar", null);
+        //获取昵称
+        String nickname = sharedPreferences_UserInfo.getString("nickname", null);
+        //获取姓名
+        String name = sharedPreferences_UserInfo.getString("name", null);
+        //获取性别
+        int sex = sharedPreferences_UserInfo.getInt("sex", 0);
+        //获取用户身份
+        String type = sharedPreferences_UserInfo.getString("type", null);
+        //获取用户所在班别
+        String banji = sharedPreferences_UserInfo.getString("banji", null);
+        //获取用户的老师
+        String teacher = sharedPreferences_UserInfo.getString("teacher", null);
+        //获取学校
+        String school = sharedPreferences_UserInfo.getString("school", null);
 
-		/* 将头像转为圆形 */
-        Resources res = getResources();
-        Bitmap bmp = BitmapFactory.decodeResource(res, R.mipmap.default_avatar);
-        iv_avatar.setImageBitmap(bmp);
-
-        Bundle bundle;
-        bundle = this.getIntent().getExtras();
-        if (bundle != null) {
-            UserEntity user = (UserEntity) bundle.getSerializable("user_info");
-            Log.v("UserInfoActivity", "从服务器获取的头像的图片的路径:"+user.getAvatar());
-            //利用Glide图片加载框架加载用户头像图片
-            Glide.with(this).load(user.getAvatar()).into(iv_avatar);
-
-            //http://www.shiyan360.cn/Public/Uploads/avatar/597.jpg
-            //(第一种方式获取URL最后的文件名)String string_valid = user.getAvatar().substring(46);
-            //(第二种方式获取URL最后的文件名)
-            /*avatar_file_name = user.getAvatar().substring(user.getAvatar().lastIndexOf("/")+1);
+        if (avatar != null) {
+            avatar_file_name = avatar.substring(avatar.lastIndexOf("/")+1);
             File file = isExistsNativeFile(avatar_file_name);
             //File file = new File(getExternalFilesDir(null)+"/syzst_avatar.png");
             if (file.exists()) {
@@ -150,37 +180,62 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
                 //如果本地的头像文件名和服务器的头像文件名相同则显示
                 if (file.getName().equals(avatar_file_name)) {
                     Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                    iv_avatar.setImageBitmap(ImageUtil.toRoundBitmap(bitmap));
+                    iv_avatar.setImageBitmap(bitmap);
                 }else {
                     //否则从服务器中下载新的头像名,并显示
-                    downloadAvatarFromNet(user.getAvatar());
+                    downloadAvatarFromNet(avatar);
                 }
             }else {
-                downloadAvatarFromNet(user.getAvatar());
-            }*/
-
-            if (!user.getNickname().isEmpty()) {
-                tv_nickname.setText(user.getNickname());
-            } else {
-                tv_nickname.setText("未填写");
+                downloadAvatarFromNet(avatar);
             }
-            if (!user.getName().isEmpty()) {
-                tv_name.setText(user.getName());
-            } else {
-                tv_name.setText("未填写");
-            }
-
-            if (user.getSex() == 0) {
-                tv_sex.setText("男");
-            } else {
-                tv_sex.setText("女");
-            }
-
-            tv_identity.setText("学生");
-
-            phonenum = bundle.getString("username");
-            txt_phonenum.setText(phonenum);
         }
+
+        //---------------------------------------------
+        if (nickname != null) {
+            tv_nickname.setText(nickname);
+        }else {
+            tv_nickname.setText("未填写");
+        }
+        if (name != null) {
+            tv_name.setText(name);
+        }else {
+            tv_name.setText("未填写");
+        }
+        if (sex == 0) {
+            tv_sex.setText("男");
+        } else if (sex == 1) {
+            tv_sex.setText("女");
+        }else {
+            tv_sex.setText("未填写");
+        }
+        if (type != null) {
+            tv_identity.setText(type);
+        }else {
+            tv_identity.setText("未填写");
+        }
+        if (school !=null) {
+            tv_school.setText(school);
+        }else {
+            tv_school.setText("未填写");
+        }
+        if (banji != null) {
+            textView_cl.setText(banji);
+        }else {
+            textView_cl.setText("未填写");
+        }
+        if (teacher != null) {
+            textView_teacher.setText(teacher);
+        }else {
+            textView_teacher.setText("未填写");
+        }
+
+        sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
+        accessToken = sp.getString("accessToken", "");
+
+		/* 将头像转为圆形 *//*
+        Resources res = getResources();
+        Bitmap bmp = BitmapFactory.decodeResource(res, R.mipmap.default_avatar);
+        iv_avatar.setImageBitmap(bmp);*/
     }
 
     /**
@@ -224,8 +279,20 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
                     @Override
                     public void onNext(ResponseBody responseBody) {
                         if (writeResponseBodyToDisk(responseBody)) {
-                            Bitmap bitmap = BitmapFactory.decodeStream(responseBody.byteStream());
-                            iv_avatar.setImageBitmap(ImageUtil.toRoundBitmap(bitmap));
+                            SharedPreferences sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
+                            String img = sp.getString("avatar", null);
+                            Bitmap bitmap = null;
+                            if (img != null) {
+                                bitmap = BitmapFactory.decodeFile(new File(img).getAbsolutePath());
+                            }
+                            //Bitmap bitmap = BitmapFactory.decodeStream(responseBody.byteStream());
+                            if (bitmap != null) {
+                                iv_avatar.setImageBitmap(bitmap);
+                            }
+                            Log.d("UserInfoActivity", "ssssssssssssssssssssssssssssssssss");
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
                         }
 
                     }
@@ -328,12 +395,24 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
                 intent5.setClass(this, ChangeProfileActivity.class);
                 startActivity(intent5);
                 break;
+            /**
+             * 修改班级
+             */
+            case R.id.activity_user_info_rl_classss:
+                showInputDialog("班级");
+                break;
+            /**
+             * 修改老师
+             */
+            case R.id.activity_user_info_rl_teacher:
+                showInputDialog("老师");
+                break;
         }
 
     }
 
     /**
-     * 头像
+     * 当点击头像选项的时候弹出来的对话框
      */
     private void showDialog() {
         View view = getLayoutInflater().inflate(R.layout.alert_choice_photo, null);
@@ -360,9 +439,11 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
         switch (v.getId()) {
             case R.id.openCamera:
                 openCamera();
+                dialog.dismiss();
                 break;
             case R.id.openPhones:
                 openPhones();
+                dialog.dismiss();
                 break;
             case R.id.cancel:
                 dialog.cancel();
@@ -586,15 +667,51 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 Log.d("UserInfoActivity", "response返回的message:"+response.message());
                 Log.d("UserInfoActivity", "response对象的isSuccessful()函数的输出:"+String.valueOf(response.isSuccessful()));
-                if (response.isSuccessful()) {
-                    File file_native_avatar = isExistsNativeFile(avatar_file_name);
-                    if (file_native_avatar.exists()) {
-                        file_native_avatar.delete();
+                ResponseBody responseBody = response.body();
+                InputStream inputStream = responseBody.byteStream();
+                BufferedReader bufferedReader = null;
+                StringBuilder responseMessage = new StringBuilder();
+                String line = null;
+                try {
+                    bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
+                    while ((line = bufferedReader.readLine()) != null) {
+                        Log.d("UserInfoActivity", "上传头像返回的数据"+line);
+                        responseMessage.append(line);
                     }
-                    if (progressDialog.isShowing()) {
-                        progressDialog.dismiss();
-                    }
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+                try {
+                    if (responseMessage.toString() != null) {
+                        JSONObject jsonObject = new JSONObject(responseMessage.toString());
+                        boolean success = jsonObject.getBoolean("success");
+                        int error_code = jsonObject.getInt("error_code");
+                        String img_url = jsonObject.getString("img_url");
+                        String message = jsonObject.getString("message");
+                        Editor editor = sharedPreferences_UserInfo.edit();
+                        editor.putString("avatar", img_url);
+                        editor.commit();
+                        Log.d("UserInfoActivity", message);
+                        if (success) {
+                            File file_native_avatar = isExistsNativeFile(avatar_file_name);
+                            boolean isDeleteSuccess = false;
+                            if (file_native_avatar.exists()) {
+                                isDeleteSuccess = file_native_avatar.delete();
+                                if (isDeleteSuccess) {
+                                    downloadAvatarFromNet(img_url);
+                                }
+                            }else {
+                                downloadAvatarFromNet(img_url);
+                            }
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
             }
 
             @Override
@@ -612,5 +729,28 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
         String name = sp.getString("name", null);
         tv_nickname.setText(nickname);
         tv_name.setText(name);
+    }
+
+    private void showInputDialog(String showTitle) {
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View view = layoutInflater.inflate(R.layout.submit_dialog_paper, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(view);
+        final EditText editTextUsername = (EditText) view.findViewById(R.id.submit_dialog_editText_username);
+        editTextUsername.setHint(showTitle);
+        EditText editTextStudentId = (EditText) view.findViewById(R.id.submit_dialog_editText_studentid);
+        editTextStudentId.setVisibility(View.GONE);
+
+        TextView textViewUsername = (TextView) view.findViewById(R.id.submit_dialog_textView_username);
+        textViewUsername.setVisibility(View.GONE);
+        TextView textViewStudentId = (TextView) view.findViewById(R.id.submit_dialog_textView_studentid);
+        textViewStudentId.setVisibility(View.GONE);
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(UserInfoActivity.this, "正在提交"+editTextUsername.getText().toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.show();
     }
 }

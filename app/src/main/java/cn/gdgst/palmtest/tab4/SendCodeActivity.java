@@ -34,21 +34,17 @@ import cn.smssdk.EventHandler;
 import cn.smssdk.SMSSDK;
 
 public class SendCodeActivity extends AppCompatActivity implements OnClickListener{
-	//后退图片按钮
-	//private ImageView register_back;
 	// 手机号输入框    验证码输入框
 	private EditText user_name_edit,code_edit;
 	// 获取验证码按钮  注册按钮  重置按钮
 	private Button btn_next,getcode;
-	//
 	int i = 30;
 	private String responseMsg = "";
 	private int error_codeMsg;
-
 	private ProgressBar mProBar = null;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sendcode);
 		ActionBar actionBar = getSupportActionBar();
@@ -57,14 +53,10 @@ public class SendCodeActivity extends AppCompatActivity implements OnClickListen
 		InitView();
 	}
 	private void InitView() {
-		// TODO Auto-generated method stub
-		//控件
-		//register_back=(ImageView) findViewById(R.id.iv_back);
 		user_name_edit=(EditText) findViewById(R.id.new_username);
 		code_edit = (EditText) findViewById(R.id.edt_code);
 		btn_next=(Button) findViewById(R.id.btn_next);
 		getcode = (Button) findViewById(R.id.btn_getcode);
-		//register_back.setOnClickListener(this);
 		btn_next.setOnClickListener(this);
 		getcode.setOnClickListener(this);
 
@@ -93,9 +85,6 @@ public class SendCodeActivity extends AppCompatActivity implements OnClickListen
 		// TODO Auto-generated method stub
 		String phoneNums = user_name_edit.getText().toString();
 		switch (v.getId()) {
-			/*case R.id.iv_back:
-				this.finish();
-				break;*/
 			case R.id.btn_getcode:
 				// 1. 通过规则判断手机号
 				if (!judgePhoneNums(phoneNums)) {

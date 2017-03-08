@@ -1,6 +1,7 @@
 package cn.gdgst.palmtest.tab1.examsystem;
 
 import android.app.ActionBar.LayoutParams;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -41,6 +42,7 @@ import com.orhanobut.logger.Logger;
 import cn.gdgst.palmtest.API.APIWrapper;
 import cn.gdgst.palmtest.DB.DbService;
 import cn.gdgst.palmtest.Entitys.PX_Cate_Entity;
+import cn.gdgst.palmtest.base.AppConstant;
 import cn.gdgst.palmtest.bean.HttpResult;
 import cn.gdgst.palmtest.rewrite.ProgressWheel;
 import cn.gdgst.palmtest.servers.GetSortList;
@@ -174,12 +176,10 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 			public void onPullUpToRefresh(PullToRefreshBase refreshView) {
 
 				if (WenKuList.size() < 20) {
-					// TODO Auto-generated method stub
 					Log.v("showmark","测试空指针异常");
 					pullToRefreshListView.postDelayed(new Runnable() {
 						@Override
 						public void run() {
-							// TODO Auto-generated method stub
 							adapter.notifyDataSetChanged();
 							pullToRefreshListView.onRefreshComplete();
 							Toast.makeText(ExamListActivity.this, "没有更多数据了", Toast.LENGTH_SHORT).show();

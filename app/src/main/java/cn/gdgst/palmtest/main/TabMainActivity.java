@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -41,18 +42,17 @@ import rx.schedulers.Schedulers;
 
 /**
  * 主界面
- * @author admin
+ * Created by JenfeeMa on 2017/3/2.
  *
  */
 @SuppressWarnings("deprecation")
 public class TabMainActivity extends NetworkBaseActivity {
-
 	/** 本地窗口管理对象 **/
 	LocalActivityManager manager = null;
 	/** ViewPager对象实现页面滑动效果 **/
 	ViewPager viewPager = null;
-	/** 分别对应首页，发布买车，搜索，我的车源 **/
-	RelativeLayout firstPageLoad, sallCarLoad, searchLoad, myCarLoad;
+	/** 分别对应首页，同步视频，仿真实验，个人中心 **/
+	RelativeLayout mRelativeLayout_One, mRelativeLayout_Two, mRelativeLayout_Three, mRelativeLayout_Four;
 	/** 底部四个文字控件 **/
 	public TextView firstText, sellText, searchText, myCarText;
 	/** 底部图片空间 **/
@@ -79,9 +79,6 @@ public class TabMainActivity extends NetworkBaseActivity {
 	 * 退出间隔
 	 */
 	private static final int INTERVAL = 2000;
-	// 标题
-	//TextView title;
-	//ImageView openRight;
 
 	private BaseApplication baseApplication;
 
@@ -136,43 +133,27 @@ public class TabMainActivity extends NetworkBaseActivity {
 	 * 初始化组件
 	 */
 	private void initView() {
-		//openRight = (ImageView) findViewById(R.id.openRight);
-		//title = (TextView) findViewById(R.id.title);
 		viewPager = (ViewPager) findViewById(R.id.main_viewpage);
-		firstPageLoad = (RelativeLayout) findViewById(R.id.main_load_first);
-		sallCarLoad = (RelativeLayout) findViewById(R.id.main_load_sell_car);
-		searchLoad = (RelativeLayout) findViewById(R.id.main_load_search);//第三个fragment布局的按钮-showmark
-		myCarLoad = (RelativeLayout) findViewById(R.id.main_load_collect);
-
+		mRelativeLayout_One = (RelativeLayout) findViewById(R.id.activity_tabmain_RelativeLayout_One);
+		mRelativeLayout_Two = (RelativeLayout) findViewById(R.id.activity_tabmain_RelativeLayout_Two);
+		mRelativeLayout_Three = (RelativeLayout) findViewById(R.id.activity_tabmain_RelativeLayout_Three);//第三个fragment布局的按钮-showmark
+		mRelativeLayout_Four = (RelativeLayout) findViewById(R.id.activity_tabmain_RelativeLayout_Four);
 
 		home = (ImageView) findViewById(R.id.main_first_image);
 		sellCar = (ImageView) findViewById(R.id.main_sell_car_image);
 		search = (ImageView) findViewById(R.id.main_search_image);//第三个fragment按钮的图片
 		myCar = (ImageView) findViewById(R.id.main_collect_image);
 
-
 		firstText = (TextView) findViewById(R.id.first_page_text);
 		sellText = (TextView) findViewById(R.id.publish_car_page_text);
 		searchText = (TextView) findViewById(R.id.search_page_text);//第三个fragment按钮的文本
 		myCarText = (TextView) findViewById(R.id.my_car_page_text);
 
-		// 设置监听器
-		/*openRight.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				Intent i = new Intent();
-				i.setClass(TabMainActivity.this, SearchActivity.class);
-				startActivity(i);
-			}
-		});*/
-		firstPageLoad.setOnClickListener(new MyOnClickListener(0));
-		sallCarLoad.setOnClickListener(new MyOnClickListener(1));
-		searchLoad.setOnClickListener(new MyOnClickListener(2));
-		myCarLoad.setOnClickListener(new MyOnClickListener(3));
+		mRelativeLayout_One.setOnClickListener(new MyOnClickListener(0));
+		mRelativeLayout_Two.setOnClickListener(new MyOnClickListener(1));
+		mRelativeLayout_Three.setOnClickListener(new MyOnClickListener(2));
+		mRelativeLayout_Four.setOnClickListener(new MyOnClickListener(3));
 		//myCarLoad.setOnClickListener(new MyOnClickListener(2));
-
-
 	}
 
 	/**
@@ -181,14 +162,14 @@ public class TabMainActivity extends NetworkBaseActivity {
 	private void initPagerViewer() {
 		viewPager = (ViewPager) findViewById(R.id.main_viewpage);
 		final ArrayList<View> list = new ArrayList<View>();
-		Intent intent = new Intent(context, Tab1Activity.class);//Tab1Activity是实验首页界面
-		list.add(getView("A", intent));
-		Intent intent2 = new Intent(context, Tab2Activity.class);//ShipinActivity是同步视频界面
-		list.add(getView("B", intent2));
-		Intent intent3 = new Intent(context, Tab3Activity.class);//ExperimentList是仿真实验界面
-		list.add(getView("C", intent3));
-		Intent intent4 = new Intent(context, Tab4Activity.class);//Tab4Activity更多设置界面
-		list.add(getView("D", intent4));
+		Intent intent_One = new Intent(context, Tab1Activity.class);//Tab1Activity是实验首页界面
+		list.add(getView("A", intent_One));
+		Intent intent_Two = new Intent(context, Tab2Activity.class);//Tab2Activity是同步视频界面
+		list.add(getView("B", intent_Two));
+		Intent intent_Three = new Intent(context, Tab3Activity.class);//Tab3Activity是仿真实验界面
+		list.add(getView("C", intent_Three));
+		Intent intent_Four = new Intent(context, Tab4Activity.class);//Tab4Activity更多设置界面
+		list.add(getView("D", intent_Four));
 		PagerViewAdapter adapter = new PagerViewAdapter(list);
 		viewPager.setAdapter(adapter);
 		viewPager.setCurrentItem(0);
@@ -209,8 +190,7 @@ public class TabMainActivity extends NetworkBaseActivity {
 		offset = (screenW / 4 - bmpW) / 2;// 计算偏移量
 //		offset = (screenW / 3 - bmpW) / 2;// 计算偏移量
 		offset += 0;
-		int height = getResources().getDimensionPixelSize(
-				R.dimen.main_bottom_tab_selected_height);
+		int height = getResources().getDimensionPixelSize(R.dimen.main_bottom_tab_selected_height);
 		cursor.setLayoutParams(new RelativeLayout.LayoutParams(bmpW, height));
 		Matrix matrix = new Matrix();
 		matrix.postTranslate(offset + 100, 0);
@@ -219,7 +199,6 @@ public class TabMainActivity extends NetworkBaseActivity {
 
 	/**
 	 * 通过activity获取视图
-	 *
 	 * @param id
 	 * @param intent
 	 * @return
@@ -232,14 +211,12 @@ public class TabMainActivity extends NetworkBaseActivity {
 	 * 页卡切换监听
 	 */
 	private class MyOnPageChangeListener implements OnPageChangeListener {
-
 		int one = offset * 2 + bmpW;// 页卡1 -> 页卡2 偏移量
 		int two = one * 2;// 页卡1 -> 页卡3 偏移量
 		int three = one * 3; // 卡页偏移3个位
 
 		@Override
 		public void onPageSelected(int arg0) {
-
 			Animation animation = null;// 动画
 			setBottomPic(arg0);
 			switch (arg0) {
@@ -248,41 +225,37 @@ public class TabMainActivity extends NetworkBaseActivity {
 						animation = new TranslateAnimation(one, 0, 0, 0);
 					} else if (currIndex == 2) {
 						animation = new TranslateAnimation(two, 0, 0, 0);
+					} else if (currIndex == 3) {
+						animation = new TranslateAnimation(three, 0, 0, 0);
 					}
-				else if (currIndex == 3) {
-					animation = new TranslateAnimation(three, 0, 0, 0);
-				}
 					break;
 				case 1:
-
 					if (currIndex == 0) {
 						animation = new TranslateAnimation(offset, one, 0, 0);
 					} else if (currIndex == 2) {
 						animation = new TranslateAnimation(two, one, 0, 0);
+					} else if (currIndex == 3) {
+						animation = new TranslateAnimation(three, one, 0, 0);
 					}
-				else if (currIndex == 3) {
-					animation = new TranslateAnimation(three, one, 0, 0);
-				}
 					break;
 				case 2:
 					if (currIndex == 0) {
 						animation = new TranslateAnimation(offset, two, 0, 0);
 					} else if (currIndex == 1) {
 						animation = new TranslateAnimation(one, two, 0, 0);
+					} else if (currIndex == 3) {
+						animation = new TranslateAnimation(three, two, 0, 0);
 					}
-				else if (currIndex == 3) {
-					animation = new TranslateAnimation(three, two, 0, 0);
-				}
 					break;
-			case 3: {
-				if (currIndex == 0) {
-					animation = new TranslateAnimation(offset, three, 0, 0);
-				} else if (currIndex == 1) {
-					animation = new TranslateAnimation(one, three, 0, 0);
-				} else if (currIndex == 2) {
-					animation = new TranslateAnimation(two, three, 0, 0);
+				case 3: {
+					if (currIndex == 0) {
+						animation = new TranslateAnimation(offset, three, 0, 0);
+					} else if (currIndex == 1) {
+						animation = new TranslateAnimation(one, three, 0, 0);
+					} else if (currIndex == 2) {
+						animation = new TranslateAnimation(two, three, 0, 0);
+					}
 				}
-			}
 				break;
 			}
 			currIndex = arg0;
@@ -304,47 +277,44 @@ public class TabMainActivity extends NetworkBaseActivity {
 
 	public void setBottomPic(int i) {
 		switch (i) {
-			case 0: {
+			case 0:
 				home.setBackgroundResource(R.mipmap.icon_home_sel);
 				firstText.setTextColor(colorh);
 				sellCar.setBackgroundResource(R.mipmap.icon_video);
 				sellText.setTextColor(colord);
-			    search.setBackgroundResource(R.mipmap.icon_experiment);//showmark
+			    search.setBackgroundResource(R.mipmap.icon_experiment);//JenfeeMa
 			    searchText.setTextColor(colord);
 				myCar.setBackgroundResource(R.mipmap.icon_setting);
 				myCarText.setTextColor(colord);
 				//openRight.setVisibility(View.INVISIBLE);
 				//title.setText("实验首页");
-			}
-			break;
-			case 1: {
+				break;
+			case 1:
 				home.setBackgroundResource(R.mipmap.icon_home);
 				firstText.setTextColor(colord);
 				sellText.setTextColor(colorh);
      			searchText.setTextColor(colord);
 				myCarText.setTextColor(colord);
 				sellCar.setBackgroundResource(R.mipmap.icon_video_sel);
-			    search.setBackgroundResource(R.mipmap.icon_experiment);//showmark
+			    search.setBackgroundResource(R.mipmap.icon_experiment);
 				myCar.setBackgroundResource(R.mipmap.icon_setting);
 				//title.setText("同步视频");
 				//openRight.setVisibility(View.VISIBLE);
 				//openRight.setImageResource(R.drawable.search);
 				break;
-			}
-		case 2: {
-			home.setBackgroundResource(R.mipmap.icon_home);
-			sellCar.setBackgroundResource(R.mipmap.icon_video);
-			search.setBackgroundResource(R.mipmap.icon_experiment_sel);
-			myCar.setBackgroundResource(R.mipmap.icon_setting);
-			firstText.setTextColor(colord);
-			sellText.setTextColor(colord);
-			searchText.setTextColor(colorh);
-			myCarText.setTextColor(colord);
-			//title.setText("更多设置");
-			//openRight.setVisibility(View.INVISIBLE);
-			break;
-		}
-			case 3: {
+			case 2:
+				home.setBackgroundResource(R.mipmap.icon_home);
+				sellCar.setBackgroundResource(R.mipmap.icon_video);
+				search.setBackgroundResource(R.mipmap.icon_experiment_sel);
+				myCar.setBackgroundResource(R.mipmap.icon_setting);
+				firstText.setTextColor(colord);
+				sellText.setTextColor(colord);
+				searchText.setTextColor(colorh);
+				myCarText.setTextColor(colord);
+				//title.setText("更多设置");
+				//openRight.setVisibility(View.INVISIBLE);
+				break;
+			case 3:
 				home.setBackgroundResource(R.mipmap.icon_home);
 				sellCar.setBackgroundResource(R.mipmap.icon_video);
 			    search.setBackgroundResource(R.mipmap.icon_experiment);
@@ -355,8 +325,7 @@ public class TabMainActivity extends NetworkBaseActivity {
 				myCarText.setTextColor(colorh);
 				//openRight.setVisibility(View.INVISIBLE);
 				//title.setText("更多设置");
-			}
-			break;
+				break;
 		}
 	}
 
@@ -372,9 +341,12 @@ public class TabMainActivity extends NetworkBaseActivity {
 
 		@Override
 		public void onClick(View v) {
+			/**
+			 * 调用ViewPager中的setCurrentItem方法适配各个视图
+			 */
 			viewPager.setCurrentItem(index);
 		}
-	};
+	}
 
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
@@ -402,14 +374,8 @@ public class TabMainActivity extends NetworkBaseActivity {
 		}
 	}
 
-	@Override
-	public void finish() {
-		Log.v("showmark","TabAnimation已经finish..........");
-		super.finish();
-	}
-
 	private void autoLogin() {
-		SharedPreferences sharedPreferences = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
+		final SharedPreferences sharedPreferences = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
 		String username = sharedPreferences.getString("username", null);
 		String password = sharedPreferences.getString("password", null);
 		Observable<HttpResult<UserEntity>> observable = APIWrapper.getInstance().login(username, password);
@@ -431,7 +397,23 @@ public class TabMainActivity extends NetworkBaseActivity {
 				boolean success = userEntityHttpResult.getSuccess();
 				if (success) {
 					UserEntity userEntity = userEntityHttpResult.getData();
-					Log.d("TabActivity", "检测用户信息更新"+userEntity.toString());
+					SharedPreferences sharedPreferences_Save = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
+					SharedPreferences.Editor editor = sharedPreferences_Save.edit();
+
+					editor.putString("id", userEntity.getId());
+					editor.putString("nickname", userEntity.getNickname());
+					editor.putString("name", userEntity.getName());
+					editor.putString("avatar", userEntity.getAvatar());
+					editor.putInt("sex", userEntity.getSex());
+					editor.putString("type", userEntity.getType());
+					editor.putString("school", userEntity.getSchool());
+					editor.putInt("status", userEntity.getStatus());
+					editor.putString("accessToken", userEntity.getAccessToken());
+					String teacher = userEntity.getTeacher();
+					editor.putString("teacher", userEntity.getTeacher());
+					editor.putString("banji", userEntity.getBanji());
+					editor.commit();//注意此处,一定要提交
+					Log.d("TabMainActivity", "检测用户信息更新完毕:"+userEntity.toString());
 				}
 				}
 		});

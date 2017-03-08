@@ -37,10 +37,22 @@
             android:textColor="@color/black"
             android:background="@color/red" />
 
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/fragment_read_ListView" />
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/fragment_read_ListView" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:orientation="vertical"
+                android:id="@+id/fragment_read_LinearLayout_container">
+            </LinearLayout>
+        </FrameLayout>
 
     </LinearLayout>
 </FrameLayout>

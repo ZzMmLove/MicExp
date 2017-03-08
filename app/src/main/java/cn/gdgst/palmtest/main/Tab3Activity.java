@@ -6,9 +6,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.projection.MediaProjection;
+import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -37,11 +41,13 @@ import cn.gdgst.palmtest.DB.DbService;
 import cn.gdgst.palmtest.Entitys.GradeEntity;
 import cn.gdgst.palmtest.Entitys.Sub;
 import cn.gdgst.palmtest.bean.HttpResult;
+import cn.gdgst.palmtest.recorder.ScreenRecorder;
 import cn.gdgst.palmtest.rewrite.ProgressWheel;
 import cn.gdgst.palmtest.servers.GetSortList;
 
 import org.afinal.simplecache.ACache;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +56,7 @@ import java.util.Map;
 import cn.gdgst.palmtest.tab3.ExperimentAdapter;
 import cn.gdgst.palmtest.tab3.MyAdapter;
 import cn.gdgst.palmtest.tab3.SubAdapter;
-import cn.gdgst.palmtest.tab3.Tab5Activity;
+import cn.gdgst.palmtest.tab3.SimulationPlayActivity;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -86,10 +92,8 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 	//greendao
 	private DbService db;
 
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_tab3);
 		db = DbService.getInstance(this);
@@ -101,16 +105,14 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 				this.getResources().getStringArray(R.array.sub_primcate) };
 
 		ExperimentList.clear();
-//		getCacheCollectdata();
+		//getCacheCollectdata();
 		readExpDB();
 		// adapter.notifyDataSetChanged();
 		getSubList();
 		getGraList();
-
 	}
 
 	private void findview() {
-		// TODO Auto-generated method stub
 		ExpListview = (PullToRefreshListView) findViewById(R.id.exp_display);
 		// ExpListview.setEmptyView(findViewById(R.id.empty));
 		// 文本
@@ -136,10 +138,7 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 	}
 
 	private void initListView() {
-		// TODO Auto-generated method stub
-
 		// View headerView =LinearLayout.inflate(this, R.id., null);
-
 		adapter = new ExperimentAdapter(this, ExperimentList);
 		ExpListview.setMode(Mode.BOTH); // 两端刷新
 
@@ -149,10 +148,9 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 
 			@Override
 			public void onPullDownToRefresh(PullToRefreshBase refreshView) {
-				// TODO Auto-generated method stub
 				page = 1;
 				ExperimentList.clear();
-//				getExperimentList();
+				//getExperimentList();
 				getExpList();
 				getSubList();
 				getGraList();
@@ -162,13 +160,10 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 
 			@Override
 			public void onPullUpToRefresh(PullToRefreshBase refreshView) {
-				// TODO Auto-generated method stub
 				if (experiment_ListEntities.size() < 20) {
-					// TODO Auto-generated method stub
 					ExpListview.postDelayed(new Runnable() {
 						@Override
 						public void run() {
-							// TODO Auto-generated method stub
 							adapter.notifyDataSetChanged();
 							ExpListview.onRefreshComplete();
 							Toast.makeText(Tab3Activity.this, "没有更多数据了", Toast.LENGTH_SHORT).show();
@@ -193,20 +188,17 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				// TODO Auto-generated method stub
 				String url = ExperimentList.get(position - 1).getHtml5_url();
 				Intent myIntent3 = new Intent();
 				myIntent3.putExtra("url", url);
-				myIntent3.setClass(Tab3Activity.this, Tab5Activity.class);
+				myIntent3.setClass(Tab3Activity.this, SimulationPlayActivity.class);
 				startActivity(myIntent3);
 			}
 		});
-
 	}
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch (v.getId()) {
 			case R.id.ll_grade:
 				idx = 1;
@@ -458,7 +450,6 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 
 			@Override
 			public boolean onTouch(View arg0, MotionEvent arg1) {
-				// TODO Auto-generated method stub
 				popupWindow.dismiss();
 				return false;
 			}
@@ -471,7 +462,6 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 	}
 
 //	private void getExperimentList() {
-//		// TODO Auto-generated method stub
 //		new Thread() {
 //			public void run() {
 //				String urlStr = "http://www.shiyan360.cn/index.php/api/experiment_list";
@@ -545,7 +535,6 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 
 						@Override
 						public void run() {
-							// TODO Auto-generated method stub
 							progress_bar.stopSpinning();
 							tv_loading.setVisibility(View.GONE);
 							adapter.notifyDataSetChanged();
@@ -561,7 +550,6 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 
 						@Override
 						public void run() {
-							// TODO Auto-generated method stub
 							progress_bar.stopSpinning();
 							tv_loading.setVisibility(View.GONE);
 							adapter.notifyDataSetChanged();
@@ -585,7 +573,6 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 
 						@Override
 						public void run() {
-							// TODO Auto-generated method stub
 							progress_bar.stopSpinning();
 							tv_loading.setVisibility(View.GONE);
 							adapter.notifyDataSetChanged();
@@ -606,7 +593,6 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 
 	@Override
 	public void onDismiss() {
-		// TODO Auto-generated method stub
 		icon1.setImageResource(R.mipmap.icon_down);
 		icon2.setImageResource(R.mipmap.icon_down);
 		icon3.setImageResource(R.mipmap.icon_down);
@@ -663,7 +649,6 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 					}
 
 				} catch (Exception e) {
-					// TODO: handle exception
 				}
 
 			}
@@ -679,7 +664,6 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 					GradeList = GetSortList.getGradelist(url, rawParams);
 
 				} catch (Exception e) {
-					// TODO: handle exception
 				}
 			}
 
@@ -767,5 +751,4 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 			getExpList();
 		}
 	}
-
 }

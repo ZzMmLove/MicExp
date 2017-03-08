@@ -39,12 +39,13 @@
                     android:background="@drawable/item_selector"
                     android:paddingTop="15dp"
                     android:paddingBottom="15dp"
-                    android:textSize="12sp" />
+                    android:textColor="@color/homepage_bottomtextcolorh"
+                    android:textSize="@dimen/alter_text_size" />
 
                 <LinearLayout
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="#d39aa2"/>
+                    android:background="#eeeeee"/>
 
                 <Button
                     android:text="仿真实验"
@@ -56,12 +57,13 @@
                     android:background="@drawable/item_selector"
                     android:paddingTop="15dp"
                     android:paddingBottom="15dp"
-                    android:textSize="12sp" />
+                    android:textColor="@color/homepage_bottomtextcolorh"
+                    android:textSize="@dimen/alter_text_size" />
 
                 <LinearLayout
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="#d39aa2"/>
+                    android:background="#eeeeee"/>
 
                 <Button
                     android:text="创新实验"
@@ -73,14 +75,15 @@
                     android:background="@drawable/item_selector"
                     android:paddingTop="15dp"
                     android:paddingBottom="15dp"
-                    android:textSize="12sp" />
+                    android:textColor="@color/homepage_bottomtextcolorh"
+                    android:textSize="@dimen/alter_text_size" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:background="#d39aa2"
+                android:background="#eeeeee"
                 android:layout_height="1dp"/>
 
             <LinearLayout
@@ -101,12 +104,13 @@
                     android:background="@drawable/item_selector"
                     android:paddingTop="15dp"
                     android:paddingBottom="15dp"
-                    android:textSize="12sp" />
+                    android:textColor="@color/homepage_bottomtextcolorh"
+                    android:textSize="@dimen/alter_text_size" />
 
                 <LinearLayout
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="#d39aa2"/>
+                    android:background="#eeeeee"/>
 
                 <Button
                     android:text="实验文库"
@@ -118,12 +122,13 @@
                     android:background="@drawable/item_selector"
                     android:paddingTop="15dp"
                     android:paddingBottom="15dp"
-                    android:textSize="12sp" />
+                    android:textColor="@color/homepage_bottomtextcolorh"
+                    android:textSize="@dimen/alter_text_size" />
 
                 <LinearLayout
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="#d39aa2"/>
+                    android:background="#eeeeee"/>
 
                 <Button
                     android:text="名师讲堂"
@@ -135,13 +140,14 @@
                     android:background="@drawable/item_selector"
                     android:paddingTop="15dp"
                     android:paddingBottom="15dp"
-                    android:textSize="12sp" />
+                    android:textColor="@color/homepage_bottomtextcolorh"
+                    android:textSize="@dimen/alter_text_size" />
             </LinearLayout>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:background="#d39aa2"
+                android:background="#eeeeee"
                 android:layout_height="1dp"/>
 
             <LinearLayout
@@ -157,17 +163,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:id="@+id/tab1_button_train_college"
-                    android:drawableTop="@mipmap/tab1_grid_train_college"
+                    android:drawableTop="@mipmap/tab1_grid_examine_system"
                     android:layout_weight="1"
                     android:background="@drawable/item_selector"
                     android:paddingTop="15dp"
                     android:paddingBottom="15dp"
-                    android:textSize="12sp" />
+                    android:textColor="@color/homepage_bottomtextcolorh"
+                    android:textSize="@dimen/alter_text_size" />
 
                 <LinearLayout
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="#d39aa2"/>
+                    android:background="#eeeeee"/>
 
                 <Button
                     android:text="实验装备"
@@ -179,12 +186,13 @@
                     android:background="@drawable/item_selector"
                     android:paddingTop="15dp"
                     android:paddingBottom="15dp"
-                    android:textSize="12sp" />
+                    android:textColor="@color/homepage_bottomtextcolorh"
+                    android:textSize="@dimen/alter_text_size" />
 
                 <LinearLayout
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="#d39aa2"/>
+                    android:background="#eeeeee"/>
 
                 <Button
                     android:text="会展中心"
@@ -196,7 +204,8 @@
                     android:background="@drawable/item_selector"
                     android:paddingTop="15dp"
                     android:paddingBottom="15dp"
-                    android:textSize="12sp" />
+                    android:textColor="@color/homepage_bottomtextcolorh"
+                    android:textSize="@dimen/alter_text_size" />
             </LinearLayout>
 
 

@@ -29,6 +29,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /><!-- access_fine_location -->
     <uses-permission android:name="android.permission.CAMERA" /><!-- camera -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" /><!-- record_audio -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -71,7 +72,7 @@
             android:theme="@style/Theme.AppCompat.Light.Dialog"
             android:windowSoftInputMode="adjustPan"/>
         <activity
-            android:name=".tab3.Tab5Activity"
+            android:name=".tab3.SimulationPlayActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"/>
@@ -96,11 +97,13 @@
         <activity
             android:name=".tab4.ResetPass"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan"
+            android:parentActivityName=".tab4.ResetPasswordActivity"/>
         <activity
             android:name=".tab4.ResetPasswordActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan"
+            android:parentActivityName=".tab4.LoginActivity"/>
         <activity
             android:name=".tab4.ChangePassActivity"
             android:screenOrientation="portrait"

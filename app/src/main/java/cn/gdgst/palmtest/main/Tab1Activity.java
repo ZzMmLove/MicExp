@@ -41,6 +41,7 @@ import cn.gdgst.palmtest.tab1.mingshi.MingShiList;
 import cn.gdgst.palmtest.tab1.examsystem.ExamListActivity;
 import cn.gdgst.palmtest.tab1.wenku.WenKuList;
 import cn.gdgst.palmtest.tab1.zhuangbei.ZhuangBeiList;
+import cn.gdgst.palmtest.utils.UserLoginUtil;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -78,25 +79,7 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 	private SlideImageLayout slideLayout = null;
 	private Button buttonSyncVideo,buttonSimulation,buttonInnovate,buttonExamineSystem,buttonTestLibrary,buttonLecture,buttonTrainCollege,buttonTestEquepment,buttonExhibitionCenter;
 	//"名师讲堂", "考试备考", "实验文库", "实验资讯", "创客空间", "会展中心",  "培训学院", "实验装备"
-	private String titleArr[] = { "同步视频", "仿真实验", "创新实验", "测评系统", "实验文库", "名师讲堂",  "考评系统", "实验装备", "会展中心"/*, "初中物理",
-			"初中化学", "初中生物"*/};
-	private int imgArr[] = { R.mipmap.tab1_grid_sync_video,
-			R.mipmap.tab1_grid_simulation_test,
-			R.mipmap.tab1_grid_innovate,
-			R.mipmap.tab1_grid_examine_system,
-			R.mipmap.tab1_grid_test_library,
-			R.mipmap.tab1_grid_lecture,
-			R.mipmap.tab1_grid_train_college,
-			R.mipmap.tab1_grid_test_equepment,
-			R.mipmap.tab1_grid_exhibition_centerr/*,
-			R.mipmap.mid_physical,
-			R.mipmap.mid_chemical,
-			R.mipmap.mid_biological */};
-
-	/*R.mipmap.sc_message, R.mipmap.te_activity, R.mipmap.ex_library,
-	R.mipmap.tr_college, R.mipmap.ck_space, R.mipmap.sen_physical, R.mipmap.sen_chemical,
-	R.mipmap.sen_biological, R.mipmap.pri_science, R.mipmap.mid_physical, R.mipmap.mid_chemical,
-	R.mipmap.mid_biological*/
+	private String titleArr[] = { "同步视频", "仿真实验", "创新实验", "测评系统", "实验文库", "名师讲堂",  "考评系统", "实验装备", "会展中心"};
 
 	private boolean adAuto = true;
 	// 广告正在滑动
@@ -153,14 +136,12 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 
 	@Override
 	protected void setLayout() {
-		// TODO Auto-generated method stub
 		super.setLayout();
 		setContentView(R.layout.activity_tab1);
 	}
 
 	@Override
 	protected void init() {
-		// TODO Auto-generated method stub
 		super.init();
 		adAuto = true;
 		adThread.start();
@@ -275,7 +256,14 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 				MingShiList_intent.putExtra("title", "会展中心");
 				startActivity(MingShiList_intent);
 				break;
-			case R.id.tab1_button_train_college://培训学院
+			/**
+			 * 考评系统
+			 */
+			case R.id.tab1_button_train_college:
+
+				//UserLoginUtil userLoginUtil = new UserLoginUtil(this);
+				//userLoginUtil.autoLogin("13138742085","e10adc3949ba59abbe56e057f20f883e");
+
 				Intent PeiSunList_intent = new Intent();
 				PeiSunList_intent.setClass(Tab1Activity.this, ExamListActivity.class);
 				startActivity(PeiSunList_intent);
@@ -377,99 +365,8 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 		}
 	}
 
-	/*private void initGridView() {
-		// 初始化并设置Adapter
-		gridView.setSelector(new ColorDrawable(Color.TRANSPARENT));
-		mAdapter = new MyGridAdapter(this, titleArr, imgArr);
-		gridView.setAdapter(mAdapter);
-		gridView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-				switch (position) {
-					case 0://同步视频
-						Intent i1 = new Intent();
-						i1.setClass(Tab1Activity.this, Tab2Activity.class);
-						startActivity(i1);
-						break;
-					case 1:
-						Intent i3 = new Intent();
-						i3.setClass(Tab1Activity.this, Tab3Activity.class);
-						startActivity(i3);
-						break;
-					case 2://创新实验
-						Intent ChuangKeList_intent = new Intent();
-						ChuangKeList_intent.setClass(Tab1Activity.this, ChuangKeList.class);
-						startActivity(ChuangKeList_intent);
-						break;
-					case 3://测评系统
-						Intent KaoShiList_intent = new Intent();
-						KaoShiList_intent.setClass(Tab1Activity.this, KaoShiList.class);
-						startActivity(KaoShiList_intent);
-						break;
-					case 4://实验文库
-						Intent WenKuList_intent = new Intent();
-						WenKuList_intent.setClass(Tab1Activity.this, WenKuList.class);
-						startActivity(WenKuList_intent);
-						break;
-					case 5://名师讲堂
-						Intent MingShiList_intent = new Intent();
-						MingShiList_intent.setClass(Tab1Activity.this, MingShiList.class);
-						MingShiList_intent.putExtra("title", "会展中心");
-						startActivity(MingShiList_intent);
-						break;
-					case 6://培训学院
-						Intent PeiSunList_intent = new Intent();
-						PeiSunList_intent.setClass(Tab1Activity.this, ExamListActivity.class);
-						startActivity(PeiSunList_intent);
-						break;
-					case 7://实验装备
-						Intent ZhuangBeiList_intent = new Intent();
-						ZhuangBeiList_intent.setClass(Tab1Activity.this, ZhuangBeiList.class);
-						startActivity(ZhuangBeiList_intent);
-						break;
-					case 8://会展中心
-						Intent HuiZhanList_intent = new Intent();
-						HuiZhanList_intent.setClass(Tab1Activity.this, HuiZhanListActivity.class);
-						HuiZhanList_intent.putExtra("category_id", "396"); // 小学科学396
-						HuiZhanList_intent.putExtra("title", "小学科学");
-						startActivity(HuiZhanList_intent);
-						break;
-					case 9:
-						Intent i9 = new Intent();
-						i9.setClass(Tab1Activity.this, XueKeList.class);
-						i9.putExtra("category_id", "386"); // 初中物理386
-						i9.putExtra("title", "初中物理");
-						startActivity(i9);
-						break;
-					case 10:
-						Intent i10 = new Intent();
-						i10.setClass(Tab1Activity.this, XueKeList.class);
-						i10.putExtra("category_id", "387"); // 初中化学 387
-						i10.putExtra("title", "初中化学");
-						startActivity(i10);
-						break;
-					case 11:
-						Intent i11 = new Intent();
-						i11.setClass(Tab1Activity.this, XueKeList.class);
-						i11.putExtra("category_id", "388"); // 初中生物388
-						i11.putExtra("title", "初中生物");
-						startActivity(i11);
-						break;
-
-					default:
-						Intent iX = new Intent();
-						iX.setClass(Tab1Activity.this, PlayVideoActivity.class);
-						startActivity(iX);
-						break;
-				}
-
-			}
-		});
-	}*/
-
 	@Override
 	protected void loadData() {
-		// TODO Auto-generated method stub
 		super.loadData();
 	}
 

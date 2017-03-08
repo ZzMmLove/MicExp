@@ -113,7 +113,14 @@ public interface APIService {
                                                        @Query("category_id") String category_id,
                                                        @Query("page") String page);
 
-    //实验
+    /**
+     * 仿真实验请求接口
+     * @param desc_type
+     * @param category_id
+     * @param grade_id
+     * @param page
+     * @return
+     */
     @POST("experiment_list")
     Observable<HttpResult<List<Experiment>>> geExperimentList(@Query("desc_type") String desc_type,
                                                               @Query("category_id") String category_id,

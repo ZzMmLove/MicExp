@@ -128,7 +128,15 @@ public class APIWrapper extends RetrofitUtil {
         Observable<HttpResult<List<KaoShi>>> observable = getAPIService().getKaoShiList(desc_type, category_id, page);
         return observable;
     }
-    //实验
+
+    /**
+     * 仿真实验列表请求接口
+     * @param desc_type
+     * @param category_id
+     * @param grade_id
+     * @param page
+     * @return
+     */
     public Observable<HttpResult<List<Experiment>>> geExperimentList(String desc_type, String category_id, String grade_id, String page) {
         Observable<HttpResult<List<Experiment>>> observable = getAPIService().geExperimentList(desc_type, category_id, grade_id, page);
         return observable;

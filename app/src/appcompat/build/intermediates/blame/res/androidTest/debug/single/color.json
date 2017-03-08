@@ -12,12 +12,12 @@
         "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\color\\abc_secondary_text_material_dark.xml"
     },
     {
-        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\color\\abc_primary_text_disable_only_material_dark.xml",
-        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\color\\abc_primary_text_disable_only_material_dark.xml"
-    },
-    {
         "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\color\\abc_background_cache_hint_selector_material_dark.xml",
         "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\color\\abc_background_cache_hint_selector_material_dark.xml"
+    },
+    {
+        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\color\\abc_primary_text_disable_only_material_dark.xml",
+        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\color\\abc_primary_text_disable_only_material_dark.xml"
     },
     {
         "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\color\\abc_secondary_text_material_light.xml",

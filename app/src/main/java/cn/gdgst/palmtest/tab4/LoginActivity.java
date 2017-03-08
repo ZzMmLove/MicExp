@@ -49,7 +49,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
     private TextView registertextview, tv_forget_pwd;
 
     private EditText user_name_edit, password_edit;
-    //private ImageView iv_back;
     private Button BtnMenulogin;
     private String responseMsg = "";
     private String accessToken;
@@ -66,7 +65,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ActionBar actionBar = getSupportActionBar();
@@ -95,16 +93,11 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
     }
 
     private void InitView() {
-        // TODO Auto-generated method stub
-        //registertextview = (TextView) findViewById(R.id.create_count);
         tv_forget_pwd = (TextView) findViewById(R.id.tv_forget_pwd);
         user_name_edit = (EditText) findViewById(R.id.login_username);
         password_edit = (EditText) findViewById(R.id.login_password);
-        //iv_back = (ImageView) findViewById(R.id.iv_back);
         BtnMenulogin = (Button) findViewById(R.id.login);
-        //registertextview.setOnClickListener(this);
         tv_forget_pwd.setOnClickListener(this);
-        //iv_back.setOnClickListener(this);
         BtnMenulogin.setOnClickListener(this);
 
         mProBar = this.createProgressBar();
@@ -113,18 +106,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
     @Override
     public void onClick(View v) {
         String username = user_name_edit.getText().toString();
-        // TODO Auto-generated method stub
         switch (v.getId()) {
-            /*case R.id.create_count:
-                Intent intent = new Intent();
-                intent.setClass(this, SendCodeActivity.class);
-                startActivity(intent);
-                break;*/
-
-            /*case R.id.iv_back:
-                LoginActivity.this.finish();
-
-                break;*/
             case R.id.login:
                 // 1. 通过规则判断手机号
                 if (!judgePhoneNums(username)) {
@@ -315,6 +297,5 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         layout.addView(mProBar);
         return mProBar;
     }
-
-
+    
 }

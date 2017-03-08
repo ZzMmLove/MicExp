@@ -28,8 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CreateUserActivity extends AppCompatActivity implements OnClickListener {
-	//private ImageView register_back;
-
 	private Button btnSub;
 	private EditText password_edit;
 	private String username, smscode;
@@ -37,7 +35,6 @@ public class CreateUserActivity extends AppCompatActivity implements OnClickList
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_creteuser);
 		ActionBar actionBar = getSupportActionBar();
@@ -48,12 +45,9 @@ public class CreateUserActivity extends AppCompatActivity implements OnClickList
 	}
 
 	private void InitView() {
-		// TODO Auto-generated method stub
-		//register_back = (ImageView) findViewById(R.id.iv_back);
 		btnSub = (Button) findViewById(R.id.new_btn_submit);
 		password_edit = (EditText) findViewById(R.id.new_password);
 
-		//register_back.setOnClickListener(this);
 		btnSub.setOnClickListener(this);
 
 		Bundle bundle = new Bundle();
@@ -68,10 +62,6 @@ public class CreateUserActivity extends AppCompatActivity implements OnClickList
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-			/*case R.id.iv_back:
-				this.finish();
-				break;*/
-
 			case R.id.new_btn_submit:
 				if (!TextUtils.isEmpty(password_edit.getText().toString())) {
 					// SMSSDK.submitVerificationCode("86", phoneNums,
@@ -94,10 +84,7 @@ public class CreateUserActivity extends AppCompatActivity implements OnClickList
 		public void run() {
 
 			String password = Encrypt.md5(password_edit.getText().toString());
-			//
 			boolean registerValidate = registerServer(password);
-			// System.out.println("----------------------------bool is
-			// :"+registerValidate+"----------response:"+responseMsg);
 
 			Message msg = handler.obtainMessage();
 			if (registerValidate) {
@@ -144,9 +131,8 @@ public class CreateUserActivity extends AppCompatActivity implements OnClickList
 				// 判断是否请求成功
 				if (response) {
 					loginValidate = true;
-					// responseMsg = response.toString();\
+					// responseMsg = response.toString();
 					responseMsg = response.toString();
-					;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -25,38 +25,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FeedBackActivity extends AppCompatActivity implements OnClickListener {
-	//private ImageView iv_back;
 	private Button sub_feedback;
 	private EditText et_name, et_phone, et_email, et_qq, et_content;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_feedback);
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle("意见反馈");
-	    //iv_back = (ImageView) findViewById(R.id.iv_back);
 		sub_feedback = (Button) findViewById(R.id.sub_feedback);
-		//iv_back.setOnClickListener(this);
-		 sub_feedback.setOnClickListener(this);
+		sub_feedback.setOnClickListener(this);
 
 		et_name = (EditText) findViewById(R.id.et_name);
 		et_phone = (EditText) findViewById(R.id.et_phone);
 		et_email = (EditText) findViewById(R.id.et_email);
 		et_qq = (EditText) findViewById(R.id.et_qq);
 		et_content = (EditText) findViewById(R.id.et_content);
-
 	}
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch (v.getId()) {
-			/*case R.id.iv_back:
-				FeedBackActivity.this.finish();
-				break;*/
 			case R.id.sub_feedback:
 				String content = et_content.getText().toString().trim();
 				String name = et_name.getText().toString().trim();
@@ -89,7 +80,6 @@ public class FeedBackActivity extends AppCompatActivity implements OnClickListen
 
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
 			String content = et_content.getText().toString();
 			String name = et_name.getText().toString();
 			String tel = et_phone.getText().toString();

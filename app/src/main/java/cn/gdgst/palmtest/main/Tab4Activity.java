@@ -127,11 +127,20 @@ public class Tab4Activity extends Activity implements OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             /**
-             * 用户信息
+             * 账号管理
              */
             case R.id.rl_account_manager:
                 sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
-                boolean autologin = sp.getBoolean("autoLogin", false);
+                String accessToken = sp.getString("accessToken", null);
+                if (accessToken == null || accessToken.equals("")) {
+                    Intent intent = new Intent();
+                    intent.setClass(Tab4Activity.this, LoginActivity.class);
+                    startActivity(intent);
+                }else {
+                    Intent intent = new Intent(Tab4Activity.this, UserInfoActivity.class);
+                    startActivity(intent);
+                }
+                /*boolean autologin = sp.getBoolean("autoLogin", false);
                 Logger.v("autologin:" + autologin);
                 if (autologin == true) {
                     //开启线程去自动登录
@@ -141,7 +150,7 @@ public class Tab4Activity extends Activity implements OnClickListener {
                     Intent intent = new Intent();
                     intent.setClass(Tab4Activity.this, LoginActivity.class);
                     startActivity(intent);
-                }
+                }*/
                 break;
             case R.id.rl_switch_about:
                 Intent intent1 = new Intent();

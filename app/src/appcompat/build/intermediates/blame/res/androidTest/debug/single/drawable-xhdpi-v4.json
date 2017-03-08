@@ -44,12 +44,12 @@
         "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\drawable-xhdpi-v4\\abc_scrubber_control_to_pressed_mtrl_005.png"
     },
     {
-        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-xhdpi-v4\\abc_ic_star_half_black_16dp.png",
-        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\drawable-xhdpi-v4\\abc_ic_star_half_black_16dp.png"
-    },
-    {
         "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-xhdpi-v4\\abc_ab_share_pack_mtrl_alpha.9.png",
         "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\drawable-xhdpi-v4\\abc_ab_share_pack_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-xhdpi-v4\\abc_ic_star_half_black_16dp.png",
+        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\drawable-xhdpi-v4\\abc_ic_star_half_black_16dp.png"
     },
     {
         "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-xhdpi-v4\\abc_textfield_search_default_mtrl_alpha.9.png",

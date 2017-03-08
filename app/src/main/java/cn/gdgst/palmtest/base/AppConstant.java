@@ -39,4 +39,5 @@ public class AppConstant {
 
 	//利用SharedPreferences储存用户信息的xml文件名 // FIXME: 2017/2/11
 	public final static String SHARED_PREFERENCES_USER = "userInfo";
+	public final static String SERVER_URL = "http://www.shiyan360.cn";
 }

@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
@@ -31,9 +33,7 @@ import java.util.Map;
 import cn.smssdk.EventHandler;
 import cn.smssdk.SMSSDK;
 
-public class ResetPasswordActivity extends Activity implements OnClickListener{
-	//后退图片按钮
-	private ImageView register_back;
+public class ResetPasswordActivity extends AppCompatActivity implements OnClickListener{
 	// 手机号输入框    验证码输入框
 	private EditText user_name_edit,code_edit;
 	// 获取验证码按钮  注册按钮  重置按钮
@@ -46,20 +46,18 @@ public class ResetPasswordActivity extends Activity implements OnClickListener{
 	private ProgressBar mProBar = null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_reset_password);
+		ActionBar actionBar = getSupportActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setTitle("找回密码");
 		InitView();
 	}
 	private void InitView() {
-		// TODO Auto-generated method stub
-		//控件
-		register_back=(ImageView) findViewById(R.id.iv_back);
 		user_name_edit=(EditText) findViewById(R.id.new_username);
 		code_edit = (EditText) findViewById(R.id.edt_code);
 		btn_next=(Button) findViewById(R.id.btn_next);
 		getcode = (Button) findViewById(R.id.btn_getcode);
-		register_back.setOnClickListener(this);
 		btn_next.setOnClickListener(this);
 		getcode.setOnClickListener(this);
 
@@ -88,9 +86,6 @@ public class ResetPasswordActivity extends Activity implements OnClickListener{
 		// TODO Auto-generated method stub
 		String phoneNums = user_name_edit.getText().toString();
 		switch (v.getId()) {
-			case R.id.iv_back:
-				this.finish();
-				break;
 			case R.id.btn_getcode:
 				// 1. 通过规则判断手机号
 				if (!judgePhoneNums(phoneNums)) {
