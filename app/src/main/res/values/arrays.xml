@@ -168,14 +168,13 @@
         <item>初中物理</item>
         <item>初中化学</item>
         <item>初中生物</item>
-        <item>初中科学</item>
-        <item>信息技术</item>
+
+
     </string-array>
 
     <string-array name="exam_paper_height_subject">
         <item>高中物理</item>
         <item>高中化学</item>
         <item>高中生物</item>
-        <item>通用技术</item>
     </string-array>
 </resources>

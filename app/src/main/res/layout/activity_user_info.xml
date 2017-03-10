@@ -273,9 +273,10 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:drawablePadding="8dip"
-                            android:text="老师"
+                            android:text="我的老师"
                             android:textColor="#353535"
-                            android:textSize="16sp" />
+                            android:textSize="16sp"
+                            android:id="@+id/activity_user_info_TextView_Title"/>
 
                         <TextView
                             android:id="@+id/activity_user_info_tv_teacher"

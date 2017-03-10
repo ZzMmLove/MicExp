@@ -66,11 +66,11 @@
                     android:background="#eeeeee"/>
 
                 <Button
-                    android:text="创新实验"
+                    android:text="考评系统"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:id="@+id/tab1_button_innovate"
-                    android:drawableTop="@mipmap/tab1_grid_innovate"
+                    android:drawableTop="@mipmap/tab1_grid_examine_system"
                     android:layout_weight="1"
                     android:background="@drawable/item_selector"
                     android:paddingTop="15dp"
@@ -159,11 +159,11 @@
                 android:layout_weight="0.5">
 
                 <Button
-                    android:text="考评系统"
+                    android:text="创新实验"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:id="@+id/tab1_button_train_college"
-                    android:drawableTop="@mipmap/tab1_grid_examine_system"
+                    android:drawableTop="@mipmap/tab1_grid_innovate"
                     android:layout_weight="1"
                     android:background="@drawable/item_selector"
                     android:paddingTop="15dp"

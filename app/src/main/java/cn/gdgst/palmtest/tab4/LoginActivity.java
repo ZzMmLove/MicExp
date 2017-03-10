@@ -222,8 +222,16 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
                 sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
                 Editor editor = sp.edit();// 获取编辑器
                 editor.putString("id", userarray.getId());
-                editor.putString("username", username);
+                editor.putString("phoneNumber", username);
                 editor.putString("password", password);
+                editor.putString("avatar", userarray.getAvatar());
+                editor.putString("nickname", userarray.getNickname());
+                editor.putString("name", userarray.getName());
+                editor.putInt("sex", userarray.getSex());
+                editor.putString("type", userarray.getType());
+                editor.putString("school", userarray.getSchool());
+                editor.putString("banji", userarray.getBanji());
+                editor.putString("teacher", userarray.getTeacher());
                 editor.putString("accessToken", accessToken);
                 // 设置自动登陆
                 editor.putBoolean("autoLogin", true);

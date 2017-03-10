@@ -99,6 +99,12 @@ public class ChangeProfileActivity extends AppCompatActivity implements OnClickL
 					case "修改学校":
 						rawParams.put("school", ed_text.getText().toString().trim());
 						break;
+					case "修改班级":
+						rawParams.put("class", ed_text.getText().toString().trim());
+						break;
+					case "修改老师":
+						rawParams.put("teacher", ed_text.getText().toString().trim());
+						break;
 				}
 				Boolean getupdateUserInfo = updateUserInfo.getUpdateUserInfo(rawParams);
 				if (getupdateUserInfo) {
@@ -137,6 +143,12 @@ public class ChangeProfileActivity extends AppCompatActivity implements OnClickL
 							break;
 						case "修改学校":
 							ed.putString("school", ed_text.getText().toString().trim());
+							break;
+						case "修改班级":
+							ed.putString("banji", ed_text.getText().toString().trim());
+							break;
+						case "修改老师":
+							ed.putString("teacher", ed_text.getText().toString().trim());
 							break;
 					}
 					ed.commit();

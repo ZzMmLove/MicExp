@@ -116,6 +116,7 @@ public class ReadFragment extends Fragment {
                 textView_Selected_Show.setText("已选:("+selected+")");
             }
             textView_title.setText(String.valueOf(examTopic.getId())+". "+Html.fromHtml(examTopic.getTitle()));
+            Log.d("ReadFragment", "打印要缓存图片的路径"+examTopic.toString());
             loadImage(examTopic.getImg(), imageView);
             listView_answer.setAdapter(new AnswerAdapter(getActivity(), examTopic));
             listView_answer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -171,6 +172,7 @@ public class ReadFragment extends Fragment {
      * @param imageView
      */
     private void loadImage(String url, ImageView imageView) {
+        String vaidImg = url.trim();
         DisplayImageOptions displayImageOptions;
         displayImageOptions = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)
@@ -178,7 +180,7 @@ public class ReadFragment extends Fragment {
                 .considerExifParams(true)
                 .displayer(new RoundedBitmapDisplayer(20)).build();
 
-        ImageLoader.getInstance().displayImage("http://www.shiyan360.cn"+url , imageView , displayImageOptions, null);
+        ImageLoader.getInstance().displayImage("http://www.shiyan360.cn"+vaidImg , imageView , displayImageOptions, null);
     }
 
     public String geSelected_result() {

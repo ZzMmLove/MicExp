@@ -565,7 +565,7 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 					if (lv2.getVisibility() == View.INVISIBLE) {
 						lv2.setVisibility(View.VISIBLE);
 						switch (idx) {
-							//当点击ListView顶部的分类,次Activity中只有一个分类
+							//当点击ListView顶部的分类,此Activity中只有一个分类
 							case 1:
 								lv1_layout.getLayoutParams().width = 0; // 全部分类 高中物理
 								switch (position) {

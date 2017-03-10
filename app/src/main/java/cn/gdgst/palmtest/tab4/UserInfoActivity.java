@@ -64,13 +64,14 @@ import rx.schedulers.Schedulers;
 
 public class UserInfoActivity extends AppCompatActivity implements OnClickListener {
     private ImageView iv_avatar;
-    private TextView txt_phonenum, tv_changepass, tv_nickname, tv_name, tv_sex, tv_identity;
+    private TextView tv_phonenum, tv_changepass, tv_nickname, tv_name, tv_sex, tv_identity;
     private String phonenum;
     private Button btn_loginout;
     private String accessToken;
     private RelativeLayout rl_avatar, rl_nickname, rl_name, rl_sex, rl_identity, rl_school, rl_phone, rl_pass;
     private SVProgressHUD progressDialog;
     private RelativeLayout relativeLayout_cl,relativeLayout_teacher;
+    private TextView textViewTypeTitle;
     /**
      * 用户所在学校
      */
@@ -116,12 +117,12 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("用户信息");
-        sharedPreferences_UserInfo = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
+        sharedPreferences_UserInfo = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, MODE_PRIVATE);
         InitView();
     }
 
     private void InitView() {
-        txt_phonenum = (TextView) findViewById(R.id.txt_phonenum);
+        tv_phonenum = (TextView) findViewById(R.id.txt_phonenum);
         tv_nickname = (TextView) findViewById(R.id.tv_nickname);
         tv_name = (TextView) findViewById(R.id.tv_name);
         tv_sex = (TextView) findViewById(R.id.tv_sex);
@@ -131,6 +132,7 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
         textView_cl = (TextView) findViewById(R.id.activity_user_info_tv_classss);
         textView_teacher = (TextView) findViewById(R.id.activity_user_info_tv_teacher);
         tv_school = (TextView) findViewById(R.id.activity_user_info_tvSchool);
+        textViewTypeTitle = (TextView) findViewById(R.id.activity_user_info_TextView_Title);
         //-----------------------------------------------------------------------
         rl_avatar = (RelativeLayout) findViewById(R.id.rl_avatar);
         rl_avatar.setOnClickListener(this);
@@ -164,12 +166,15 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
         int sex = sharedPreferences_UserInfo.getInt("sex", 0);
         //获取用户身份
         String type = sharedPreferences_UserInfo.getString("type", null);
+        String typeTrim = type.substring(0, 7);
         //获取用户所在班别
         String banji = sharedPreferences_UserInfo.getString("banji", null);
         //获取用户的老师
         String teacher = sharedPreferences_UserInfo.getString("teacher", null);
         //获取学校
         String school = sharedPreferences_UserInfo.getString("school", null);
+        //获取用户的手机号码
+        String phoneNumber = sharedPreferences_UserInfo.getString("phoneNumber" ,null);
 
         if (avatar != null) {
             avatar_file_name = avatar.substring(avatar.lastIndexOf("/")+1);
@@ -208,6 +213,11 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
         }else {
             tv_sex.setText("未填写");
         }
+        if (type == "student") {
+            textViewTypeTitle.setText("我的老师");
+        } else if (typeTrim == "teacher") {
+            textViewTypeTitle.setText("我的学生");
+        }
         if (type != null) {
             tv_identity.setText(type);
         }else {
@@ -228,7 +238,12 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
         }else {
             textView_teacher.setText("未填写");
         }
-
+        if (phoneNumber != null) {
+            tv_phonenum.setText(phoneNumber);
+        }else {
+            tv_phonenum.setText("未填写");
+        }
+        Log.d("UserInfoActivity", "打印用户信息参数:头像"+avatar+"昵称"+nickname+"姓名"+name+"身份"+type+"班级"+banji+"老师"+teacher+"学校"+school);
         sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
         accessToken = sp.getString("accessToken", "");
 
@@ -348,9 +363,10 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
         switch (v.getId()) {
             case R.id.btn_loginout:
                 Editor editor = sp.edit();// 获取编辑器
-                editor.putString("username", "");
-                editor.putString("password", "");
-                editor.putString("accessToken", "");
+                editor.remove("id");
+                editor.remove("phoneNumber");
+                editor.remove("password");
+                editor.remove("accessToken");
                 // 设置退出之后不自动登陆
                 editor.putBoolean("autoLogin", false);
                 editor.commit();// 提交修改
@@ -399,13 +415,19 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
              * 修改班级
              */
             case R.id.activity_user_info_rl_classss:
-                showInputDialog("班级");
+                Intent intentBanji = new Intent(this, ChangeProfileActivity.class);
+                intentBanji.putExtra("tv_title", "修改班级");
+                intentBanji.putExtra("hint", "请输入新班级");
+                startActivity(intentBanji);
                 break;
             /**
              * 修改老师
              */
             case R.id.activity_user_info_rl_teacher:
-                showInputDialog("老师");
+                Intent intentTeacher = new Intent(this, ChangeProfileActivity.class);
+                intentTeacher.putExtra("tv_title", "修改老师");
+                intentTeacher.putExtra("hint", "请输入新老师");
+                startActivity(intentTeacher);
                 break;
         }
 
@@ -727,8 +749,14 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
         SharedPreferences sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, MODE_PRIVATE);
         String nickname = sp.getString("nickname", null);
         String name = sp.getString("name", null);
+        String school = sp.getString("school", null);
+        String banji = sp.getString("banji", null);
+        String teacher = sp.getString("teacher", null);
         tv_nickname.setText(nickname);
         tv_name.setText(name);
+        tv_school.setText(school);
+        textView_cl.setText(banji);
+        textView_teacher.setText(teacher);
     }
 
     private void showInputDialog(String showTitle) {

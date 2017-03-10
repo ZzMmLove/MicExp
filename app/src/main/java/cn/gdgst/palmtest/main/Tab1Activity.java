@@ -235,10 +235,10 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 				i3.setClass(Tab1Activity.this, Tab3Activity.class);
 				startActivity(i3);
 				break;
-			case R.id.tab1_button_innovate://创新实验
-				Intent ChuangKeList_intent = new Intent();
-				ChuangKeList_intent.setClass(Tab1Activity.this, ChuangKeList.class);
-				startActivity(ChuangKeList_intent);
+			case R.id.tab1_button_innovate://考评系统
+				Intent PeiSunList_intent = new Intent();
+				PeiSunList_intent.setClass(Tab1Activity.this, ExamListActivity.class);
+				startActivity(PeiSunList_intent);
 				break;
 			case R.id.tab1_button_examine_system://测评系统
 				Intent KaoShiList_intent = new Intent();
@@ -257,16 +257,12 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 				startActivity(MingShiList_intent);
 				break;
 			/**
-			 * 考评系统
+			 * 创新实验
 			 */
 			case R.id.tab1_button_train_college:
-
-				//UserLoginUtil userLoginUtil = new UserLoginUtil(this);
-				//userLoginUtil.autoLogin("13138742085","e10adc3949ba59abbe56e057f20f883e");
-
-				Intent PeiSunList_intent = new Intent();
-				PeiSunList_intent.setClass(Tab1Activity.this, ExamListActivity.class);
-				startActivity(PeiSunList_intent);
+				Intent ChuangKeList_intent = new Intent();
+				ChuangKeList_intent.setClass(Tab1Activity.this, ChuangKeList.class);
+				startActivity(ChuangKeList_intent);
 				break;
 			case R.id.tab1_button_test_equepment://实验装备
 				Intent ZhuangBeiList_intent = new Intent();

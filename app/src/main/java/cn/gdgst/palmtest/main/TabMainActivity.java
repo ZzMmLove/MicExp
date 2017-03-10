@@ -375,8 +375,8 @@ public class TabMainActivity extends NetworkBaseActivity {
 	}
 
 	private void autoLogin() {
-		final SharedPreferences sharedPreferences = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
-		String username = sharedPreferences.getString("username", null);
+		SharedPreferences sharedPreferences = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
+		String username = sharedPreferences.getString("phoneNumber", null);
 		String password = sharedPreferences.getString("password", null);
 		Observable<HttpResult<UserEntity>> observable = APIWrapper.getInstance().login(username, password);
 		 observable.subscribeOn(Schedulers.io())
@@ -394,26 +394,24 @@ public class TabMainActivity extends NetworkBaseActivity {
 
 				@Override
 				public void onNext(HttpResult<UserEntity> userEntityHttpResult) {
-				boolean success = userEntityHttpResult.getSuccess();
-				if (success) {
-					UserEntity userEntity = userEntityHttpResult.getData();
-					SharedPreferences sharedPreferences_Save = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
-					SharedPreferences.Editor editor = sharedPreferences_Save.edit();
-
-					editor.putString("id", userEntity.getId());
-					editor.putString("nickname", userEntity.getNickname());
-					editor.putString("name", userEntity.getName());
-					editor.putString("avatar", userEntity.getAvatar());
-					editor.putInt("sex", userEntity.getSex());
-					editor.putString("type", userEntity.getType());
-					editor.putString("school", userEntity.getSchool());
-					editor.putInt("status", userEntity.getStatus());
-					editor.putString("accessToken", userEntity.getAccessToken());
-					String teacher = userEntity.getTeacher();
-					editor.putString("teacher", userEntity.getTeacher());
-					editor.putString("banji", userEntity.getBanji());
-					editor.commit();//注意此处,一定要提交
-					Log.d("TabMainActivity", "检测用户信息更新完毕:"+userEntity.toString());
+					boolean success = userEntityHttpResult.getSuccess();
+					if (success) {
+						UserEntity userEntity = userEntityHttpResult.getData();
+						SharedPreferences sharedPreferences_Save = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
+						SharedPreferences.Editor editor = sharedPreferences_Save.edit();
+						editor.putString("id", userEntity.getId());
+						editor.putString("nickname", userEntity.getNickname());
+						editor.putString("name", userEntity.getName());
+						editor.putString("avatar", userEntity.getAvatar());
+						editor.putInt("sex", userEntity.getSex());
+						editor.putString("type", userEntity.getType());
+						editor.putString("school", userEntity.getSchool());
+						editor.putInt("status", userEntity.getStatus());
+						editor.putString("accessToken", userEntity.getAccessToken());
+						editor.putString("teacher", userEntity.getTeacher());
+						editor.putString("banji", userEntity.getBanji());
+						editor.commit();//注意此处,一定要提交
+						Log.d("TabMainActivity", "检测用户信息更新完毕:"+userEntity.toString());
 				}
 				}
 		});
