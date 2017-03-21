@@ -4,7 +4,9 @@ package cn.gdgst.palmtest.tab1.examsystem;
 import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,13 +37,18 @@ import cn.gdgst.palmtest.bean.TExamTopic;
  * Use the {@link ReadFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ReadFragment extends Fragment {
+public class ReadFragment extends Fragment{
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String ARG_PARAM3 = "param3";
     private static final String ARG_PARAM4 = "param4";
     private int content;
+    private boolean isSaveTAnswer;
+    private List<EditText> listEditText = new ArrayList<>();
+    private int editTextCount;
+    private ArrayList<String> arrayListT = new ArrayList<>();
+    private String stringAnswer;
 
     private ExamTopic examTopic;
     /**
@@ -52,6 +61,7 @@ public class ReadFragment extends Fragment {
     private TExamTopic jExamTopic;
     private View view;
     private String selected;
+    private HashMap<Integer, String> hashMapResult = new HashMap<>();
 
     public ReadFragment() {
         // Required empty public constructor
@@ -147,13 +157,37 @@ public class ReadFragment extends Fragment {
             textView_Selected_Show.setVisibility(View.GONE);
             listView_answer.setVisibility(View.GONE);
             LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.fragment_read_LinearLayout_container);
-            int editTextCount = getBracketCount(tExamTopic.getTitle());
+            editTextCount = getBracketCount(tExamTopic.getTitle());
             Log.d("ReadFragment", "要创建的EditText的数量:"+editTextCount);
+
             for (int a = 0; a < editTextCount; a ++) {
-                EditText editText = new EditText(getActivity());
+                final EditText editText = new EditText(getActivity());
+                editText.setId(a + 1);
+                editText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        hashMapResult.put(editText.getId(), s.toString());
+                    }
+                });
                 editText.setWidth(700);
                 editText.setHint(String.valueOf(a+1));
+                listEditText.add(editText);
                 linearLayout.addView(editText);
+                if (!arrayListT.isEmpty()) {
+                    if (arrayListT.get(a) != null) {
+                        editText.setText(arrayListT.get(a));
+                    }
+                }
             }
         } else if (content == 3) {
             textView_title.setText(jExamTopic.getTitle());
@@ -161,7 +195,26 @@ public class ReadFragment extends Fragment {
             LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.fragment_read_LinearLayout_container);
             EditText editTextJContent = new EditText(getActivity());
             editTextJContent.setWidth(700);
+            editTextJContent.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    stringAnswer = s.toString();
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    stringAnswer = s.toString();
+                }
+            });
             linearLayout.addView(editTextJContent);
+            if (stringAnswer != null) {
+                editTextJContent.setText(stringAnswer);
+            }
         }
 
     }
@@ -181,10 +234,6 @@ public class ReadFragment extends Fragment {
                 .displayer(new RoundedBitmapDisplayer(20)).build();
 
         ImageLoader.getInstance().displayImage("http://www.shiyan360.cn"+vaidImg , imageView , displayImageOptions, null);
-    }
-
-    public String geSelected_result() {
-        return selected;
     }
 
     /**
@@ -208,4 +257,25 @@ public class ReadFragment extends Fragment {
         Log.d("ReadFragment", "一共有多少对括号:"+count);
         return count;
     }
+
+    public void setSaveTAnswer(boolean isSaveTAnswer) {
+        this.isSaveTAnswer = isSaveTAnswer;
+        for (int c = 0; c < editTextCount; c ++) {
+            arrayListT.add(listEditText.get(c).getText().toString());
+            Log.d("ReadFragment", "保存答案输出:"+listEditText.get(c).getText().toString());
+        }
+    }
+
+    public String getSelected_result() {
+        return selected;
+    }
+
+    public HashMap<Integer, String> getTAnswerList() {
+        return hashMapResult;
+    }
+
+    public String getJAnswer() {
+        return stringAnswer;
+    }
+
 }

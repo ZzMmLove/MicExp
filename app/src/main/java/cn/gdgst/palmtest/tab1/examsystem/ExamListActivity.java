@@ -207,6 +207,7 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Intent intent = new Intent();
 				intent.putExtra("exampaperItemId", examPaperList.get(position - 1).getId());
+				intent.putExtra("exampaperItemTitle", examPaperList.get(position - 1).getPaper());
 				intent.setClass(ExamListActivity.this, ExamPaperDetailActivity.class);
 				startActivity(intent);
 			}

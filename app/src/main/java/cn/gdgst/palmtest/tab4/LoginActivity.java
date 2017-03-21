@@ -32,12 +32,19 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
+import cn.gdgst.palmtest.API.APIWrapper;
 import cn.gdgst.palmtest.R;
 import cn.gdgst.palmtest.Entitys.UserEntity;
 import cn.gdgst.palmtest.base.AppConstant;
+import cn.gdgst.palmtest.bean.HttpResult;
 import cn.gdgst.palmtest.main.TabMainActivity;
 import cn.gdgst.palmtest.utils.Encrypt;
 import cn.gdgst.palmtest.utils.HttpUtil;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import com.orhanobut.logger.Logger;
 
@@ -115,8 +122,12 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
                     Toast.makeText(this, "密码不能为空", Toast.LENGTH_LONG).show();
                 } else {
                     mProBar.setVisibility(View.VISIBLE);
-                    Thread loginThread = new Thread(new LoginThread());
-                    loginThread.start();
+                    String usernameTest = user_name_edit.getText().toString();
+                    String passwordTest = password_edit.getText().toString();
+                    String passwordValid = Encrypt.md5(passwordTest);
+                    autoLogin(usernameTest, passwordValid);
+                    /*Thread loginThread = new Thread(new LoginThread());
+                    loginThread.start();*/
                 }
 
                 break;
@@ -200,7 +211,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
             // 设置请求参数项
             // 发送请求返回json
             String json = HttpUtil.postRequest(urlStr, rawParams);
-
+            Log.d("LoginActivity", "登录返回的JSON结果:"+json);
             Logger.json(json);
             // 解析json数据
             com.alibaba.fastjson.JSONObject jsonobj = JSON.parseObject(json);
@@ -305,5 +316,50 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         layout.addView(mProBar);
         return mProBar;
     }
-    
+
+    private void autoLogin(String username, String password) {
+
+        Observable<HttpResult<UserEntity>> observable = APIWrapper.getInstance().login(username, password);
+        observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<HttpResult<UserEntity>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(HttpResult<UserEntity> userEntityHttpResult) {
+                        UserEntity userEntity1 = userEntityHttpResult.getData();
+                        String message = userEntityHttpResult.getMessage();
+                        boolean success = userEntityHttpResult.getSuccess();
+                        if (success) {
+                            UserEntity userEntity = userEntityHttpResult.getData();
+                            SharedPreferences sharedPreferences_Save = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences_Save.edit();
+                            editor.putString("id", userEntity.getId());
+                            editor.putString("nickname", userEntity.getNickname());
+                            editor.putString("name", userEntity.getName());
+                            editor.putString("avatar", userEntity.getAvatar());
+                            editor.putInt("sex", userEntity.getSex());
+                            editor.putString("type", userEntity.getType());
+                            editor.putString("school", userEntity.getSchool());
+                            editor.putInt("status", userEntity.getStatus());
+                            editor.putString("accessToken", userEntity.getAccessToken());
+                            editor.putString("teacher", userEntity.getTeacher());
+                            editor.putString("banji", userEntity.getBanji());
+                            editor.commit();//注意此处,一定要提交
+                            startActivity(new Intent(LoginActivity.this, UserInfoActivity.class));
+                            finish();
+                        } else {
+                            Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
 }
