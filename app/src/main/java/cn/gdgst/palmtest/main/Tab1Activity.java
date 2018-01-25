@@ -1,14 +1,13 @@
 package cn.gdgst.palmtest.main;
 
+import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.Uri;
+
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -18,6 +17,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -25,12 +25,16 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.tbruyelle.rxpermissions.RxPermissions;
 
+import cn.gdgst.palmtest.API.APIWrapper;
 import cn.gdgst.palmtest.BuildConfig;
+import cn.gdgst.palmtest.Entitys.VoteAction;
 import cn.gdgst.palmtest.R;
 import cn.gdgst.palmtest.Entitys.UpdateInfo;
 import cn.gdgst.palmtest.base.NetworkBaseActivity;
-import cn.gdgst.palmtest.service.UpdateInfoService;
+import cn.gdgst.palmtest.bean.HttpResult;
+import cn.gdgst.palmtest.service.UpdateAppService;
 import cn.gdgst.palmtest.tab1.Grid_Item;
 import cn.gdgst.palmtest.tab1.MyGridAdapter;
 import cn.gdgst.palmtest.tab1.SlideImageLayout;
@@ -39,9 +43,18 @@ import cn.gdgst.palmtest.tab1.huizhan.HuiZhanListActivity;
 import cn.gdgst.palmtest.tab1.kaoshi.KaoShiList;
 import cn.gdgst.palmtest.tab1.mingshi.MingShiList;
 import cn.gdgst.palmtest.tab1.examsystem.ExamListActivity;
+import cn.gdgst.palmtest.tab1.vote.TestActivity;
+import cn.gdgst.palmtest.tab1.vote.VoteActivity;
 import cn.gdgst.palmtest.tab1.wenku.WenKuList;
 import cn.gdgst.palmtest.tab1.zhuangbei.ZhuangBeiList;
-import cn.gdgst.palmtest.utils.UserLoginUtil;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -49,15 +62,15 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 这是底部4个导航栏中的第一个导航栏页面
@@ -79,7 +92,7 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 	private SlideImageLayout slideLayout = null;
 	private Button buttonSyncVideo,buttonSimulation,buttonInnovate,buttonExamineSystem,buttonTestLibrary,buttonLecture,buttonTrainCollege,buttonTestEquepment,buttonExhibitionCenter;
 	//"名师讲堂", "考试备考", "实验文库", "实验资讯", "创客空间", "会展中心",  "培训学院", "实验装备"
-	private String titleArr[] = { "同步视频", "仿真实验", "创新实验", "测评系统", "实验文库", "名师讲堂",  "考评系统", "实验装备", "会展中心"};
+	private String titleArr[] = { "同步视频", "实验文库", "创新实验", "测评系统", "活动赛事", "名师讲堂",  "考评系统", "实验装备", "新闻动态"};
 
 	private boolean adAuto = true;
 	// 广告正在滑动
@@ -87,6 +100,11 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 	// 更新版本要用到的一些信息
 	private UpdateInfo info;
 	private ProgressDialog pBar;
+	/**
+	 * 更新版本
+	 */
+	private Intent updateServiceIntent;
+	private static int REQUESTPERMISSION = 110 ;
 
 	// 广告移动处理
 	Handler handler = new Handler() {
@@ -113,7 +131,9 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getSupportActionBar().hide();
-		new Thread() {
+		getUpdateInfoByRetrofit();
+
+/*		new Thread() {
 			public void run() {
 				try {
 					Thread.sleep(500);
@@ -130,8 +150,35 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 					e.printStackTrace();
 				}
 			}
-		}.start();
+		}.start();*/
+	}
 
+
+	private void getUpdateInfoByRetrofit() {
+		String version_code= BuildConfig.VERSION_NAME;
+		APIWrapper.getInstance().updateInfoRemark(version_code)
+				.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<HttpResult<UpdateInfo>>() {
+					@Override
+					public void onCompleted() {
+						handler.sendEmptyMessage(0);
+					}
+
+					@Override
+					public void onError(Throwable e) {
+
+					}
+
+					@Override
+					public void onNext(HttpResult<UpdateInfo> updateInfoHttpResult) {
+						boolean success = updateInfoHttpResult.getSuccess();
+						if (success){
+							info = updateInfoHttpResult.getData();
+							Log.d("Application1","通过Retrofit访问"+info.toString());
+						}
+					}
+				});
 	}
 
 	@Override
@@ -167,7 +214,6 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 		buttonTestEquepment.setOnClickListener(this);
 		buttonExhibitionCenter.setOnClickListener(this);
 	}
-
 	// 线程来自动播放图片
 	Thread adThread = new Thread() {
 		public void run() {
@@ -201,16 +247,16 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 		slideLayout = new SlideImageLayout(this);
 		slideLayout.setCircleImageLayout(length);
 		for (int i = 0; i < length; i++) {
-			int defId = R.mipmap.a01;
+			int defId = R.mipmap.ad01;
 			switch (i) {
 			case 1:
-				defId = R.mipmap.a02;
+				defId = R.mipmap.ad02;
 				break;
 			case 2:
-				defId = R.mipmap.a03;
+				defId = R.mipmap.ad03;
 				break;
 			case 3:
-				defId = R.mipmap.a04;
+				defId = R.mipmap.ad04;
 				break;
 			}
 			View ImageView = slideLayout.getSlideImageLayout(null, i, defId);
@@ -232,7 +278,7 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 				break;
 			case R.id.tab1_button_simulation_test:
 				Intent i3 = new Intent();
-				i3.setClass(Tab1Activity.this, Tab3Activity.class);
+				i3.setClass(Tab1Activity.this, WenKuList.class);
 				startActivity(i3);
 				break;
 			case R.id.tab1_button_innovate://考评系统
@@ -247,7 +293,7 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 				break;
 			case R.id.tab1_button_test_library://实验文库
 				Intent WenKuList_intent = new Intent();
-				WenKuList_intent.setClass(Tab1Activity.this, WenKuList.class);
+				WenKuList_intent.setClass(Tab1Activity.this, ZhuangBeiList.class);
 				startActivity(WenKuList_intent);
 				break;
 			case R.id.tab1_button_lecture://名师讲堂
@@ -264,16 +310,41 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 				ChuangKeList_intent.setClass(Tab1Activity.this, ChuangKeList.class);
 				startActivity(ChuangKeList_intent);
 				break;
-			case R.id.tab1_button_test_equepment://实验装备
-				Intent ZhuangBeiList_intent = new Intent();
-				ZhuangBeiList_intent.setClass(Tab1Activity.this, ZhuangBeiList.class);
-				startActivity(ZhuangBeiList_intent);
+			//实验装备
+			case R.id.tab1_button_test_equepment:
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String result = null;
+                        OkHttpClient okHttpClient = new OkHttpClient();
+                        Request request = new Request.Builder()
+                                .url("http://shiyan360.cn/api/activity")
+                                .build();
+                        Response response = null;
+                        try {
+                            response = okHttpClient.newCall(request).execute();
+                            result = response.body().string();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            result = "";
+                        }
+                        Intent ZhuangBeiList_intent = new Intent();
+                        ZhuangBeiList_intent.putExtra("votedetail", result);
+                        ZhuangBeiList_intent.setClass(Tab1Activity.this, VoteActivity.class);
+                        //ZhuangBeiList_intent.setClass(Tab1Activity.this, TestActivity.class);
+                        startActivity(ZhuangBeiList_intent);
+                    }
+                }).start();
+
+
 				break;
-			case R.id.tab1_button_exhibition_center://会展中心
+			//会展中心
+			case R.id.tab1_button_exhibition_center:
 				Intent HuiZhanList_intent = new Intent();
 				HuiZhanList_intent.setClass(Tab1Activity.this, HuiZhanListActivity.class);
 				HuiZhanList_intent.putExtra("category_id", "396"); // 小学科学396
-				HuiZhanList_intent.putExtra("title", "小学科学");
+				HuiZhanList_intent.putExtra("title", "新闻动态");
 				startActivity(HuiZhanList_intent);
 				break;
 		}
@@ -382,7 +453,8 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 			public void onClick(DialogInterface dialog, int which) {
 //					open();
 				if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-					downFile(info.getUpgrade_url());
+					//downFile(info.getUpgrade_url());
+					upDate();
 				} else {
 					Toast.makeText(Tab1Activity.this, "SD卡不可用，请插入SD卡", Toast.LENGTH_SHORT).show();
 				}
@@ -395,6 +467,45 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 			}
 		});
 		builder.create().show();
+	}
+
+	private void upDate() {
+
+		RxPermissions.getInstance(Tab1Activity.this).request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+				.subscribe(new Subscriber<Boolean>() {
+					@Override
+					public void onCompleted() {
+
+					}
+
+					@Override
+					public void onError(Throwable e) {
+
+					}
+
+					@Override
+					public void onNext(Boolean aBoolean) {
+						if (aBoolean) {
+							Intent service = new Intent(Tab1Activity.this, UpdateAppService.class);
+							service.putExtra("url", info.getUpgrade_url());
+							Toast.makeText(Tab1Activity.this, "正在下载中", Toast.LENGTH_SHORT).show();
+							startService(service);
+						} else {
+							Toast.makeText(Tab1Activity.this, "SD卡下载权限被拒绝", Toast.LENGTH_SHORT).show();
+						}
+					}
+				});
+
+//		updateServiceIntent = new Intent(Tab1Activity.this, UpdateAppService.class);
+//		updateServiceIntent.putExtra("url", info.getUpgrade_url());
+//		if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+//			//申请权限
+//			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUESTPERMISSION);
+//			startService(updateServiceIntent);
+//			Toast.makeText(this, "请允许下载权限", Toast.LENGTH_LONG).show();
+//		}else {
+//			startService(updateServiceIntent);
+//		}
 	}
 
 	private boolean isNeedUpdate() {
@@ -471,14 +582,34 @@ public class Tab1Activity extends NetworkBaseActivity implements View.OnClickLis
 		handler.post(new Runnable() {
 			public void run() {
 				pBar.cancel();
-				update();
+				//update();
 			}
 		});
 	}
 
-	private void update() {
-		Intent intent = new Intent(Intent.ACTION_VIEW);
-		intent.setDataAndType(Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "MicExp.apk")), "application/vnd.android.package-archive");
-		startActivity(intent);
+//	private void update() {
+//		Intent intent = new Intent();
+//		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//		intent.setAction(Intent.ACTION_VIEW);
+//		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//		intent.setDataAndType(Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "MicExp.apk")), "application/vnd.android.package-archive");
+//		startActivity(intent);
+//	}
+
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		if(requestCode == REQUESTPERMISSION){
+			if(permissions[0].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+				if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+					if(updateServiceIntent!=null)
+						startService(updateServiceIntent);
+				}else{
+					//提示没有权限，安装不了咯
+					Toast.makeText(this, "没有权限，无法安装", Toast.LENGTH_LONG).show();
+				}
+			}
+		}
 	}
 }

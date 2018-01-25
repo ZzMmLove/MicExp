@@ -14,7 +14,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;
 
-/**使用自定义数据适配器绑定数据到listview
+/**仿真实验的适配器
  * @author Don
  *
  */
@@ -61,6 +61,7 @@ public class ExperimentAdapter extends BaseAdapter {
 			vd=new viewholder();
 			vd.exp_img=(ImageView) view.findViewById(R.id.exp_img);
 			vd.exp_tv=(TextView) view.findViewById(R.id.exp_tv);
+			vd.getExp_tv_time = (TextView) view.findViewById(R.id.exp_tv_time);
 			view.setTag(vd);// 给View添加一个格外的数据
 		}
 		else {
@@ -73,6 +74,8 @@ public class ExperimentAdapter extends BaseAdapter {
 
 		vd.exp_tv.setText(expitem.getName()); //  exp_tv设置文本
 
+		vd.getExp_tv_time.setText("更新时间："+ expitem.getTime());
+
 
 		return view;
 	}
@@ -80,6 +83,7 @@ public class ExperimentAdapter extends BaseAdapter {
 	public class viewholder{
 		private ImageView exp_img;
 		private TextView exp_tv;
+		private TextView getExp_tv_time;
 	}
 
 }

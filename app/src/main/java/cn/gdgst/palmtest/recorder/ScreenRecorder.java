@@ -49,13 +49,17 @@ public class ScreenRecorder extends Thread {
     private static final int IFRAME_INTERVAL = 10; // 10 seconds between I-frames
     private static final int TIMEOUT_US = 10000;
 
+    /**用于将音视频进行压缩编码，它有个比较牛X的地方是可以对Surface内容进行编码*/
     private MediaCodec mEncoder_MediaCodec;
     private Surface mSurface;
+    /**用于将音频和视频进行混合生成多媒体文件*/
     private MediaMuxer mMuxer;
     private boolean mMuxerStarted = false;
     private int mVideoTrackIndex = -1;
+    /**就是在多线程环境下，当有多个线程同时执行这些类的实例包含的方法时，具有排他性*/
     private AtomicBoolean mQuit = new AtomicBoolean(false);
     private MediaCodec.BufferInfo mBufferInfo = new MediaCodec.BufferInfo();
+    /***/
     private VirtualDisplay mVirtualDisplay;
 
     public ScreenRecorder(int width, int height, int bitrate, int dpi, MediaProjection mp, String dstPath) {
@@ -69,12 +73,13 @@ public class ScreenRecorder extends Thread {
     }
 
 
-    public ScreenRecorder(MediaProjection mp) {
+   /* public ScreenRecorder(MediaProjection mp) {
         // 480p 2Mbps
         this(640, 480, 2000000, 1, mp, "/sdcard/test.mp4");
-    }
+    }*/
 
     /**
+     * run()方法中完成了MediaCodec的初始化，VirtualDisplay的创建，以及循环进行编码的全部实现。
      * stop task
      */
     public final void quit() {
@@ -87,7 +92,8 @@ public class ScreenRecorder extends Thread {
             try {
                 //第一步:准备编码器
                 prepareEncoder();
-                //第二步:创建mMuxer对象,mMuxer中封装了保存视频的路径
+                //第二步:创建mMuxer对象,mMuxer中封装了保存视频的路径,MediaMuxer构造函数：
+                // 第一个参数：String path：指定媒体文件的输出路径， 第二个参数：输出媒体文件的格式
                 mMuxer = new MediaMuxer(mDstPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
 
             } catch (IOException e) {
@@ -103,10 +109,16 @@ public class ScreenRecorder extends Thread {
             recordVirtualDisplay();
 
         } finally {
+            //释放资源
             release();
         }
     }
 
+    /**
+     * 编码器实现编码循环
+     * 实现编码过程，由于使用的是Muxer来进行视频的采集，
+     * 所以在resetOutputFormat方法中实际意义是将编码后的视频参数信息传递给Muxer并启动Muxer。
+     */
     private void recordVirtualDisplay() {
         //是一个循环的过程
         while (!mQuit.get()) {
@@ -145,6 +157,9 @@ public class ScreenRecorder extends Thread {
             // The codec config data was pulled out and fed to the muxer when we got
             // the INFO_OUTPUT_FORMAT_CHANGED status.
             // Ignore it.
+
+            // 大致意思就是配置信息(avcc)已经在之前的resetOutputFormat()中喂给了Muxer，
+            // 此处已经用不到了，然而在项目中这一步却是十分重要的一步，因为需要手动提前实现sps, pps的合成发送给流媒体服务器
             Log.d(TAG, "ignoring BUFFER_FLAG_CODEC_CONFIG");
             mBufferInfo.size = 0;
         }
@@ -166,7 +181,7 @@ public class ScreenRecorder extends Thread {
     }
 
     private void resetOutputFormat() {
-        // should happen before receiving buffers, and should only happen once
+        // 在接收缓冲之前，而且只能发生一次
         if (mMuxerStarted) {
             throw new IllegalStateException("output format already changed!");
         }
@@ -182,6 +197,7 @@ public class ScreenRecorder extends Thread {
     /**
      * 创建媒体编码解码器MediaCodec
      * 创建Surface表面或者是面板
+     * 此方法中进行了编码器的参数配置与启动、Surface的创建两个关键的步骤
      * @throws IOException
      */
     private void prepareEncoder() throws IOException {
@@ -198,8 +214,12 @@ public class ScreenRecorder extends Thread {
         mSurface = mEncoder_MediaCodec.createInputSurface();
         Log.d(TAG, "created input surface: " + mSurface);
         mEncoder_MediaCodec.start();
+
     }
 
+    /**
+     * 资源释放回收
+     */
     private void release() {
         if (mEncoder_MediaCodec != null) {
             mEncoder_MediaCodec.stop();

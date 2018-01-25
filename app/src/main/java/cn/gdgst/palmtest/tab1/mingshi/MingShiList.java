@@ -49,6 +49,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.gdgst.palmtest.utils.NetworkCheck;
+import cn.gdgst.palmtest.utils.NetworkCheckDialog;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -217,27 +219,36 @@ public class MingShiList extends Activity implements OnDismissListener, OnClickL
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		switch (v.getId()) {
-			case R.id.ll_grade:
-				idx = 1;
-				icon1.setImageResource(R.mipmap.icon_up);
-				showPopupWindow(findViewById(R.id.ll_layout), 1);
-				break;
-			case R.id.ll_category:
-				idx = 2;
-				icon2.setImageResource(R.mipmap.icon_up);
-				showPopupWindow(findViewById(R.id.ll_layout), 2);
-				break;
-			case R.id.ll_sorting_latest:
-				idx = 3;
-				icon3.setImageResource(R.mipmap.icon_up);
-				showPopupWindow(findViewById(R.id.ll_layout), 3);
-				break;
-			case R.id.iv_back:
-				this.finish();
-				break;
+		NetworkCheck check = new NetworkCheck(this);
 
-		}
+			switch (v.getId()) {
+				case R.id.ll_grade:
+					idx = 1;
+					icon1.setImageResource(R.mipmap.icon_up);
+					if (check.Network()) {
+						showPopupWindow(findViewById(R.id.ll_layout), 1);
+					}else NetworkCheckDialog.dialog(this);
+					break;
+				case R.id.ll_category:
+					idx = 2;
+					icon2.setImageResource(R.mipmap.icon_up);
+					if (check.Network()) {
+
+						showPopupWindow(findViewById(R.id.ll_layout), 2);
+					}else NetworkCheckDialog.dialog(this);
+					break;
+				case R.id.ll_sorting_latest:
+					idx = 3;
+					icon3.setImageResource(R.mipmap.icon_up);
+					if (check.Network()) {
+
+						showPopupWindow(findViewById(R.id.ll_layout), 3);
+					}else NetworkCheckDialog.dialog(this);
+					break;
+				case R.id.iv_back:
+					this.finish();
+					break;
+			}
 	}
 
 //	private void getExperimentList() {
@@ -728,7 +739,7 @@ public class MingShiList extends Activity implements OnDismissListener, OnClickL
 		String desc_type = String.valueOf(desctype);
 		String category_id = categoryid;
 		String paged = String.valueOf(page);
-		String grade_id=gradeid;
+		String grade_id = gradeid;
 		Logger.i("categoryid"+categoryid);
 
 		APIWrapper.getInstance().getMingShiList(desc_type, category_id,grade_id,paged)

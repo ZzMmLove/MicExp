@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,8 +15,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import cn.gdgst.entity.Video;
+
+import com.mob.MobSDK;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.orhanobut.logger.Logger;
+
+import cn.gdgst.palmtest.API.APIWrapper;
+import cn.gdgst.palmtest.Entitys.CollectEntity;
+import cn.gdgst.palmtest.base.AppConstant;
+import cn.gdgst.palmtest.bean.HttpResult;
 import cn.gdgst.palmtest.service.CollectService;
 
 import java.util.ArrayList;
@@ -24,8 +32,10 @@ import java.util.List;
 import java.util.Map;
 
 import cn.gdgst.palmtest.R;
-import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class Video_List_Adapter extends BaseAdapter {
 	private List<Video> Video_List;
@@ -37,11 +47,38 @@ public class Video_List_Adapter extends BaseAdapter {
 	 /**
      * 初始化sharedPreferences
      */
-    private SharedPreferences sp = null;
+    private SharedPreferences sp;
     
 	public Video_List_Adapter(Context context, List<Video> video_List) {
 		this.context = context;
 		this.Video_List = video_List;
+	}
+
+	private void getCollectListID(){
+		SharedPreferences spf = context.getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
+		String accesstoken = spf.getString("accessToken", "");
+		APIWrapper.getInstance().getCollect(accesstoken, "play")
+				.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<HttpResult<List<CollectEntity>>>() {
+					@Override
+					public void onCompleted() {
+
+					}
+
+					@Override
+					public void onError(Throwable e) {
+
+					}
+
+					@Override
+					public void onNext(HttpResult<List<CollectEntity>> listHttpResult) {
+						Logger.e(listHttpResult.getData().toString(), "TAG");
+						for (int i = 0; i <= listHttpResult.getData().size(); i++){
+							//idList.add(listHttpResult.getData().get(i).getVideo_id());
+						}
+					}
+				});
 	}
 
 	@Override
@@ -64,9 +101,8 @@ public class Video_List_Adapter extends BaseAdapter {
 
 	@Override
 	public View getView(final int position, View view, ViewGroup viewgroup) {
-		viewholder vd = new viewholder();
+		viewholder vd;
 		final Video video_item = Video_List.get(position);
-
 		if (view == null) {
 			view = LayoutInflater.from(context).inflate(R.layout.video_list_item, null);
 			vd = new viewholder();
@@ -83,70 +119,125 @@ public class Video_List_Adapter extends BaseAdapter {
 		vd.vid_tv.setText(video_item.getName());
 
 		final ImageView iv_collect = vd.iv_collect;
-		if (attentionArr.contains(position)) {
-			if (COLLECTTAG == 1) {
-				iv_collect.setImageResource(R.mipmap.detail_interaction_bar_favorite_pressed);
-			} else {
-				iv_collect.setImageResource(R.mipmap.detail_interaction_bar_favorite);
-			}
 
-		} else {
-			iv_collect.setImageResource(R.mipmap.detail_interaction_bar_favorite);
-		}
-		vd.iv_collect.setOnClickListener(new OnClickListener() {
+
+		SharedPreferences spf = context.getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
+		String accesstoken = spf.getString("accessToken", "");
+		APIWrapper.getInstance().getCollect(accesstoken, "play")
+				.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<HttpResult<List<CollectEntity>>>() {
+					@Override
+					public void onCompleted() {
+
+					}
+
+					@Override
+					public void onError(Throwable e) {
+
+					}
+
+					@Override
+					public void onNext(HttpResult<List<CollectEntity>> listHttpResult) {
+						List<String> idList = new ArrayList<>();
+						//Logger.e(listHttpResult.getData().toString(), "TAG");
+						for (int i = 0; i <= listHttpResult.getData().size() - 1 ; i++) {
+							Log.e("TAG", "---------->CollectId=" + listHttpResult.getData().get(i).getVideo_id() + "----------->ItemId=" + video_item.getId());
+							if (listHttpResult.getData().get(i).getVideo_id().equals(String.valueOf(video_item.getId()))){
+								iv_collect.setImageResource(R.mipmap.detail_interaction_bar_favorite_pressed);
+							}else {
+								iv_collect.setImageResource(R.mipmap.detail_interaction_bar_favorite);
+							}
+						}
+//						String videoItemId = String.valueOf(video_item.getId());
+//						Log.e("TAG", "---------->videoItemId=" + videoItemId + "----------->ListId=" + idList.get(1));
+//						for (int i = 0; i <= idList.size() - 1; i++) {
+//							if (idList.get(i) == videoItemId) {
+//								iv_collect.setImageResource(R.mipmap.detail_interaction_bar_favorite_pressed);
+//							} else {
+//								iv_collect.setImageResource(R.mipmap.detail_interaction_bar_favorite);
+//
+//							}
+//						}
+					}
+				});
+
+//		String videoItemId = String.valueOf(video_item.getId());
+//		Log.e("TAG", "---------->videoItemId="+videoItemId+"----------->ListId="+idList.get(1));
+//		for (int i = 0; i <= idList.size() - 1; i++){
+//			if (idList.get(i) == videoItemId){
+//				iv_collect.setImageResource(R.mipmap.detail_interaction_bar_favorite_pressed);
+//			}else {
+//				iv_collect.setImageResource(R.mipmap.detail_interaction_bar_favorite);
+//			}
+//		}
+
+//		if (attentionArr.contains(position)) {
+//			if (COLLECTTAG == 1) {
+//				iv_collect.setImageResource(R.mipmap.detail_interaction_bar_favorite_pressed);
+//			} else {
+//				iv_collect.setImageResource(R.mipmap.detail_interaction_bar_favorite);
+//			}
+//
+//		} else {
+//			iv_collect.setImageResource(R.mipmap.detail_interaction_bar_favorite);
+//		}
+		iv_collect.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				if (COLLECTTAG == 0) {
-
 					new Thread() {
 						public void run() {
 							try {
 								Thread.sleep(100);
 								CollectService updateInfoService = new CollectService(context);
-								sp = context.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+								sp = context.getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
 								String accessToken = sp.getString("accessToken", "");
+								Log.e("TAG", "accessToken===="+ accessToken);
 								String model = "play";
-								Map<String, String> rawParams = new HashMap<String, String>();
+								Map<String, String> rawParams = new HashMap<>();
 								rawParams.put("accessToken", accessToken);
 								rawParams.put("model", model);
 								rawParams.put("id", Video_List.get(position).getId().toString());
 								int getaddInfo = updateInfoService.getaddInfo(rawParams);
 								if (getaddInfo==0) {
 									handler.post(new Runnable() {
-					                    @Override
-					                    public void run() {
-					                    	iv_collect.setImageResource(R.mipmap.detail_interaction_bar_favorite_pressed);
-					    					COLLECTTAG = 1;
-					    					attentionArr.add(position);// 在点击时将position加入其中
-					    					Logger.i("collect"+ "收藏成功");
-					    					Toast.makeText(context, "收藏成功", Toast.LENGTH_SHORT).show();
-					    					
-					    					Logger.i( ""+video_item.getId());
-					    	                
-					                    }
-					                });
+										@Override
+										public void run() {
+											iv_collect.setImageResource(R.mipmap.detail_interaction_bar_favorite_pressed);
+											COLLECTTAG = 1;
+											attentionArr.add(position);// 在点击时将position加入其中
+											Logger.i("collect"+ "收藏成功");
+											Toast.makeText(context, "收藏成功", Toast.LENGTH_SHORT).show();
+
+											Logger.i( ""+video_item.getId());
+
+											sp = context.getSharedPreferences("addInfo", Context.MODE_PRIVATE);
+											Editor editor = sp.edit();// 获取编辑器
+											editor.putString("videoid", video_item.getId().toString());
+											editor.commit();// 提交修改
+										}
+									});
 								}else if (getaddInfo==2) {
 									handler.post(new Runnable() {
-					                    @Override
-					                    public void run() {
-					                    	Toast.makeText(context, "已经收藏过了", Toast.LENGTH_SHORT).show();
-					                    }
-					                });
-								}
-								else {
+										@Override
+										public void run() {
+											Toast.makeText(context, "已经收藏过了", Toast.LENGTH_SHORT).show();
+										}
+									});
+								} else {
 									handler.post(new Runnable() {
-					                    @Override
-					                    public void run() {
-					                    	Toast.makeText(context, "请先进行登录", Toast.LENGTH_SHORT).show();
-					                    }
-					                });
+										@Override
+										public void run() {
+											Toast.makeText(context, "请先进行登录", Toast.LENGTH_SHORT).show();
+										}
+									});
 								}
-								
+
 							} catch (Exception e) {
 								e.printStackTrace();
-								
 							}
 						}
 					}.start();
@@ -157,10 +248,10 @@ public class Video_List_Adapter extends BaseAdapter {
 							try {
 								Thread.sleep(100);
 								CollectService updateInfoService = new CollectService(context);
-								 sp = context.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+								 sp = context.getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
 								String accessToken = sp.getString("accessToken", "");
 								String model = "play";
-								Map<String, String> rawParams = new HashMap<String, String>();
+								Map<String, String> rawParams = new HashMap<>();
 								rawParams.put("accessToken", accessToken);
 								rawParams.put("model", model);
 								rawParams.put("id", Video_List.get(position).getId().toString());
@@ -172,18 +263,12 @@ public class Video_List_Adapter extends BaseAdapter {
 					                    	iv_collect.setImageResource(R.mipmap.detail_interaction_bar_favorite);
 					    					attentionArr.add(position);// 在点击时将position加入其中
 					    					COLLECTTAG = 0;
-					    					
+
 					    					Logger.i("collect"+ "取消收藏");
+											Logger.i("download");
 					    					Toast.makeText(context, "取消收藏", Toast.LENGTH_SHORT).show();
-					    					
+
 					    					Logger.i( ""+video_item.getId());
-					    					
-					    					
-					    					sp = context.getSharedPreferences("addInfo", Context.MODE_PRIVATE);
-					    	                Editor editor = sp.edit();// 获取编辑器
-					    	                editor.putString("videoid", video_item.getId().toString());
-					    	                editor.commit();// 提交修改
-					    	                
 					                    }
 					                });
 								}else {
@@ -194,27 +279,20 @@ public class Video_List_Adapter extends BaseAdapter {
 					                    }
 					                });
 								}
-
 							} catch (Exception e) {
 								e.printStackTrace();
-								
 							}
 						}
 					}.start();
 				}
-
 			}
 		});
-		
-		
 		
 		vd.iv_share.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				ShareSDK.initSDK(context);
-
 				OnekeyShare oks = new OnekeyShare();
 				// 关闭sso授权
 				oks.disableSSOWhenAuthorize();
@@ -229,6 +307,7 @@ public class Video_List_Adapter extends BaseAdapter {
 				oks.setText(video_item.getName() + video_item.getVideo_url());
 				// 设置分享照片的url地址，如果没有可以不设置
 				oks.setImageUrl(video_item.getImg_url());
+				oks.setImagePath("/sdcard/test.jpg");
 				// url仅在微信（包括好友和朋友圈）中使用
 				oks.setUrl(video_item.getVideo_url());
 				// comment是我对这条分享的评论，仅在人人网和QQ空间使用

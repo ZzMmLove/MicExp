@@ -3,6 +3,7 @@ package cn.gdgst.palmtest.tab1.chuangke;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,17 +15,18 @@ import android.widget.Toast;
 
 import cn.gdgst.entity.ChuangKe;
 import cn.gdgst.palmtest.R;
+
+import com.mob.MobSDK;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.orhanobut.logger.Logger;
 import cn.gdgst.palmtest.service.CollectService;
+import cn.sharesdk.onekeyshare.OnekeyShare;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.sharesdk.framework.ShareSDK;
-import cn.sharesdk.onekeyshare.OnekeyShare;
 
 public class ChuangKeAdapter extends BaseAdapter {
 	private List<ChuangKe> ChuangKeList;
@@ -116,6 +118,9 @@ public class ChuangKeAdapter extends BaseAdapter {
 								rawParams.put("model", model);
 								rawParams.put("id", ChuangKeList.get(position).getId().toString());
 								int getaddInfo = updateInfoService.getaddInfo(rawParams);
+
+								Log.i("ChuangKeAdapter", "======Error_code===="+getaddInfo);
+
 								if (getaddInfo==0) {
 									handler.post(new Runnable() {
 										@Override
@@ -207,8 +212,6 @@ public class ChuangKeAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				ShareSDK.initSDK(context);
-
 				OnekeyShare oks = new OnekeyShare();
 				// 关闭sso授权
 				oks.disableSSOWhenAuthorize();
@@ -225,6 +228,7 @@ public class ChuangKeAdapter extends BaseAdapter {
 				oks.setImageUrl(expitem.getImg_url());
 				// url仅在微信（包括好友和朋友圈）中使用
 				oks.setUrl(expitem.getVideo_url());
+				oks.setImagePath("/sdcard/test.jpg");
 				// comment是我对这条分享的评论，仅在人人网和QQ空间使用
 				oks.setComment("我是测试评论文本");
 				// site是分享此内容的网站名称，仅在QQ空间使用

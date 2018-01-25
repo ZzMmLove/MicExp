@@ -13,14 +13,21 @@
         <TextView
             android:id="@+id/tv_wenku"
             android:layout_width="320dp"
-            android:layout_height="60dp"
-            android:layout_centerVertical="true"
+            android:layout_height="wrap_content"
             android:drawablePadding="8dip"
-            android:gravity="center_vertical"
             android:paddingLeft="17.0dip"
             android:text="实验文库内容"
             android:textColor="#353535"
             android:textSize="16sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:id="@+id/tv_updatetime"
+            android:paddingLeft="17.0dip"
+            android:layout_marginTop="5dp"
+            android:drawablePadding="8dip"
+            android:gravity="center"
+            android:layout_below="@+id/tv_wenku"/>
 
         <ImageView
             android:layout_width="wrap_content"

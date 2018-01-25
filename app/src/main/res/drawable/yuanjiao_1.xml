@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android" >
-
-    <solid android:color="#a6dff7" />
-
-    <corners
-        android:bottomLeftRadius="1dp"
-        android:bottomRightRadius="1dp"
-        android:topLeftRadius="1dp"
-        android:topRightRadius="1dp" />
-
+<!-- 用于设置信息对话框的圆角 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="8dp"></corners>
+    <solid android:color="@color/white"></solid>
 </shape>

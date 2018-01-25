@@ -3,10 +3,21 @@ package cn.gdgst.palmtest.Entitys;
 import java.io.Serializable;
 
 public class PX_Cate_Entity implements Serializable{
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -5451055200836468333L;
+
+	/**
+	 * "success":true,
+	 "error_code":0,
+	 "message":"数据加载完毕",
+	 "data":[
+	 {
+	 "id":"137",
+	 "name":"物理实验设备",
+	 "tpl":"index_pic",
+	 "sort":"11"
+	 },
+	 */
 
 	private String id;
 
@@ -51,4 +62,13 @@ public class PX_Cate_Entity implements Serializable{
 	return this.sort;
 	}
 
+	@Override
+	public String toString() {
+		return "PX_Cate_Entity{" +
+				"id='" + id + '\'' +
+				", name='" + name + '\'' +
+				", tpl='" + tpl + '\'' +
+				", sort='" + sort + '\'' +
+				'}';
+	}
 }

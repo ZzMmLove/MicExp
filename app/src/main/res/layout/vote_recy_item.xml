@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#efeded"
+    android:layout_margin="5dp">
+
+    <ImageView
+        android:id="@+id/image_url"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_launcher"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"/>
+
+    <TextView
+        android:text="211"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:id="@+id/texttitle"
+        android:textColor="#000"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:text="211"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:id="@+id/textView3"
+        android:textColor="#ae0d1d"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"/>
+
+    <Button
+        android:text="投票"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:id="@+id/vote"
+        android:textColor="#fff"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:background="@drawable/btn_register_bg"
+        android:layout_marginBottom="10dp"/>
+</LinearLayout>

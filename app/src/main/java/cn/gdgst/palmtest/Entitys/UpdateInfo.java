@@ -1,10 +1,18 @@
 package cn.gdgst.palmtest.Entitys;
 
 public class UpdateInfo {
+	/**
+	 是否需要更新
+	 */
 	private int is_upgrade;
-
+	/**
+	 * 更新路径
+	 */
 	private String upgrade_url;
 
+	/**
+	 * 更新版本
+	 */
 	private String upgrade_remark;
 
 	public UpdateInfo(int is_upgrade, String upgrade_url, String upgrade_remark) {
@@ -39,5 +47,13 @@ public class UpdateInfo {
 	public void setUpgrade_remark(String upgrade_remark) {
 		this.upgrade_remark = upgrade_remark;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "UpdateInfo{" +
+				"is_upgrade=" + is_upgrade +
+				", upgrade_url='" + upgrade_url + '\'' +
+				", upgrade_remark='" + upgrade_remark + '\'' +
+				'}';
+	}
 }

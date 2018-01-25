@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
@@ -17,6 +19,7 @@ import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.location.LocationClientOption.LocationMode;
 import com.lidroid.xutils.util.LogUtils;
+import com.mob.MobSDK;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -66,6 +69,12 @@ public class BaseApplication extends FrontiaApplication {
 			}
 		}
 
+		StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+		StrictMode.setVmPolicy(builder.build());
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+			builder.detectFileUriExposure();
+		}
+
 		if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) || !Environment.isExternalStorageRemovable()) {
 			File file_PalmTest = new File(Environment.getExternalStorageDirectory()+"/PalmTest");
 			if (!file_PalmTest.exists()) {
@@ -75,8 +84,9 @@ public class BaseApplication extends FrontiaApplication {
 
 		activities = new ArrayList<Activity>();
 		myApplication = this;
-		initPush();
-		getInfo();
+		MobSDK.init(this);
+		//initPush();
+		//getInfo();
 		initBaiDuMap();
 		initImageLoader(getApplicationContext());
         Logger.init("Dontag");

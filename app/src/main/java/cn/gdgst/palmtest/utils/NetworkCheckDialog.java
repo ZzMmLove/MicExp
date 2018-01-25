@@ -44,6 +44,7 @@ public class NetworkCheckDialog {
 				dialog.dismiss();
 			}
 		});
+		builder.create().show();
 	}
 
 

@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -29,6 +30,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
@@ -56,6 +59,9 @@ import java.util.List;
 import java.util.Map;
 
 import cn.gdgst.palmtest.tab3.SubAdapter;
+import cn.gdgst.palmtest.utils.NetworkCheck;
+import cn.gdgst.palmtest.utils.NetworkCheckDialog;
+import cn.gdgst.palmtest.utils.ToastUtil;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -104,6 +110,11 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 	private ListView actualListView;
 
 	private SubAdapter subAdapter;
+	//从SharePreference中获取用户的学校和班级参数
+	private String school ;
+	private String banji ;
+	/**用于判断是否登录*/
+	private String accessToken ;
 
 	/**
 	 * 初中和高中的下一级科目分类
@@ -114,8 +125,16 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getExaminPaperList(0,0);
-		setContentView(R.layout.activity_exam_list);
+		//getExaminPaperList(0,0);
+		initData();
+
+		if (accessToken != null && accessToken != ""){
+			setContentView(R.layout.activity_exam_list);
+		}else {
+			setContentView(R.layout.activity_exam_list_unlogin);
+			return;
+		}
+		getExaminPaperList(0,school,banji,null,null);
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle("考评系统");
@@ -127,6 +146,14 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 //		getCacheCollectdata();
 		//readPeiXunDB();
 		//getwkcateList();
+	}
+
+	private void initData() {
+		SharedPreferences sharedPreferences = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
+		school = sharedPreferences.getString("school", "");
+		banji = sharedPreferences.getString("banji", "");
+		accessToken = sharedPreferences.getString("accessToken", "");
+		Log.d("TAG", "学校名称和班级----------->"+school);
 	}
 
 	private void findview() {
@@ -167,8 +194,18 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 				if (examPaperList != null) {
 					examPaperList.clear();
 				}
-				getExaminPaperList(0,0);
-				Log.v("jenfee's", "测试执行从网络获取试卷列表");
+				//getExaminPaperList(0,0);
+				if (tv_grade.getText().equals("不限")){
+
+					getExaminPaperList(page,school,banji,null,null);
+				}else {
+					getExaminPaperList(page,school,banji,tv_grade.getText().toString().substring(0,2),tv_grade.getText().toString().substring(2,4));
+
+				}
+
+		/*		Log.v("jenfee's", "测试执行从网络获取试卷列表");
+				Log.v("ZhongMo", "年级为---------》"+tv_grade.getText().toString().substring(0,2));
+				Log.v("ZhongMo", "课程为---------》"+tv_grade.getText().toString().substring(2,4));*/
 				adapter.notifyDataSetChanged();
 			}
 
@@ -194,6 +231,7 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 					page = page + 1;
 					Logger.i("page" + page);
 //					getExperimentList();
+					getExaminPaperList(page,school,banji,tv_grade.getText().toString().substring(0,2),tv_grade.getText().toString().substring(2,4));
 					getPxList();
 					adapter.notifyDataSetChanged();
 				}
@@ -207,7 +245,7 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Intent intent = new Intent();
 				intent.putExtra("exampaperItemId", examPaperList.get(position - 1).getId());
-				intent.putExtra("exampaperItemTitle", examPaperList.get(position - 1).getPaper());
+				intent.putExtra("exampaperItemTitle", examPaperList.get(position - 1 ).getPaper());
 				intent.setClass(ExamListActivity.this, ExamPaperDetailActivity.class);
 				startActivity(intent);
 			}
@@ -226,6 +264,7 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 		}
 	}
 
+	//使用Handle消息处理机制来对UI进行更新
 	private Handler mHandler = new Handler() {
 
 		@Override
@@ -325,30 +364,30 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if (parent.getAdapter() instanceof MyAdapter) {
-					myadapter.setSelectItem(position);
-					myadapter.notifyDataSetChanged();
-					switch (idx) {
-						case 1:
-							lv1_layout.getLayoutParams().width = 0;
-							switch (position) {
-								case 0://case = 0时，也就是点击了不限,什么事情也不做
-									Toast.makeText(ExamListActivity.this.getApplicationContext(),"你点击了不限",Toast.LENGTH_SHORT).show();
-									Log.v("jenfee's", "你点击了不限");
-									break;
-								case 1://case = 1时，也就是点击了初中，继续创建子适配器，显示下级分类
-									subAdapter = new SubAdapter(ExamListActivity.this.getApplicationContext(), subject[position]);
-									lv2.setAdapter(subAdapter);
-									subAdapter.notifyDataSetChanged();
-									Log.v("jenfee's", "你点击了初中");
-									break;
+					if (parent.getAdapter() instanceof MyAdapter) {
+						myadapter.setSelectItem(position);
+						myadapter.notifyDataSetChanged();
+						switch (idx) {
+							case 1:
+								lv1_layout.getLayoutParams().width = 0;
+								switch (position) {
+									case 0://case = 0时，也就是点击了不限,什么事情也不做
+										Toast.makeText(ExamListActivity.this.getApplicationContext(), "你点击了不限", Toast.LENGTH_SHORT).show();
+										tv_grade.setText("不限");
+										Log.v("jenfee's", "你点击了不限");
+										break;
+									case 1://case = 1时，也就是点击了初中，继续创建子适配器，显示下级分类
+										subAdapter = new SubAdapter(ExamListActivity.this.getApplicationContext(), subject[position]);
 
-							}
-							break;
-
+										lv2.setAdapter(subAdapter);
+										subAdapter.notifyDataSetChanged();
+										tv_grade.setText("初中");
+										Log.v("jenfee's", "你点击了初中");
+										break;
+								}
+								break;
+						}
 					}
-				}
-
 			}
 		});
 		popupWindow.setOnDismissListener(this);
@@ -357,6 +396,7 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 		ColorDrawable dw = new ColorDrawable(00000);
 		popupWindow.setBackgroundDrawable(dw);
 		popupWindow.setContentView(contentView);
+		//用于在屏幕空白的任何地方触摸屏幕就让这个窗体消失，提高用户的体验
 		contentView.setOnTouchListener(new OnTouchListener() {
 
 			@Override
@@ -439,6 +479,7 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 
 	}
 
+
 	/**
 	 * 从网络获取培训文章列表
 	 */
@@ -510,16 +551,22 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 	/**
 	 * 执行从网络服务器中获取试卷列表
 	 * 并把试卷列表保存在examPaperList中,(wrote by Jenfee)
-	 * page 下拉刷新的页数
+	 * @param page  请求试卷的页码
+	 * @param school  学校
+	 * @param banji 班级
+	 * @param nj 年级
+	 * @param id 课程ID
 	 */
-	private void getExaminPaperList(int page, int cid) {
+	private void getExaminPaperList(int page, String school, String banji, String nj, String id) {
 		/**
+		 * 之前版本铵如下分，单现在不是。
 		 * 按分类来筛选(高中物理:371,高中化学:373,高中生物:375,通用技术:406,
 		 *              初中物理:386,初中化学:387,初中生物:388,初中科学:404,信息技术:393)
 		 */
-		APIWrapper.getInstance().examinPaperList(page, cid)
-				.subscribeOn(Schedulers.io())
-				.observeOn(AndroidSchedulers.mainThread())
+
+		APIWrapper.getInstance().examinPaperList(page, school, banji, nj, id)
+				.subscribeOn(Schedulers.io())  //指定subscribe发生在IO线程，发起数据访问
+				.observeOn(AndroidSchedulers.mainThread())   //指定subscribe的回调方法发生在UI线程，显示数据
 				.subscribe(new Subscriber<HttpResult<List<ExamPaper>>>() {
 					@Override
 					public void onCompleted() {
@@ -543,6 +590,7 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 	}
 
 	private void showPopupWindow2(View anchor, int flag) {
+
 		View contentView = LayoutInflater.from(ExamListActivity.this).inflate(R.layout.windows_popupwindow, null);
 		final PopupWindow popupWindow = new PopupWindow(contentView);
 
@@ -559,6 +607,9 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				NetworkCheck check = new NetworkCheck(ExamListActivity.this);
+				boolean isHasNet = check.Network();
+				if (isHasNet){
 				if (parent.getAdapter() instanceof MyAdapter) {
 					myadapter.setSelectItem(position);
 					myadapter.notifyDataSetChanged();
@@ -566,7 +617,7 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 					if (lv2.getVisibility() == View.INVISIBLE) {
 						lv2.setVisibility(View.VISIBLE);
 						switch (idx) {
-							//当点击ListView顶部的分类,此Activity中只有一个分类
+							//当点击ListView顶部的分类,次Activity中只有一个分类
 							case 1:
 								lv1_layout.getLayoutParams().width = 0; // 全部分类 高中物理
 								switch (position) {
@@ -576,7 +627,7 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 											examPaperList.clear();
 										}
 										pullToRefreshListView.setAdapter(peiXunAdapter);
-										getExaminPaperList(0,0);
+										//getExaminPaperList(0,0);
 										peiXunAdapter.notifyDataSetChanged();
 										String name = (String) parent.getAdapter().getItem(position);
 										setHeadText(idx, name);
@@ -597,8 +648,9 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 															examPaperList.clear();
 														}
 														pullToRefreshListView.setAdapter(peiXunAdapter);
-														getExaminPaperList(0,386);
+														getExaminPaperList(0,school, banji, "初中", "物理");
 														peiXunAdapter.notifyDataSetChanged();
+														tv_grade.setText("初中物理");
 														popupWindow.dismiss();
 														break;
 													case 1:
@@ -607,8 +659,10 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 															examPaperList.clear();
 														}
 														pullToRefreshListView.setAdapter(peiXunAdapter);
-														getExaminPaperList(0, 387);
+														//getExaminPaperList(0, 387);
+														getExaminPaperList(0,school, banji, "初中", "化学");
 														peiXunAdapter.notifyDataSetChanged();
+														tv_grade.setText("初中化学");
 														popupWindow.dismiss();
 														break;
 													case 2:
@@ -617,11 +671,13 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 															examPaperList.clear();
 														}
 														pullToRefreshListView.setAdapter(peiXunAdapter);
-														getExaminPaperList(0, 388);
+														//getExaminPaperList(0, 388);
+														getExaminPaperList(0,school, banji, "初中", "生物");
+														tv_grade.setText("初中生物");
 														peiXunAdapter.notifyDataSetChanged();
 														popupWindow.dismiss();
 														break;
-													case 3:
+													/*case 3:
 														//Toast.makeText(ExamListActivity.this,"初中科学",Toast.LENGTH_SHORT).show();
 														if (examPaperList != null) {
 															examPaperList.clear();
@@ -640,7 +696,7 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 														getExaminPaperList(0, 393);
 														peiXunAdapter.notifyDataSetChanged();
 														popupWindow.dismiss();
-														break;
+														break;*/
 												}
 											}
 										});
@@ -666,7 +722,9 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 															examPaperList.clear();
 														}
 														pullToRefreshListView.setAdapter(peiXunAdapter);
-														getExaminPaperList(0, 371);
+														//getExaminPaperList(0, 371);
+														getExaminPaperList(0,school, banji, "高中", "物理");
+														tv_grade.setText("高中物理");
 														peiXunAdapter.notifyDataSetChanged();
 														popupWindow.dismiss();
 														break;
@@ -676,8 +734,10 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 															examPaperList.clear();
 														}
 														pullToRefreshListView.setAdapter(peiXunAdapter);
-														getExaminPaperList(0, 373);
+														//getExaminPaperList(0, 373);
+														getExaminPaperList(0,school, banji, "高中", "化学");
 														peiXunAdapter.notifyDataSetChanged();
+														tv_grade.setText("高中化学");
 														popupWindow.dismiss();
 														break;
 													case 2:
@@ -686,11 +746,13 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 															examPaperList.clear();
 														}
 														pullToRefreshListView.setAdapter(peiXunAdapter);
-														getExaminPaperList(0, 375);
+														//getExaminPaperList(0, 375);
+														getExaminPaperList(0,school, banji, "高中", "生物");
+														tv_grade.setText("高中生物");
 														peiXunAdapter.notifyDataSetChanged();
 														popupWindow.dismiss();
 														break;
-													case 3:
+												/*	case 3:
 														//Toast.makeText(ExamListActivity.this, "通用技术", Toast.LENGTH_SHORT).show();
 														if (examPaperList != null) {
 															examPaperList.clear();
@@ -699,7 +761,7 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 														getExaminPaperList(0, 406);
 														peiXunAdapter.notifyDataSetChanged();
 														popupWindow.dismiss();
-														break;
+														break;*/
 												}
 											}
 										});
@@ -709,6 +771,9 @@ public class ExamListActivity extends AppCompatActivity implements OnDismissList
 						}
 
 					}
+				}
+				}else {
+					NetworkCheckDialog.dialog(ExamListActivity.this);
 				}
 			}
 		});

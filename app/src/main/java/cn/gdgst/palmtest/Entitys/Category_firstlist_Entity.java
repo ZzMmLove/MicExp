@@ -11,12 +11,19 @@ public class Category_firstlist_Entity implements Serializable{
 	/**
 	 */
 	private static final long serialVersionUID = -278439166217828718L;
+	/**视频ID*/
 	private String id;
+
 	private String diyname;
+	/**视频标题名字*/
 	private String name;
+	/**视频图片路径*/
 	private String imgurl;
+	/**排序ID*/
 	private String pid;
+	/**排序*/
 	private String sort;
+	/**是否排序*/
 	private String ishot;
 	private String isnew;
 	private String pagetitle;

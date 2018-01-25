@@ -134,11 +134,13 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static int indicator_right_padding=0x7f060004;
     }
     public static final class drawable {
-        public static int default_ptr_flip=0x7f020000;
-        public static int default_ptr_rotate=0x7f020001;
-        public static int indicator_arrow=0x7f020002;
-        public static int indicator_bg_bottom=0x7f020003;
-        public static int indicator_bg_top=0x7f020004;
+        public static int bg_check_answe=0x7f020000;
+        public static int bg_edit_answe=0x7f020001;
+        public static int default_ptr_flip=0x7f020002;
+        public static int default_ptr_rotate=0x7f020003;
+        public static int indicator_arrow=0x7f020004;
+        public static int indicator_bg_bottom=0x7f020005;
+        public static int indicator_bg_top=0x7f020006;
     }
     public static final class id {
         public static int both=0x7f070003;

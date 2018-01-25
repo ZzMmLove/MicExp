@@ -9,7 +9,7 @@
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@mipmap/title_bar" >
+        android:background="#28a3ed" >
 
         <ImageView
             android:id="@+id/iv_back"
@@ -65,23 +65,7 @@
                 android:layout_gravity="center"
                 android:orientation="vertical" >
 
-                <cn.gdgst.palmtest.rewrite.ProgressWheel
-                    android:id="@+id/progress_bar"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerInParent="true"
-                    android:layout_centerVertical="true"
-                     ProgressWheel:matProg_progressIndeterminate="true" 
-                     ProgressWheel:matProg_fillRadius="true"/>
 
-                <TextView
-                    android:id="@+id/tv_loading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/progress_bar"
-                    android:layout_centerInParent="true"
-                    android:text="加载中……" />
                 <!-- The PullToRefreshListView replaces a standard ListView widget. -->
 
                 <WebView
@@ -91,6 +75,25 @@
                     android:layout_centerInParent="true"
                     android:layerType="software"
                     android:scrollbars="none" />
+
+                <cn.gdgst.palmtest.rewrite.ProgressWheel
+                    android:id="@+id/progress_bar"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerInParent="true"
+                    android:layout_centerVertical="true"
+                    ProgressWheel:matProg_progressIndeterminate="true"
+                    ProgressWheel:matProg_fillRadius="true"/>
+
+                <TextView
+                    android:id="@+id/tv_loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/progress_bar"
+                    android:layout_centerInParent="true"
+                    android:text="加载中……" />
+
             </RelativeLayout>
             <!-- Here is the view to show if the list is emtpy -->
 

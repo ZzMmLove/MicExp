@@ -4,12 +4,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
+
+import cn.gdgst.palmtest.API.APIWrapper;
 import cn.gdgst.palmtest.R;
 import com.orhanobut.logger.Logger;
+
+import cn.gdgst.palmtest.bean.HttpResult;
 import cn.gdgst.palmtest.utils.Encrypt;
 import cn.gdgst.palmtest.utils.HttpUtil;
 import cn.gdgst.palmtest.utils.NetworkCheck;
 import cn.gdgst.palmtest.utils.NetworkCheckDialog;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -50,10 +57,8 @@ public class ResetPass extends AppCompatActivity implements OnClickListener {
 
 		btnSub.setOnClickListener(this);
 
-		Bundle bundle = new Bundle();
-		bundle = this.getIntent().getExtras();
-		username = bundle.getString("user_name");
-		smscode = bundle.getString("smscode");
+		username = getIntent().getStringExtra("user_name");
+		//smscode = bundle.getString("smscode");
 		Logger.v( "传递取得的:" + username);
 		Logger.v( "传递取得的:" + smscode);
 
@@ -61,20 +66,41 @@ public class ResetPass extends AppCompatActivity implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.new_btn_submit:
-				if (!TextUtils.isEmpty(password_edit.getText().toString())) {
-					// SMSSDK.submitVerificationCode("86", phoneNums,
-					// code_edit.getText().toString());//将验证码提交至SMSSDK服务器
-					Thread RegThread = new Thread(new RegisterThread());
-					RegThread.start();
-				} else {
-					Toast.makeText(this, "密码不能为空", 1).show();
-				}
-				break;
+		if (!TextUtils.isEmpty(password_edit.getText().toString().trim())) {
+			/*Thread RegThread = new Thread(new RegisterThread());
+				RegThread.start();*/
+			NetworkCheck check = new NetworkCheck(this);
+			boolean isAliable = check.Network();
+			if (isAliable){
+				String md5Pass = Encrypt.md5(password_edit.getText().toString().trim());
+				APIWrapper.getInstance().getResetPass(username, smscode, md5Pass)
+						.subscribeOn(Schedulers.io())
+						.observeOn(AndroidSchedulers.mainThread())
+						.subscribe(new Subscriber<HttpResult>() {
+							@Override
+							public void onCompleted() {
 
-			default:
-				break;
+							}
+
+							@Override
+							public void onError(Throwable e) {
+								handler.sendEmptyMessage(2);
+							}
+
+							@Override
+							public void onNext(HttpResult httpResult) {
+								if (httpResult.getSuccess()){
+									handler.sendEmptyMessage(3);
+								}else {
+									handler.sendEmptyMessage(1);
+								}
+							}
+						});
+			}else {
+				NetworkCheckDialog.dialog(this);
+			}
+		} else {
+			Toast.makeText(this, "密码不能为空", Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -108,13 +134,11 @@ public class ResetPass extends AppCompatActivity implements OnClickListener {
 	private boolean registerServer(String password) {
 		boolean loginValidate = false;
 		// 使用apache HTTP客户端实现
-		String urlStr = "http://www.shiyan360.cn/index.php/api/find_pass";
-		// String urlStr = "http://testphp7.114dg.cn/index.php/api/send_code";
+		String urlStr = "http://shiyan360.cn/index.php/api/find_pass";
 		password = Encrypt.md5(password_edit.getText().toString()).trim();
 		NetworkCheck check = new NetworkCheck(ResetPass.this);
 		boolean isalivable = check.Network();
 		if (isalivable) {
-
 			// 封装请求参数
 			Map<String, String> rawParams = new HashMap<String, String>();
 			rawParams.put("user_name", username);
@@ -129,52 +153,37 @@ public class ResetPass extends AppCompatActivity implements OnClickListener {
 				// 发送请求返回json
 				String json = HttpUtil.postRequest(urlStr, rawParams);
 				Logger.json(json);
-
 				// 解析json数据
 				com.alibaba.fastjson.JSONObject jsonobj = JSON.parseObject(json);
 				Boolean response = (Boolean) jsonobj.get("success");
-
-
-
-				// com.alibaba.fastjson.JSONObject responsee = (JSONObject)
-				// jsonobj.get("success");
-				// String data = responsee.toJSONString();
-				// com.alibaba.fastjson.JSONObject response =
-				// JSON.parseObject(data);
-
 				// 判断是否请求成功
 				if (response) {
 					loginValidate = true;
-					// responseMsg = response.toString();\
 					responseMsg = response.toString();
-					;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
 		} else {
 			NetworkCheckDialog.dialog(ResetPass.this);
 		}
 		return loginValidate;
 	}
 
-	/**
-	 *
-	 */
 	Handler handler = new Handler() {
+		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 				case 3:
 					Intent intent = new Intent();
 					intent.setClass(ResetPass.this, LoginActivity.class);
 					startActivity(intent);
-					finish();
-					Toast.makeText(ResetPass.this, "重置密码成功，请重新登录", 1).show();
+					Toast.makeText(ResetPass.this, "重置密码成功，请重新登录", Toast.LENGTH_LONG).show();
+					ResetPass.this.finish();
 					Logger.v(responseMsg+"注册成功");
 					break;
 				case 1:
-					Toast.makeText(ResetPass.this, "重置密码失败", 1).show();
+					Toast.makeText(ResetPass.this, "重置密码失败", Toast.LENGTH_LONG).show();
 					break;
 				default:
 					break;

@@ -42,7 +42,7 @@ public abstract class NetworkBaseActivity extends BaseActivity {
      */
     protected void preliminary() {
         mHandler = new Handler();
-        mAsyncRequests = new ArrayList<AsyncBaseRequest>();
+        mAsyncRequests = new ArrayList<>();
         mDefaultThreadPool = DefaultThreadPool.getInstance();
     }
     public List<AsyncBaseRequest> getAsyncRequests() {

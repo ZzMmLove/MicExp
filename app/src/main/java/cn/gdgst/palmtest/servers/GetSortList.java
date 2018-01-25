@@ -54,7 +54,7 @@ public class GetSortList {
 	 * @param requestparams
 	 * @return
 	 */
-	public static List<Sub> getSubList(String url,Map<String, String>requestparams){
+	public static List<Sub> getSubList(String url,Map<String, String> requestparams){
 		String Cate_firstlist = HttpUtil.postRequest(url, requestparams);
 		com.alibaba.fastjson.JSONObject jsonobj=JSON.parseObject(Cate_firstlist);
 		com.alibaba.fastjson.JSONArray userdata = jsonobj.getJSONArray("data");
@@ -77,7 +77,7 @@ public class GetSortList {
 		return sublist;
 	}
 
-	public static List<GradeEntity> getGradeList(String url, Map<String, String>requestparams){
+	public static List<GradeEntity> getGradeList(String url, Map<String, String> requestparams){
 		String Cate_firstlist = HttpUtil.postRequest(url, requestparams);
 		com.alibaba.fastjson.JSONObject jsonobj=JSON.parseObject(Cate_firstlist);
 		com.alibaba.fastjson.JSONArray userdata = jsonobj.getJSONArray("data");
@@ -107,7 +107,7 @@ public class GetSortList {
 
 	}
 
-	public static List<PX_Cate_Entity> getpxcateList(String url, Map<String, String>requestparams){
+	public static List<PX_Cate_Entity> getpxcateList(String url, Map<String, String> requestparams){
 		String Json=HttpUtil.postRequest(url, requestparams);
 		com.alibaba.fastjson.JSONObject jsonobj=JSON.parseObject(Json);
 		com.alibaba.fastjson.JSONArray userdata = jsonobj.getJSONArray("data");

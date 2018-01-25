@@ -7,7 +7,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -23,13 +26,17 @@ import com.orhanobut.logger.Logger;
 import cn.gdgst.palmtest.utils.Encrypt;
 import cn.gdgst.palmtest.utils.NetworkCheck;
 import cn.gdgst.palmtest.utils.NetworkCheckDialog;
+import cn.gdgst.palmtest.utils.RegExUtils;
+import cn.gdgst.palmtest.utils.ToastUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class CreateUserActivity extends AppCompatActivity implements OnClickListener {
+public class CreateUserActivity extends AppCompatActivity implements OnClickListener, TextWatcher {
 	private Button btnSub;
 	private EditText password_edit;
+	private EditText user_email;
+	private ImageView ic_correct;
 	private String username, smscode;
 	private String responseMsg = "";
 
@@ -46,16 +53,16 @@ public class CreateUserActivity extends AppCompatActivity implements OnClickList
 
 	private void InitView() {
 		btnSub = (Button) findViewById(R.id.new_btn_submit);
+		user_email = (EditText) findViewById(R.id.new_email);
 		password_edit = (EditText) findViewById(R.id.new_password);
-
+		ic_correct = (ImageView) findViewById(R.id.iv_correct);
 		btnSub.setOnClickListener(this);
+		user_email.addTextChangedListener(this);
 
-		Bundle bundle = new Bundle();
-		bundle = this.getIntent().getExtras();
-		username = bundle.getString("user_name");
-		smscode = bundle.getString("smscode");
+		username =getIntent().getStringExtra("user_name");
+		//smscode = bundle.getString("smscode");
 		Logger.v( "传递取得的:" + username);
-		Logger.v( "传递取得的:" + smscode);
+		//Logger.v( "传递取得的:" + smscode);
 
 	}
 
@@ -64,8 +71,6 @@ public class CreateUserActivity extends AppCompatActivity implements OnClickList
 		switch (v.getId()) {
 			case R.id.new_btn_submit:
 				if (!TextUtils.isEmpty(password_edit.getText().toString())) {
-					// SMSSDK.submitVerificationCode("86", phoneNums,
-					// code_edit.getText().toString());//将验证码提交至SMSSDK服务器
 					Thread RegThread = new Thread(new RegisterThread());
 					RegThread.start();
 				} else {
@@ -75,6 +80,25 @@ public class CreateUserActivity extends AppCompatActivity implements OnClickList
 
 			default:
 				break;
+		}
+	}
+
+	@Override
+	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+	}
+
+	@Override
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+	}
+
+	@Override
+	public void afterTextChanged(Editable s) {
+		if (RegExUtils.isEmail(s.toString())){
+			ic_correct.setVisibility(View.VISIBLE);
+		}else {
+			ic_correct.setVisibility(View.INVISIBLE);
 		}
 	}
 
@@ -108,16 +132,17 @@ public class CreateUserActivity extends AppCompatActivity implements OnClickList
 	private boolean registerServer(String password) {
 		boolean loginValidate = false;
 		// 使用apache HTTP客户端实现
-		String urlStr = "http://www.shiyan360.cn/index.php/api/user_signup";
+		String urlStr = "http://shiyan360.cn/index.php/api/user_signup";
 		// String urlStr = "http://testphp7.114dg.cn/index.php/api/send_code";
-		password = Encrypt.md5(password_edit.getText().toString()).trim();
+		Log.e("TAG","==="+username);
+		smscode = user_email.getText().toString().trim();
 		NetworkCheck check = new NetworkCheck(CreateUserActivity.this);
 		boolean isalivable = check.Network();
 		if (isalivable) {
 			// 封装请求参数
-			Map<String, String> rawParams = new HashMap<String, String>();
+			Map<String, String> rawParams = new HashMap<>();
 			rawParams.put("user_name", username);
-			rawParams.put("user_code", smscode);
+			rawParams.put("user_email", smscode);
 			rawParams.put("user_pass", password);
 			try {
 				// 设置请求参数项
@@ -159,8 +184,10 @@ public class CreateUserActivity extends AppCompatActivity implements OnClickList
 					Logger.v(responseMsg+ "注册成功");
 					break;
 				case 1:
-					Toast.makeText(CreateUserActivity.this, "注册失败，请",  Toast.LENGTH_SHORT).show();
+					Toast.makeText(CreateUserActivity.this, "注册失败，请核对信息",  Toast.LENGTH_SHORT).show();
 					break;
+				case 2:
+					ToastUtil.show("注册失败，请检查网络");
 				default:
 					break;
 			}

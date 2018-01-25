@@ -10,13 +10,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import cn.gdgst.palmtest.R;
+
+import com.mob.MobSDK;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import cn.gdgst.palmtest.Entitys.CollectEntity;
+import cn.sharesdk.onekeyshare.OnekeyShare;
 
 import java.util.List;
 
-import cn.sharesdk.framework.ShareSDK;
-import cn.sharesdk.onekeyshare.OnekeyShare;
 
 public class ShouCangAdapter extends BaseAdapter {
 	private List<CollectEntity> ChuangKeList;
@@ -72,8 +73,6 @@ public class ShouCangAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				ShareSDK.initSDK(context);
-
 				OnekeyShare oks = new OnekeyShare();
 				// 关闭sso授权
 				oks.disableSSOWhenAuthorize();
@@ -88,6 +87,7 @@ public class ShouCangAdapter extends BaseAdapter {
 				oks.setText(expitem.getName() + expitem.getVideo_url());
 				// 设置分享照片的url地址，如果没有可以不设置
 				oks.setImageUrl(expitem.getImg_url());
+				oks.setImagePath("/sdcard/test.jpg");
 				// url仅在微信（包括好友和朋友圈）中使用
 				oks.setUrl(expitem.getVideo_url());
 				// comment是我对这条分享的评论，仅在人人网和QQ空间使用

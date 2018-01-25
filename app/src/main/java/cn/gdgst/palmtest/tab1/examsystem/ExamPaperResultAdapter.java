@@ -1,6 +1,7 @@
 package cn.gdgst.palmtest.tab1.examsystem;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,8 +18,8 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import java.util.HashMap;
 import java.util.List;
 
-import cn.gdgst.entity.ExamTopic;
 import cn.gdgst.palmtest.R;
+import cn.gdgst.palmtest.bean.ExamTopic;
 
 /**
  * Created by JenfeeMa on 2016/12/30.
@@ -76,7 +77,12 @@ public class ExamPaperResultAdapter extends BaseAdapter {
         Log.v("ExamPaperResultAdapter","ExamPaperResultAdapter中的图片:"+"****************"+examTopic.getImg()+"************");
         String select_result = hashmap_selected_result.get(position+1);
         holder.textView_title.setText(String.valueOf(examTopic.getId())+". "+ Html.fromHtml(examTopic.getTitle()));
-        holder.textView_selected.setText("已选择的答案:"+select_result);
+        if (select_result.equals(examTopic.getRight())){
+            holder.textView_selected.setTextColor(Color.GREEN);
+        }else {
+            holder.textView_selected.setTextColor(Color.RED);
+        }
+        holder.textView_selected.setText("你选择的答案:"+select_result);
         holder.textView_right.setText("正确答案:"+examTopic.getRight());
         holder.textView_optionA.setText(Html.fromHtml(examTopic.getOptionA()));
         holder.textView_optionB.setText(Html.fromHtml(examTopic.getOptionB()));

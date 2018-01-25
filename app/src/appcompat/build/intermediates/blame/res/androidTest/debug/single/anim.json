@@ -1,42 +1,42 @@
 [
     {
-        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_grow_fade_in_from_bottom.xml",
-        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_grow_fade_in_from_bottom.xml"
+        "merged": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_slide_out_top.xml",
+        "source": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_slide_out_top.xml"
     },
     {
-        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_slide_in_bottom.xml",
-        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_slide_in_bottom.xml"
+        "merged": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_popup_exit.xml",
+        "source": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_popup_exit.xml"
     },
     {
-        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_popup_exit.xml",
-        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_popup_exit.xml"
+        "merged": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_grow_fade_in_from_bottom.xml",
+        "source": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_grow_fade_in_from_bottom.xml"
     },
     {
-        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_fade_out.xml",
-        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_fade_out.xml"
+        "merged": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_popup_enter.xml",
+        "source": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_popup_enter.xml"
     },
     {
-        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_slide_in_top.xml",
-        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_slide_in_top.xml"
+        "merged": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_fade_in.xml",
+        "source": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_fade_in.xml"
     },
     {
-        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_shrink_fade_out_from_bottom.xml",
-        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_shrink_fade_out_from_bottom.xml"
+        "merged": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_fade_out.xml",
+        "source": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_fade_out.xml"
     },
     {
-        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_fade_in.xml",
-        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_fade_in.xml"
+        "merged": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_shrink_fade_out_from_bottom.xml",
+        "source": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_shrink_fade_out_from_bottom.xml"
     },
     {
-        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_popup_enter.xml",
-        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_popup_enter.xml"
+        "merged": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_slide_out_bottom.xml",
+        "source": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_slide_out_bottom.xml"
     },
     {
-        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_slide_out_top.xml",
-        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_slide_out_top.xml"
+        "merged": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_slide_in_bottom.xml",
+        "source": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_slide_in_bottom.xml"
     },
     {
-        "merged": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_slide_out_bottom.xml",
-        "source": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_slide_out_bottom.xml"
+        "merged": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\abc_slide_in_top.xml",
+        "source": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\anim\\abc_slide_in_top.xml"
     }
 ]

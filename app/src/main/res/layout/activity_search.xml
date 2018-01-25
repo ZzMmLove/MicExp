@@ -80,6 +80,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <TextView
+            android:id="@+id/tv_null"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="gone"
+            android:textSize="20sp"
+            android:textColor="@color/red"
+            android:text="暂无相关内容..."/>
+
         <cn.gdgst.palmtest.search.KeywordsFlow
             android:id="@+id/keywordsflow"
             android:layout_width="match_parent"

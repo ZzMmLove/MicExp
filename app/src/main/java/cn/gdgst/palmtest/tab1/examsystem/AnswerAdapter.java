@@ -7,8 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import cn.gdgst.entity.ExamTopic;
 import cn.gdgst.palmtest.R;
+import cn.gdgst.palmtest.bean.ExamTopic;
 
 /**
  * Created by Jenfee on 2016/12/30.

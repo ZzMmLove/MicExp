@@ -1,7 +1,6 @@
 package cn.gdgst.palmtest.tab1.zhuangbei;
 
 import android.app.ActionBar.LayoutParams;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -48,6 +47,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.gdgst.palmtest.utils.NetworkCheck;
+import cn.gdgst.palmtest.utils.NetworkCheckDialog;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -66,10 +67,11 @@ public class ZhuangBeiList extends AppCompatActivity implements OnDismissListene
 	private ListView lv1;
 	private MyAdapter myadapter;
 	private int idx;
-	private List<PX_Cate_Entity> PX_Cate_List;
+	/**存放实验装备分类的集合*/
+	private List<PX_Cate_Entity> pX_Cate_List;
 
 	private int desctype = 0;
-	private String wkid = "135"; // 专辑ID
+	private String wkid = "135"; // 专辑ID = 135 表示的是所有的实验装备
 	private int page = 1;
 	private Boolean isRefreshing = false;
 	//private TextView tv_title;
@@ -92,7 +94,8 @@ public class ZhuangBeiList extends AppCompatActivity implements OnDismissListene
 		ZhuangBeiList.clear();
 //		getCacheCollectdata();
 		readZhuangBeiDB();
-		getwkcateList();
+		//getwkcateList();
+		getZhuangbiecategory();
 
 	}
 
@@ -134,7 +137,8 @@ public class ZhuangBeiList extends AppCompatActivity implements OnDismissListene
 				ZhuangBeiList.clear();
 //				getExperimentList();
 				getZbList();
-				getwkcateList();
+				//getwkcateList();
+				getZhuangbiecategory();
 				adapter.notifyDataSetChanged();
 
 			}
@@ -186,19 +190,25 @@ public class ZhuangBeiList extends AppCompatActivity implements OnDismissListene
 
 	}
 
+	/**
+	 * 装备分类的条件
+	 * @param v
+     */
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
-			case R.id.ll_grade:
-				idx = 1;
-				icon1.setImageResource(R.mipmap.icon_up);
-				showPopupWindow(findViewById(R.id.ll_layout), 1);
-				break;
-			/*case R.id.iv_back:
+				case R.id.ll_grade:
+					idx = 1;
+					icon1.setImageResource(R.mipmap.icon_up);
+					NetworkCheck check = new NetworkCheck(this);
+					if (check.Network()) {
+						showPopupWindow(findViewById(R.id.ll_layout), 1);
+					}else NetworkCheckDialog.dialog(this);
+					break;
+			case R.id.iv_back:
 				this.finish();
-				break;*/
-
+				break;
 		}
 	}
 
@@ -371,24 +381,25 @@ public class ZhuangBeiList extends AppCompatActivity implements OnDismissListene
 					myadapter.notifyDataSetChanged();
 					switch (idx) {
 						case 1:
-							lv1_layout.getLayoutParams().width = 0; // 年级分类
-							// 当没有下级时直接将信息设置textview中
+							// 点击分类的不限
 							if (position == 0) {
-								wkid = "135";
+								wkid = "135";  //所有实验装备（各个分类）
 								ZhuangBeiList.clear();
 								MSListview.setAdapter(adapter);
 //								getExperimentList();
 								getZbList();
 								adapter.notifyDataSetChanged();
 							} else {
-								wkid = PX_Cate_List.get(position - 1).getId();
-								Logger.i("ckid"+wkid);
+								wkid = pX_Cate_List.get(position - 1).getId();
+								//Log.i("ZhuangBeiList", "==实体类=="+pX_Cate_List.get(position).toString()) ;
+								//Logger.i("===ckid==="+wkid);
 								ZhuangBeiList.clear();
 								MSListview.setAdapter(adapter);
 //								getExperimentList();
 								getZbList();
 								adapter.notifyDataSetChanged();
 							}
+							lv1_layout.getLayoutParams().width = 0; // 年级分类
 							String name = (String) parent.getAdapter().getItem(position);
 							setHeadText(idx, name);
 							popupWindow.dismiss();
@@ -428,6 +439,11 @@ public class ZhuangBeiList extends AppCompatActivity implements OnDismissListene
 		icon1.setImageResource(R.mipmap.icon_down);
 	}
 
+	/**
+	 * 从资源文件中取得数据
+	 * @param id
+	 * @return
+     */
 	private List<String> initArrayData(int id) {
 		List<String> list = new ArrayList<String>();
 		String[] array = this.getResources().getStringArray(id);
@@ -453,14 +469,23 @@ public class ZhuangBeiList extends AppCompatActivity implements OnDismissListene
 
 	}
 
+	/**
+	 * 物理实验设备
+	 * 化学实验设备
+	 * 生物实验设备
+	 * 通用技术实验设备
+	 * 信息化装备
+	 * 常规教学仪器
+	 * 其他实验设备
+	 */
 	public void getwkcateList() {
 		new Thread() {
 			public void run() {
-				String url = "http://www.shiyan360.cn/index.php/api/article_category_sub"; // 二级分类
+				String url = "http://www.shiyan360.cn/index.php/api/article_category_sub"; // 实验装备的二级分类
 				try {
 					Map<String, String> rawParams = new HashMap<String, String>();
 					rawParams.put("id", "135");
-					PX_Cate_List = GetSortList.getpxcateList(url, rawParams);
+					pX_Cate_List = GetSortList.getpxcateList(url, rawParams);
 
 				} catch (Exception e) {
 					// TODO: handle exception
@@ -469,6 +494,30 @@ public class ZhuangBeiList extends AppCompatActivity implements OnDismissListene
 
 		}.start();
 
+	}
+
+
+	private void getZhuangbiecategory(){
+		String id = "135";    //135代表的是实验装备的分类
+		APIWrapper.getInstance().getZhuangBeiCarteray(id)
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(new Subscriber<HttpResult<List<PX_Cate_Entity>>>() {
+					@Override
+					public void onCompleted() {
+
+					}
+
+					@Override
+					public void onError(Throwable e) {
+
+					}
+
+					@Override
+					public void onNext(HttpResult<List<PX_Cate_Entity>> listHttpResult) {
+						pX_Cate_List = listHttpResult.getData();
+					}
+				});
 	}
 
 	// 缓存中获取数据
@@ -501,18 +550,22 @@ public class ZhuangBeiList extends AppCompatActivity implements OnDismissListene
 				.subscribe(new Subscriber<HttpResult<List<ZhuangBei>>>() {
 					@Override
 					public void onCompleted() {
+						//访问服务器完成后没有数据就发送一个标记为4 的消息给主线程做相应的处理
 						if (List_ZhuangBeiEntities==null||List_ZhuangBeiEntities.size()<=0){
 							mHandler.sendEmptyMessage(4);
 							Logger.i("mhander 4");
 						}else {
+							//有数据距发送一个标记为0 的消息给主线程柱视图的更新
 							mHandler.sendEmptyMessage(0);
 							Logger.i("mhander 0");
+							//把数据放到数据库中
 							saveZhuangBeiDB();
 						}
 					}
 
 					@Override
 					public void onError(Throwable e) {
+						//访问服务器错误就发送标记为1 的消息给主线程做相应的处理
 						mHandler.sendEmptyMessage(1);
 						Logger.i("mhander 1");
 					}
@@ -536,6 +589,9 @@ public class ZhuangBeiList extends AppCompatActivity implements OnDismissListene
 				});
 	}
 
+	/**
+	 * 把装备数据存放到数据库中
+	 */
 	public void saveZhuangBeiDB() {
 
 		List<ZhuangBei> list = new ArrayList<>();
@@ -554,12 +610,16 @@ public class ZhuangBeiList extends AppCompatActivity implements OnDismissListene
 
 	}
 
+	/**
+	 * 从数据库中读取装备数据
+	 */
 	public void readZhuangBeiDB() {
 		if (!db.loadAllZhuangBei().isEmpty()) {
 			List_ZhuangBeiEntities=db.loadAllZhuangBeiByOrder();
 			mHandler.sendEmptyMessage(0);
 		}
 		else{
+			//数据库中没有就从服务器中获取
 			getZbList();
 			Logger.i("read fail");
 		}

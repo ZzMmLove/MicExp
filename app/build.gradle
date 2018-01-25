@@ -1,28 +1,32 @@
-apply (plugin: 'com.android.application')
+apply(plugin: 'com.android.application')
+apply plugin: "com.mob.sdk"
 
 android {
-    compileSdkVersion (23)
-    buildToolsVersion ("23.0.3")
+    compileSdkVersion(26)
+    buildToolsVersion('26')
 
-    lintOptions ({
-        checkReleaseBuilds (false)
-        abortOnError (false)
+    lintOptions({
+        checkReleaseBuilds(false)
+        abortOnError(false)
     })
 
-    defaultConfig ({
-        applicationId ("cn.gdgst.palmtest")
-        minSdkVersion (14)
-        targetSdkVersion (23)
-        versionCode (2)
-        versionName ("2.2.1")
+    defaultConfig({
+        applicationId("cn.gdgst.palmtest")
+        minSdkVersion(21)
+        targetSdkVersion(26)
+        versionCode(2)
+        versionName("2.3.1")
+        vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
     })
 
-    buildTypes ({
-        release ({
-            minifyEnabled (false)
-            proguardFiles (getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro')
+    buildTypes({
+        release({
+            minifyEnabled(false)
+            proguardFiles(getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro')
         })
     })
+
 
     sourceSets {
         main {
@@ -30,41 +34,89 @@ android {
         }
     }
 }
+
+repositories{
+    flatDir{
+        dirs 'libs' //就是你放aar的目录地址
+    }
+}
+
+
+MobSDK {
+    appKey "11aee97e4d4ec"
+    appSecret "8be3985767da866344b8d4ffa8bd173e"
+
+    ShareSDK {
+        devInfo {
+            QQ{
+                appId "1105302165"
+                appKey "noKOGvWYAme41s72"
+                shareByAppClient true
+                enable true
+            }
+            QZone{
+                appId "1105302165"
+                appKey "noKOGvWYAme41s72"
+                enable true
+            }
+
+            Wechat {
+                appId "wxbaed711f77d41333"
+                appSecret "78923017530e268d4b242f518144fba8"
+                enable true
+            }
+            WechatMoments{
+                appId "wxbaed711f77d41333"
+                appSecret "78923017530e268d4b242f518144fba8"
+                bypassApproval false
+                enable true
+            }
+            SinaWeibo {
+                appKey "4198071360"
+                appSecret "849bf6084ca66d3e2f55f03cf5ec91b4"
+                callbackUri "http://shiyan360.cn/index.php/article/1015.html"
+                shareByAppClient false
+            }
+        }
+    }
+
+    SMSSDK {}
+}
+
+
 def retrofitVersion = '2.0.0-beta3'
-dependencies ({
+dependencies({
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':library')
-    compile project(':SMSSDK')
     compile project(':videoJjlibrary')
-    compile files('libs/universal-image-loader-1.9.3-with-sources.jar')
-    compile files('libs/org.apache.http.legacy.jar')
-    compile files('libs/ShareSDK-Core-2.7.2.jar')
-    compile files('libs/ShareSDK-Email-2.7.2.jar')
-    compile files('libs/ShareSDK-QQ-2.7.2.jar')
-    compile files('libs/ShareSDK-QZone-2.7.2.jar')
-    compile files('libs/ShareSDK-ShortMessage-2.7.2.jar')
-    compile files('libs/ShareSDK-SinaWeibo-2.7.2.jar')
-    compile files('libs/ShareSDK-Wechat-2.7.2.jar')
-    compile files('libs/ShareSDK-Wechat-Core-2.7.2.jar')
-    compile files('libs/ShareSDK-Wechat-Favorite-2.7.2.jar')
-    compile files('libs/ShareSDK-Wechat-Moments-2.7.2.jar')
     compile project(':appcompat')
     //rxjava retrofit greendao
+
     //----------------------rxjava+retrofit---------------------------------
-    compile ('io.reactivex:rxjava:1.1.6')//rxjava
-    compile ('io.reactivex:rxandroid:1.2.1')//rxandroid
-    compile ("com.squareup.retrofit2:retrofit:2.1.0")//retrofit
-    compile ('com.squareup.retrofit2:adapter-rxjava:2.1.0')//adapter-rxjava
-    compile ('com.squareup.retrofit2:converter-gson:2.1.0')//converter-gson
+    compile('io.reactivex:rxjava:+')//rxjava
+    compile('io.reactivex:rxandroid:+')//rxandroid
+    compile("com.squareup.retrofit2:retrofit:+")//retrofit
+    compile('com.squareup.retrofit2:adapter-rxjava:+')//adapter-rxjava
+    compile('com.squareup.retrofit2:converter-gson:+')//converter-gson
     //compile ("com.squareup.retrofit2:converter-gson:$retrofitVersion")//converter-gson
     //----------------------------------------------------------------------
-    compile ('com.github.orhanobut:logger:1.12')
-    compile ('com.squareup.okhttp3:okhttp:3.0.1')
-    compile ('com.squareup.okhttp3:logging-interceptor:3.0.1')
-    compile ('org.greenrobot:greendao-encryption:2.2.0')
-    compile ('com.bigkoo:svprogresshud:1.0.2')
-    compile ('com.umeng.analytics:analytics:latest.integration')
-    compile ('com.github.bumptech.glide:glide:3.7.0')
-    testCompile ('junit:junit:4.12')
+    compile('com.github.orhanobut:logger:1.12')
+    compile('com.squareup.okhttp3:okhttp:3.2.0')
+    compile('com.squareup.okhttp3:logging-interceptor:3.2.0')
+    //compile 'com.squareup.okhttp3:okhttp-urlconnection:3.0.0-RC1'
+    compile('org.greenrobot:greendao-encryption:2.2.0')
+    compile('com.bigkoo:svprogresshud:1.0.2')
+    compile('com.umeng.analytics:analytics:latest.integration')
+    compile('com.github.bumptech.glide:glide:3.7.0')
+    testCompile('junit:junit:4.12')
+    androidTestCompile 'junit:junit:4.12'
     compile files('libs/universal-image-loader-1.9.4-with-sources.jar')
+    compile('com.android.support:recyclerview-v7:25.0.0') {
+        exclude group: 'com.android.support', module: 'support-v4'
+    }
+    //compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.8.0@aar'
+    compile('com.github.arcadefire:nice-spinner:1.3.1') {
+        exclude group: 'com.android.support', module: 'appcompat-v7'
+    }
 })

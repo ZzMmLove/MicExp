@@ -13,7 +13,8 @@ import android.widget.TextView;
 
 import cn.gdgst.palmtest.R;
 
-@SuppressLint({ "ResourceAsColor", "InflateParams" }) public class MyAdapter extends BaseAdapter {
+@SuppressLint({ "ResourceAsColor", "InflateParams" })
+public class MyAdapter extends BaseAdapter {
 	private List<String> l;
 	private Context context;
 	private int selectItem = -1;

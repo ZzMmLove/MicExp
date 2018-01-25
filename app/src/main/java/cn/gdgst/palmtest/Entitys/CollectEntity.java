@@ -66,5 +66,16 @@ public class CollectEntity {
 		this.view_count = view_count;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "CollectEntity{" +
+				"id='" + id + '\'' +
+				", video_id='" + video_id + '\'' +
+				", name='" + name + '\'' +
+				", img_url='" + img_url + '\'' +
+				", img_url_s='" + img_url_s + '\'' +
+				", video_url='" + video_url + '\'' +
+				", view_count='" + view_count + '\'' +
+				'}';
+	}
 }

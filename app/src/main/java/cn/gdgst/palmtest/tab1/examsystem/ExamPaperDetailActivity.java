@@ -14,8 +14,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
@@ -36,15 +36,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import cn.gdgst.entity.ExamTopic;
 import cn.gdgst.palmtest.R;
 import cn.gdgst.palmtest.API.APIWrapper;
 import cn.gdgst.palmtest.base.AppConstant;
+import cn.gdgst.palmtest.bean.ExamTopic;
 import cn.gdgst.palmtest.bean.HttpResult;
 import cn.gdgst.palmtest.bean.TExamTopic;
+import cn.gdgst.palmtest.utils.ToastUtil;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -62,7 +64,7 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
     private ImageView imageView_Shadow;
     private MessageHandler messageHandler;
     private int int_ExamPaperId;
-    private String ExamPaperTitle;
+    private String examPaperTitle;
     private ArrayList<ExamTopic> ArrayList_ExamTopic = new ArrayList<>();
     private ArrayList<TExamTopic> ArrayList_TExamTopic = new ArrayList<>();
     private ArrayList<TExamTopic> ArrayList_JExamTopic = new ArrayList<>();
@@ -84,11 +86,13 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
     /**
      * 存放解答题答案的列表
      */
-    private List<String> ListJAnswer = new ArrayList<String>();
+    private ArrayList<String> ListJAnswer = new ArrayList<String>();
     /**
      * 选择题的总数
      */
     private int xcontentCount;
+    HashMap<Integer, List> hashmap_selected_resultT = new HashMap<Integer, List>();
+    HashMap<Integer, String> hashmap_selected_resultS = new HashMap<Integer, String>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,7 +105,7 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
         showDialog("正在加载...");
         Intent intent = getIntent();
         int_ExamPaperId = intent.getIntExtra("exampaperItemId",0);
-        ExamPaperTitle = intent.getStringExtra("exampaperItemTitle");
+        examPaperTitle = intent.getStringExtra("exampaperItemTitle");
         //开启线程从服务器获取试卷内容
         new PostThread().start();
         messageHandler = new MessageHandler();
@@ -139,32 +143,53 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
                 } else {
                     readFragment = hashMap_ReadFragment.get(i-1);
 
-                    //获得选择题的答案列表
-                    if (readFragment.getSelected_result() != null) {
-                        hashmap_selected_result.put(i, readFragment.getSelected_result());
-                    }
-
-                    //获得填空题的答案HashMap列表,并转换成ArrayList列表中
-                    HashMap<Integer, String> hashMapResult = new HashMap<Integer, String>();
-                    hashMapResult = readFragment.getTAnswerList();
-                    if (!hashMapResult.isEmpty()) {
-                        for (int n = 1; n <= hashMapResult.size(); n ++) {
-                            ListTAnswer.add(hashMapResult.get(n));
+                    if (readFragment.getCurrentFragmentState() == 1) {
+                        //获得选择题的答案列表
+                        if (readFragment.getSelected_result() != null) {
+                            Log.d("ExamPaperDetailActivity", "打印选择题:"+readFragment.getSelected_result());
+                            hashmap_selected_result.put(i, readFragment.getSelected_result());
                         }
-                        if (!ListTAnswer.isEmpty()) {
-                            //把每一道填空题的答案放入到所有的填空题列表中
-                            ListALLTAnswer.add(ListTAnswer);
-                        }
-                    }
+                    } else if (readFragment.getCurrentFragmentState() == 2) {
+                        //获得填空题的答案HashMap列表,并转换成ArrayList列表中
+                        HashMap<Integer, String> hashMapResult;
+                        hashMapResult = readFragment.getTAnswerList();
+                        if (!hashMapResult.isEmpty()) {
+                            ListTAnswer.clear();
+                            ListALLTAnswer.clear();
+                            for (int n = 1; n <= hashMapResult.size(); n ++) {
+                                ListTAnswer.add(hashMapResult.get(n));
+                                Log.d("ExamPaperDetailActivity", "打印填空题："+hashMapResult.get(n));
+                            }
+                            if (!ListTAnswer.isEmpty()) {
+                                //把每一道填空题的答案放入到所有的填空题列表中
+                                Iterator i1 = ListTAnswer.iterator();
+                                StringBuilder sb = new StringBuilder();
+                                    while (i1.hasNext()) {
+                                        sb.append(i1.next().toString());
+                                        sb.append(",");
+                                    }
+                                Log.d("ExamPaperDetailActivity", "字符串储存输出:"+sb);
+                                hashmap_selected_resultS.put(i, sb.toString());
+                                hashmap_selected_resultT.put(i, ListTAnswer);
 
-                    //获得解答题的答案列表
-                    String stringJ;
-                    stringJ = readFragment.getJAnswer();
-                    if (stringJ != null) {
-                        ListJAnswer.add(stringJ);
+                                for (int a:hashmap_selected_resultS.keySet()) {
+                                    Log.d("ExamPaperDetailActivity", "序列化成字符串输出->"+a+"序列化成字符串输出->"+hashmap_selected_resultS.get(a));
+                                }
+
+                                ListALLTAnswer.add(ListTAnswer);
+                            }
+                        }
+                    } else if (readFragment.getCurrentFragmentState() == 3) {
+                        //获得解答题的答案列表
+                        String stringJ;
+                        stringJ = readFragment.getJAnswer();
+                        if (stringJ != null) {
+                            ListJAnswer.clear();
+                            ListJAnswer.add(stringJ);
+                        }
                     }
                 }
-                if (i == (ArrayList_ExamTopic.size() - 1)) {
+                if (i == ((ArrayList_ExamTopic.size() + ArrayList_TExamTopic.size() + ArrayList_JExamTopic.size()) - 1)) {
                     button_Submit.setVisibility(View.VISIBLE);
                 }
             }
@@ -199,14 +224,6 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
                 readerViewPager.setCurrentItem(currentItemId1, true);
                 break;
             case R.id.activity_exampaperdetail_button_submit:
-                SharedPreferences sharedPreferences = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
-                String school = sharedPreferences.getString("school", null);
-                String banji = sharedPreferences.getString("banji", null);
-                String teacher = sharedPreferences.getString("teacher", null);
-                /*if (school == null || banji == null || teacher == null) {
-                    Toast.makeText(ExamPaperDetailActivity.this, "请完善个人信息", Toast.LENGTH_SHORT).show();
-                    return;
-                }*/
                 int FragmentCount = ArrayList_ExamTopic.size() + ArrayList_TExamTopic.size() + ArrayList_JExamTopic.size();
                 ReadFragment readFragment_end = hashMap_ReadFragment.get(FragmentCount - 1);
                 hashmap_selected_result.put(hashMap_ReadFragment.size(),readFragment_end.getSelected_result());
@@ -221,27 +238,48 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
                 for (int x = 1; x <= hashMap_ReadFragment.size(); x ++){
                     hashmap_selected_result.put(x, hashMap_ReadFragment1.get(x-1).getSelected_result());
                 }
-
-                //打印所有选择题的答案
-                for (int y = 1; y <= hashmap_selected_result.size(); y ++) {
-                    String test = hashmap_selected_result.get(y);
-                    Log.v("ExamPaperDetailActivity", "打印所有选择题的答案:"+String.valueOf(y)+test);
-                }
-
-                //打印所有填空题的答案
-                for (int f = 0; f < ListALLTAnswer.size(); f ++) {
-                    List<String> printTest = ListALLTAnswer.get(f);
-                    for (int g = 0; g < printTest.size(); g ++) {
-                        Log.d("ExamPaperDetailActivity", "第"+f+"道填空题的答案:"+printTest.get(g));
+                //打印测试
+                printlTest();
+                List<EditText> listEdits = new ArrayList<>();
+                listEdits = readFragment_end.getListEditText();
+                for (int i = 0 ; i < listEdits.size(); i ++){
+                    if (TextUtils.isEmpty(listEdits.get(i).getText().toString())){
+                        ToastUtil.show("您还没有作答的题,请答完再交卷...");
+                        return;
                     }
                 }
 
-                //打印所有解答题的答案
-                for (int h = 0; h < ListJAnswer.size(); h ++) {
-                    Log.d("ExamPaperDetailActivity", "第几道解答题的答案:"+ListJAnswer.get(h));
-                }
                 showInputDialog();
                 break;
+        }
+    }
+
+    private void printlTest(){
+        //打印所有选择题的答案
+        for (int y = 1; y <= hashmap_selected_result.size(); y ++) {
+            String test = hashmap_selected_result.get(y);
+            Log.v("ExamPaperDetailActivity", "打印所有选择题的答案:"+String.valueOf(y)+test);
+        }
+
+        for (int a:hashmap_selected_resultS.keySet()) {
+            Log.d("ExamPaperDetailActivity", "点击之后序列化成字符串输出->"+a+"点击之后序列化成字符串输出->"+hashmap_selected_resultS.get(a));
+        }
+
+        Log.d("ExamPaperDetailActivity", "所有填空题的总数="+ListALLTAnswer.size());
+        //打印所有填空题的答案
+        for (int f = 0; f < ListALLTAnswer.size(); f ++) {
+            List<String> printTest = ListALLTAnswer.get(f);
+
+
+                  /*  for (int g = 0; g < printTest.size(); g ++) {
+                        Log.d("ExamPaperDetailActivity", "第"+f+"道填空题的答案:"+printTest.get(g));
+
+                    }*/
+        }
+
+        //打印所有解答题的答案
+        for (int h = 0; h < ListJAnswer.size(); h ++) {
+            Log.d("ExamPaperDetailActivity", "第"+h+"道解答题的答案:"+ListJAnswer.get(h));
         }
     }
 
@@ -264,9 +302,9 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
                             return;
                         }
                         JSONObject jsonObjectXExamTopic = jsonObjectExamPaper.optJSONObject("xcontent");
-                        JSONObject jSONObjectTExamTopic = jsonObjectExamPaper.optJSONObject("tcontent");
-                        JSONObject jSONObjectJExamTopic = jsonObjectExamPaper.optJSONObject("jcontent");
-                        if (jsonObjectXExamTopic != null) {
+                            JSONObject jSONObjectTExamTopic = jsonObjectExamPaper.optJSONObject("tcontent");
+                            JSONObject jSONObjectJExamTopic = jsonObjectExamPaper.optJSONObject("jcontent");
+                            if (jsonObjectXExamTopic != null) {
                             /**
                              * 此部分代码为手动解析选择题json数据
                              * 循环创建10道题的对象,并把每个对象加入到ArrayList_ExamTopic
@@ -348,6 +386,8 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
                                 JSONObject jSONObject_TNumber = jSONObjectTExamTopic.getJSONObject(String.valueOf(a));
                                 tExamTopic.setTitle(jSONObject_TNumber.getString("title"));
                                 tExamTopic.setImg(jSONObject_TNumber.getString("img"));
+                                Log.e("TAG_img", "====="+jSONObject_TNumber.getString("img"));
+
                                 tExamTopic.setRight(jSONObject_TNumber.getString("right"));
                                 tExamTopic.setJiexi(jSONObject_TNumber.getString("jiexi"));
                                 ArrayList_TExamTopic.add(tExamTopic);
@@ -387,10 +427,25 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
                     if (ArrayList_ExamTopic != null) {
                         intent_ExamPaperResultActivity.putExtra("examTopicList", ArrayList_ExamTopic);
                     }
+                    if (ArrayList_TExamTopic != null){
+                        intent_ExamPaperResultActivity.putExtra("TexamTopicList", ArrayList_TExamTopic);
+                    }
+                    if (ArrayList_JExamTopic != null){
+                        intent_ExamPaperResultActivity.putExtra("JexamTopicList",ArrayList_JExamTopic );
+                    }
                     if (hashmap_selected_result != null) {
                         intent_ExamPaperResultActivity.putExtra("hashmap_selected_result", hashmap_selected_result);
                     }
+                    if (hashmap_selected_resultS != null){
+
+                        intent_ExamPaperResultActivity.putExtra("hashmap_selected_resultS", hashmap_selected_resultS);
+                    }
+                    if (ListJAnswer != null){
+                        intent_ExamPaperResultActivity.putExtra("ListJAnswer", ListJAnswer);
+
+                    }
                     startActivity(intent_ExamPaperResultActivity);
+                    finish();
                     break;
             }
         }
@@ -404,7 +459,7 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
             String result;
             HttpURLConnection connection = null;
             try {
-                URL url = new URL("http://www.shiyan360.cn/index.php/api/examinPaperDetail?id="+int_ExamPaperId);
+                URL url = new URL("http://shiyan360.cn/index.php/api/examinPaperDetail?id="+int_ExamPaperId);
                 connection = (HttpURLConnection) url.openConnection();
                 // 设置请求方式
                 connection.setRequestMethod("POST");
@@ -469,7 +524,7 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
 
     private void showInputDialog() {
         AlertDialog.Builder inputDialog = new AlertDialog.Builder(this);
-        inputDialog.setTitle("提交信息").setMessage("你确定要提交吗?");
+        inputDialog.setTitle("提交信息").setMessage("您确定全部作答完成吗？");
         inputDialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -491,11 +546,11 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
                 SharedPreferences sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
                 String sid = sp.getString("id", null);
                 if (sid == null || sid.equals("")) {
-                    Toast.makeText(ExamPaperDetailActivity.this, "你不是合法的登录", Toast.LENGTH_SHORT).show();
+                    ToastUtil.show("您的资料没有完善..,");
                     return;
                 }
                 int sidValid = Integer.parseInt(sid);
-                submitPaperJsonWithRetrofit(bean2json(hashmap_selected_result, ListALLTAnswer, ListJAnswer, int_ExamPaperId, sidValid, ExamPaperTitle,
+                submitPaperJsonWithRetrofit(bean2json(hashmap_selected_result, ListALLTAnswer, hashmap_selected_resultS, ListJAnswer, int_ExamPaperId, sidValid, examPaperTitle,
                         String.valueOf(mHour), String.valueOf(mMinute)));
             }
         }).show();
@@ -506,18 +561,16 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
      * 手动把
      * cp_id 试卷的序号,
      * sid 用户的ID
-     * student 学生的姓名,
+     * title 学生的姓名,
      * number 学生的学号,
-     * content 学生所填的试卷的答案,
      * hour 做试卷时所用的小时,
      * minute 做试卷所用的分钟
-     * 转换成JSON数据(wrote by JenfeeMa)
      * @param map_select 装选择题答案的HashMap
      * @param ListALLTAnswer 装填空题答案的List
      * @param ListJAnswer 装解答题答案的List
      */
-    private String bean2json(Map<Integer, String> map_select, List<List> ListALLTAnswer, List<String> ListJAnswer, int cp_id, int sid, String title, String hour, String minute) {
-        xcontentCount = map_select.size() - ListALLTAnswer.size() - ListJAnswer.size();
+    private String bean2json(Map<Integer, String> map_select, List<List> ListALLTAnswer, HashMap<Integer, String> hashmapString, List<String> ListJAnswer, int cp_id, int sid, String title, String hour, String minute) {
+        xcontentCount = map_select.size() - hashmapString.size() - ListJAnswer.size();
         /**
          * 创建试卷Json对象
          */
@@ -543,11 +596,34 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
                 jsonObjectXTopic.put(String.valueOf(i), jsonObject_select);
             }
             jsonObject_Paper.put("xcontent", jsonObjectXTopic);
+            Log.d("ExamPaperDetailActivity", "准备发送到服务器的选择题的JSON"+jsonObjectXTopic.toString());
 
             /**
              * 把经过解析之后的填空题答案装入jsonObject_Paper中
              */
             JSONObject jsonObjectTTopic = new JSONObject();//tcontent属性的值（为一个对象）
+            int topicOder = 0;
+            for (int order:hashmapString.keySet()) {
+                topicOder = topicOder + 1;
+                JSONObject JSONObjectUser = new JSONObject();//第几道题属性的值（为一个对象）
+                JSONArray JSONArrayPerBracket = new JSONArray();//user属性的值（为一个数组）
+                String a = hashmapString.get(order);
+                Log.d("ExamPaperDetailActivity", "Json解析输出:"+a);
+                String splitString[] = null;
+                splitString = a.split(",");
+                for (int k = 0; k < splitString.length; k ++) {
+                    JSONArrayPerBracket.put(k, splitString[k]);
+                }
+                JSONObjectUser.put("user", JSONArrayPerBracket);
+                jsonObjectTTopic.put(String.valueOf(topicOder), JSONObjectUser);
+            }
+            jsonObject_Paper.put("tcontent", jsonObjectTTopic);
+            Log.d("ExamPaperDetailActivity", "准备发送到服务器的填空题的JSON"+jsonObjectTTopic.toString());
+
+            /**
+             * 把经过解析之后的填空题答案装入jsonObject_Paper中
+             */
+            /*JSONObject jsonObjectTTopic = new JSONObject();//tcontent属性的值（为一个对象）
             for (int j = 1; j <= ListALLTAnswer.size(); j ++) {
                 JSONObject JSONObjectUser = new JSONObject();//第几道题属性的值（为一个对象）
                 JSONArray JSONArrayPerBracket = new JSONArray();//user属性的值（为一个数组）
@@ -559,7 +635,7 @@ public class ExamPaperDetailActivity extends AppCompatActivity implements View.O
                 jsonObjectTTopic.put(String.valueOf(j), JSONObjectUser);
             }
             jsonObject_Paper.put("tcontent", jsonObjectTTopic);
-            Log.d("ExamPaperDetailActivity", "准备发送到服务器的填空题的JSON"+jsonObjectTTopic.toString());
+            Log.d("ExamPaperDetailActivity", "准备发送到服务器的填空题的JSON"+jsonObjectTTopic.toString());*/
 
             /**
              * 把解答题答案装入jsonObjectJTopic中

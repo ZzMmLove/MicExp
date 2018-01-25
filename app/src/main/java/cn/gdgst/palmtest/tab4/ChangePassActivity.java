@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -18,14 +19,21 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+
+import cn.gdgst.palmtest.API.APIWrapper;
 import cn.gdgst.palmtest.R;
 import cn.gdgst.palmtest.base.AppConstant;
+import cn.gdgst.palmtest.bean.HttpResult;
 import cn.gdgst.palmtest.utils.HttpUtil;
 
 import com.orhanobut.logger.Logger;
 import cn.gdgst.palmtest.utils.Encrypt;
 import cn.gdgst.palmtest.utils.NetworkCheck;
 import cn.gdgst.palmtest.utils.NetworkCheckDialog;
+import cn.gdgst.palmtest.utils.ToastUtil;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,13 +43,13 @@ public class ChangePassActivity extends Activity implements OnClickListener {
 
 	private Button btnSub;
 	private EditText oldpassword_edit, newpassword_edit;
-	private String old_pass, accessToken;
+	private String accessToken;
 	private String responseMsg = "";
 
 	/**
 	 * 初始化sharedPreferences
 	 */
-	private SharedPreferences sp = null;
+	private SharedPreferences sharedPreferencesUserInfo = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,18 +70,14 @@ public class ChangePassActivity extends Activity implements OnClickListener {
 		register_back.setOnClickListener(this);
 		btnSub.setOnClickListener(this);
 
-		sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
-		old_pass = sp.getString("password", "");
-		accessToken = sp.getString("accessToken", "");
-		Logger.i( "old_pass:" + old_pass);
+		sharedPreferencesUserInfo = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
+		accessToken = sharedPreferencesUserInfo.getString("accessToken", "");
 		Logger.i( "accessToken:" + accessToken);
 
 	}
 
 	@Override
 	public void onClick(View v) {
-		String oldpassword = Encrypt.md5(oldpassword_edit.getText().toString());
-		String newpassword = Encrypt.md5(newpassword_edit.getText().toString());
 
 		switch (v.getId()) {
 			case R.id.iv_back:
@@ -81,17 +85,54 @@ public class ChangePassActivity extends Activity implements OnClickListener {
 				break;
 
 			case R.id.new_btn_submit:
-				if (!TextUtils.isEmpty(oldpassword) && !TextUtils.isEmpty(newpassword)) {
+				String oldPass = oldpassword_edit.getText().toString().trim();
+				String newPass = newpassword_edit.getText().toString().trim();
+				String oldpassword = Encrypt.md5(oldPass);
+				String newpassword = Encrypt.md5(newPass);
+				Log.i("ChangePassActivity", "====oldpassword==="+oldpassword);
+				Log.i("ChangePassActivity", "====password==="+oldPass);
+				if (TextUtils.isEmpty(oldPass) || "".equals(oldPass)) {
+					oldpassword_edit.setError("旧密码不能为空");
+					return;
+				}
+				if(TextUtils.isEmpty(newPass) || "".equals(newPass)){
+					newpassword_edit.setError("新密码不能为空");
+					return;
+				}
+				if (!oldpassword.equals(sharedPreferencesUserInfo.getString("passwordMd5",""))){
+					ToastUtil.show("旧密码不正确");
+					return;
+				}
 					// SMSSDK.submitVerificationCode("86", phoneNums,
 					// code_edit.getText().toString());//将验证码提交至SMSSDK服务器
-					Thread RegThread = new Thread(new RegisterThread());
-					RegThread.start();
+					//Thread RegThread = new Thread(new RegisterThread());
+					//RegThread.start();
+				APIWrapper.getInstance().getChangePass(accessToken, oldpassword, newpassword)
+						.observeOn(AndroidSchedulers.mainThread())
+						.subscribeOn(Schedulers.io())
+						.subscribe(new Subscriber<HttpResult>() {
+							@Override
+							public void onCompleted() {
+							}
 
-				}  else {
-					Toast.makeText(this, "密码不能为空", Toast.LENGTH_SHORT).show();
-				}
+							@Override
+							public void onError(Throwable e) {
+							}
+
+							@Override
+							public void onNext(HttpResult httpResult) {
+								Log.i("ChangePassActivity", "===success==="+httpResult.getSuccess());
+
+								if (httpResult.getError_code() == 0){
+									Intent intent = new Intent();
+									intent.setClass(ChangePassActivity.this, LoginActivity.class);
+									startActivity(intent);
+									finish();
+								}
+							}
+
+						});
 				break;
-
 			default:
 				break;
 		}
@@ -131,7 +172,7 @@ public class ChangePassActivity extends Activity implements OnClickListener {
 	private boolean registerServer(String oldpassword, String newpassword) {
 		boolean loginValidate = false;
 		// 使用apache HTTP客户端实现
-		String urlStr = "http://www.shiyan360.cn/index.php/api/change_pass";
+		String urlStr = "http://shiyan360.cn/index.php/api/change_pass";
 		// String urlStr = "http://testphp7.114dg.cn/index.php/api/send_code";
 
 		oldpassword = Encrypt.md5(oldpassword_edit.getText().toString()).trim();
@@ -181,9 +222,7 @@ public class ChangePassActivity extends Activity implements OnClickListener {
 		return loginValidate;
 	}
 
-	/**
-	 *
-	 */
+
 	Handler handler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
@@ -195,14 +234,12 @@ public class ChangePassActivity extends Activity implements OnClickListener {
 					Toast.makeText(ChangePassActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
 					Logger.v(responseMsg+ "修改成功");
 
-					sp= getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
-					Editor editor = sp.edit();// 获取编辑器
+					sharedPreferencesUserInfo = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
+					Editor editor = sharedPreferencesUserInfo.edit();// 获取编辑器
 					editor.putString("password", "");
 					// 设置自动登陆为否
 					editor.putBoolean("autoLogin", false);
 					editor.commit();// 提交修改
-
-
 					break;
 				case 1:
 					Toast.makeText(ChangePassActivity.this, "修改失败，请重新尝试", Toast.LENGTH_SHORT).show();

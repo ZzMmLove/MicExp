@@ -102,9 +102,9 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
     /**
      * 初始化sharedPreferences
      */
-    private SharedPreferences sp = null;
-    private String sexx = null;
-    private String Identity = null;
+    //private SharedPreferences sp;
+    private String sexx;
+    private String Identity;
     private String avatar_file_name;
     private boolean isExceptionForSDCard = false;
     private SharedPreferences sharedPreferences_UserInfo;
@@ -156,7 +156,7 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
         relativeLayout_teacher = (RelativeLayout) findViewById(R.id.activity_user_info_rl_teacher);
         relativeLayout_teacher.setOnClickListener(this);
 
-        //获取头像的路径
+        //获取头像的路径（服务器上的路径如：http://www.shiyan360.cn/Public/Uploads/avatar/temp-855.jpg）
         String avatar = sharedPreferences_UserInfo.getString("avatar", null);
         //获取昵称
         String nickname = sharedPreferences_UserInfo.getString("nickname", null);
@@ -176,15 +176,22 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
         //获取用户的手机号码
         String phoneNumber = sharedPreferences_UserInfo.getString("phoneNumber" ,null);
 
+
         if (avatar != null) {
-            avatar_file_name = avatar.substring(avatar.lastIndexOf("/")+1);
+            avatar_file_name = avatar.substring(avatar.lastIndexOf("/")+1);  //截取文件名，包括后缀名
+
+            Log.i("UserInfoActivity", "头像文件名"+ avatar_file_name);
+
             File file = isExistsNativeFile(avatar_file_name);
             //File file = new File(getExternalFilesDir(null)+"/syzst_avatar.png");
+            //如果文件存在
             if (file.exists()) {
                 Log.v("UserInfoActivity", "打印本地头像的文件绝对路径:"+file.getAbsolutePath());
                 //如果本地的头像文件名和服务器的头像文件名相同则显示
                 if (file.getName().equals(avatar_file_name)) {
                     Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+
+                    Log.i("UserinfoActivity", "===本地文件的绝对路径==="+file.getAbsolutePath());
                     iv_avatar.setImageBitmap(bitmap);
                 }else {
                     //否则从服务器中下载新的头像名,并显示
@@ -193,7 +200,7 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
             }else {
                 downloadAvatarFromNet(avatar);
             }
-        }
+        }else downloadAvatarFromNet(avatar);
 
         //---------------------------------------------
         if (nickname != null) {
@@ -244,8 +251,8 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
             tv_phonenum.setText("未填写");
         }
         Log.d("UserInfoActivity", "打印用户信息参数:头像"+avatar+"昵称"+nickname+"姓名"+name+"身份"+type+"班级"+banji+"老师"+teacher+"学校"+school);
-        sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
-        accessToken = sp.getString("accessToken", "");
+        sharedPreferences_UserInfo = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
+        accessToken = sharedPreferences_UserInfo.getString("accessToken", "");
 
 		/* 将头像转为圆形 *//*
         Resources res = getResources();
@@ -262,8 +269,8 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) || !Environment.isExternalStorageRemovable()) {
             File file_ExternalStorageDir = Environment.getExternalStorageDirectory();
             File file_PalmTest = new File(file_ExternalStorageDir.toString() + "/PalmTest");
-            boolean is_mkdir = file_PalmTest.mkdir();
-            boolean is_Directory = file_PalmTest.isDirectory();
+            //boolean is_mkdir = file_PalmTest.mkdir();//用这个抽象路径创建一个目录
+            //boolean is_Directory = file_PalmTest.isDirectory();
             file_PalmTest.setReadable(true);
             file_PalmTest.setWritable(true);
             File file_syzst_avatar = new File(file_PalmTest.getAbsolutePath()+"/"+avatar_name);
@@ -294,19 +301,26 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
                     @Override
                     public void onNext(ResponseBody responseBody) {
                         if (writeResponseBodyToDisk(responseBody)) {
-                            SharedPreferences sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
-                            String img = sp.getString("avatar", null);
+                            //SharedPreferences sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
+                            //String img = sp.getString("avatar", null);
                             Bitmap bitmap = null;
-                            if (img != null) {
-                                bitmap = BitmapFactory.decodeFile(new File(img).getAbsolutePath());
+                            InputStream is = responseBody.byteStream();
+
+                            if (is != null) {
+                                 bitmap = BitmapFactory.decodeStream(is);
                             }
                             //Bitmap bitmap = BitmapFactory.decodeStream(responseBody.byteStream());
                             if (bitmap != null) {
                                 iv_avatar.setImageBitmap(bitmap);
                             }
-                            Log.d("UserInfoActivity", "ssssssssssssssssssssssssssssssssss");
+
                             if (progressDialog.isShowing()) {
                                 progressDialog.dismiss();
+                            }
+                            if (is != null) try {
+                                is.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
                         }
 
@@ -317,6 +331,7 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
     private boolean writeResponseBodyToDisk(ResponseBody body) {
         try {
             File newAvatarFile = new File(Environment.getExternalStorageDirectory()+"/PalmTest/"+avatar_file_name);
+            //文件目录是否存在
             if (newAvatarFile.exists()) {
                 boolean isDelete = newAvatarFile.delete();
                 if (!isDelete) {
@@ -361,11 +376,19 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_loginout:
-                Editor editor = sp.edit();// 获取编辑器
+            case R.id.btn_loginout:  //退出登录，退出后要把sp中的个人信息删除掉
+                Editor editor = sharedPreferences_UserInfo.edit();// 获取编辑器
                 editor.remove("id");
                 editor.remove("phoneNumber");
                 editor.remove("password");
+                editor.remove("avatar");
+                editor.remove("nickname");
+                editor.remove("name");
+                editor.remove("sex");
+                editor.remove("type");//用户身份
+                editor.remove("school");
+                editor.remove("banji");
+                editor.remove("teacher");
                 editor.remove("accessToken");
                 // 设置退出之后不自动登陆
                 editor.putBoolean("autoLogin", false);
@@ -384,8 +407,9 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
             case R.id.rl_avatar:
                 showDialog();
                 break;
+            //修改身份，在4月20号修改不能修改身份
             case R.id.rl_identity:
-                showIdDialog();
+                //showIdDialog();
                 break;
             /**
              * 修改用户名
@@ -464,7 +488,7 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
                 dialog.dismiss();
                 break;
             case R.id.openPhones:
-                openPhones();
+                openPhotos();
                 dialog.dismiss();
                 break;
             case R.id.cancel:
@@ -476,7 +500,7 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
     }
 
     // 打开相册
-    private void openPhones() {
+    private void openPhotos() {
         Intent intentFromGallery = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intentFromGallery.setType("image/*"); // 设置文件类型
         intentFromGallery.setAction(Intent.ACTION_GET_CONTENT);
@@ -514,13 +538,11 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
                     break;
                 case RESULT_REQUEST_CODE:// 裁剪完成,删除照相机缓存的图片
                     final File tempFile = new File(IMGURL + IMAGE_FILE_NAME_TEMP);
-                    if (tempFile.exists()) {
+                    if (tempFile.exists()) {    //如果有这个头像文件就删除
                         new Thread() {
                             public void run() {
                                 tempFile.delete();
                             }
-
-                            ;
                         }.start();
                     }
                     // 保存截取后的图片
@@ -531,17 +553,22 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
                             iv_avatar.setImageBitmap(bitmap_photo);
                             Logger.i("avatar"+ IMGURL + IMAGE_FILE_NAME);
                             try {
+                                //缓存到本地的图片的路径和名称
                                 File f = new File(IMGURL + IMAGE_FILE_NAME);
+                                //文件不存在就创建
                                 if (!f.exists()) {
                                     f.createNewFile();
                                 }
+                                //把文件缓存到本地中去
                                 FileOutputStream fOut = new FileOutputStream(f);
                                 bitmap_photo.compress(Bitmap.CompressFormat.PNG, 100, fOut);
                                 fOut.flush();
                                 fOut.close();
-                                SharedPreferences sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, MODE_PRIVATE);
-                                String id = sp.getString("id", null);
+                               // SharedPreferences sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, MODE_PRIVATE);
+                                //根据用户的id来获取头像
+                                String id = sharedPreferences_UserInfo.getString("id", null);
                                 Log.d("UserInfoActivity", "修改头像时要上传到服务器的id参数输出:"+id);
+                                //同时把文件头像上传到服务器上
                                 uploadAvatarToNet(f, id);
                             } catch (IOException e) {
                                 isExceptionForSDCard = true;
@@ -581,7 +608,7 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
      */
     public static boolean hasSdcard() {
         String state = Environment.getExternalStorageState();
-        if (state.equals(Environment.MEDIA_MOUNTED)) {
+            if (state.equals(Environment.MEDIA_MOUNTED)) {
             // 有存储的SDCard
             return true;
         } else {
@@ -589,6 +616,9 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
         }
     }
 
+    /**
+     * 选择性别的对话框
+     */
     private void showSexDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(UserInfoActivity.this);
         builder.setTitle("请选择性别");
@@ -626,6 +656,9 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
         builder.show();
     }
 
+    /**
+     * 修改身份的对话框
+     */
     private void showIdDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(UserInfoActivity.this);
         builder.setTitle("请选择身份");
@@ -734,6 +767,8 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
                     e.printStackTrace();
                 }
 
+                progressDialog.dismiss();
+
             }
 
             @Override
@@ -746,12 +781,12 @@ public class UserInfoActivity extends AppCompatActivity implements OnClickListen
     @Override
     protected void onRestart() {
         super.onRestart();
-        SharedPreferences sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, MODE_PRIVATE);
-        String nickname = sp.getString("nickname", null);
-        String name = sp.getString("name", null);
-        String school = sp.getString("school", null);
-        String banji = sp.getString("banji", null);
-        String teacher = sp.getString("teacher", null);
+        //SharedPreferences sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, MODE_PRIVATE);
+        String nickname = sharedPreferences_UserInfo.getString("nickname", null);
+        String name = sharedPreferences_UserInfo.getString("name", null);
+        String school = sharedPreferences_UserInfo.getString("school", null);
+        String banji = sharedPreferences_UserInfo.getString("banji", null);
+        String teacher = sharedPreferences_UserInfo.getString("teacher", null);
         tv_nickname.setText(nickname);
         tv_name.setText(name);
         tv_school.setText(school);

@@ -24,8 +24,10 @@ import cn.gdgst.palmtest.Entitys.AppSearchEntity;
 import cn.gdgst.palmtest.R;
 import cn.gdgst.palmtest.base.NetworkBaseActivity;
 import cn.gdgst.palmtest.bean.HttpResult;
+import cn.gdgst.palmtest.imagecache.ImageLoader;
 import cn.gdgst.palmtest.main.Tab2Activity;
 import cn.gdgst.palmtest.tab2.Vid_Play_Activity;
+import cn.gdgst.palmtest.tab3.SimulationPlayActivity;
 import cn.gdgst.palmtest.utils.NetworkDialogUtils;
 import rx.Observable;
 import rx.Scheduler;
@@ -44,10 +46,21 @@ public class SearchActivity extends NetworkBaseActivity implements OnClickListen
 	private ImageView back_arrow;
 	private Animation shakeAnim;
 	private DeletableEditText searchEdit;
+	private SearchResultAdapter searchResultAdapter;
+	/**
+	 * 浮动关键字的视图
+	 */
 	private KeywordsFlow keywordsFlow;
+	/**
+	 * 带有删除的EditText
+	 */
 	private DeletableEditText deletableEditText;
+	/**
+	 * 搜索按钮
+	 */
 	private Button button_Search;
 	private ListView listView;
+	private TextView tvNull;
 	private String keyword;
 	private List<AppSearchEntity> list_AppSearchEntity;
 	private int STATE = 1;
@@ -70,7 +83,12 @@ public class SearchActivity extends NetworkBaseActivity implements OnClickListen
 					NetworkDialogUtils.getInstance().HideNetworkDialog();
 					keywordsFlow.setVisibility(View.GONE);
 					//ArrayAdapter arrayAdapter = new ArrayAdapter(SearchActivity.this, R.layout.item_search_result_adapter,list_AppSearchEntity);
-					SearchResultAdapter searchResultAdapter = new SearchResultAdapter();
+					if (list_AppSearchEntity.isEmpty()){
+
+						feedKeywordsFlow(keywordsFlow, keywords);
+						keywordsFlow.setVisibility(View.VISIBLE);
+
+					}
 					listView.setAdapter(searchResultAdapter);
 					break;
 				case INTERNET_FALSE:
@@ -80,7 +98,13 @@ public class SearchActivity extends NetworkBaseActivity implements OnClickListen
 		};
 	};
 
+	/**
+	 *在这个页面初始化3D滚动页面的关键字，吧关键字传过去
+	 * @param keywordsFlow
+	 * @param arr
+     */
 	private static void feedKeywordsFlow(KeywordsFlow keywordsFlow, String[] arr) {
+		//用随机数来放置关键字
 		Random random = new Random();
 		for (int i = 0; i < KeywordsFlow.MAX; i++) {
 			int ran = random.nextInt(arr.length);
@@ -102,15 +126,28 @@ public class SearchActivity extends NetworkBaseActivity implements OnClickListen
 
 	private void initView() {
 		listView = (ListView) findViewById(R.id.activity_search_listView);
+		searchResultAdapter = new SearchResultAdapter();
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				String url = list_AppSearchEntity.get(position).getUrl();
-				if (url.substring(url.lastIndexOf(".")).equals(".mp4")) {
+				Log.e("TAG", "======"+url);
+
+				String testStr = url.substring(url.length() - 3, url.length());
+
+				if (testStr.equals("mp4")) {
 					Intent myIntent3 = new Intent();
+					//需要把视频播放的路径和名称传过去
 					myIntent3.putExtra("video_path", "http://www.shiyan360.cn"+url);
 					myIntent3.putExtra("video_name", list_AppSearchEntity.get(position).getTitle());
 					myIntent3.setClass(SearchActivity.this, Vid_Play_Activity.class);
+					SearchActivity.this.startActivity(myIntent3);
+				}else {
+					Intent myIntent3 = new Intent();
+					//需要把视频播放的路径和名称传过去
+					myIntent3.putExtra("url", "http://www.shiyan360.cn"+url);
+					myIntent3.putExtra("name", list_AppSearchEntity.get(position).getTitle());
+					myIntent3.setClass(SearchActivity.this, SimulationPlayActivity.class);
 					SearchActivity.this.startActivity(myIntent3);
 				}
 			}
@@ -122,14 +159,19 @@ public class SearchActivity extends NetworkBaseActivity implements OnClickListen
 		back_arrow.setAnimation(shakeAnim);
 		searchEdit = (DeletableEditText) findViewById(R.id.search_view);
 		deletableEditText = (DeletableEditText) findViewById(R.id.search_view);
+		tvNull = (TextView) findViewById(R.id.tv_null);
 		button_Search = (Button) findViewById(R.id.activity_search_button);
+
 		button_Search.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				keyword = deletableEditText.getText().toString();
+				list_AppSearchEntity = new ArrayList<AppSearchEntity>();
+				list_AppSearchEntity.clear();
+				searchResultAdapter.notifyDataSetChanged();
+				keyword = deletableEditText.getText().toString().trim();
 				if (keyword != null || !keyword.equals("")) {
 					NetworkDialogUtils.getInstance().ShowNetworkDialog();
-					APIWrapper.getInstance().appSearch(keyword, 1)
+					APIWrapper.getInstance().appSearch(keyword,1)
 							.subscribeOn(Schedulers.io())
 							.observeOn(AndroidSchedulers.mainThread())
 							.subscribe(new Subscriber<HttpResult<List<AppSearchEntity>>>() {
@@ -146,20 +188,26 @@ public class SearchActivity extends NetworkBaseActivity implements OnClickListen
 								@Override
 								public void onNext(HttpResult<List<AppSearchEntity>> listHttpResult) {
 									if (listHttpResult.getSuccess()) {
-										list_AppSearchEntity = new ArrayList<AppSearchEntity>();
 										list_AppSearchEntity = listHttpResult.getData();
 										if (!list_AppSearchEntity.isEmpty()) {
-											for (AppSearchEntity ase: list_AppSearchEntity) {
-												if (ase.getUrl() == null || ase.getUrl().equals("")) {
-													list_AppSearchEntity.remove(ase);
+											keywordsFlow.setVisibility(View.GONE);
+											tvNull.setVisibility(View.GONE);
+											for (int i = 0; i <= list_AppSearchEntity.size() - 1; i++){
+												if ((list_AppSearchEntity.get(i).getUrl()).equals("") || list_AppSearchEntity.get(i).getUrl() == null){
+													list_AppSearchEntity.remove(i);
+													i = i - 1;
 												}
-												Log.d("SearchActivity", "测试返回的搜索结果:"+ase.getTitle());
 											}
+										}else {
+												keywordsFlow.setVisibility(View.VISIBLE);
+												tvNull.setVisibility(View.VISIBLE);
 										}
 									}
 								}
 							});
 				}
+				feedKeywordsFlow(keywordsFlow, keywords);
+				keywordsFlow.setVisibility(View.VISIBLE);
 			}
 		});
 		feedKeywordsFlow(keywordsFlow, keywords);
@@ -167,6 +215,10 @@ public class SearchActivity extends NetworkBaseActivity implements OnClickListen
 		handler.sendEmptyMessageDelayed(FEEDKEY_START, 5000);
 	}
 
+	/**
+	 * 点击滚动的关键字就放到EditText中去
+	 * @param v
+     */
 	@Override
 	public void onClick(View v) {
 		if (v instanceof TextView) {
@@ -227,15 +279,45 @@ public class SearchActivity extends NetworkBaseActivity implements OnClickListen
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			TextView textview_result = null;
+			ViewHolder holder;
 			if (convertView == null) {
+				holder = new ViewHolder();
 				convertView = getLayoutInflater().inflate(R.layout.item_search_result_adapter, null);
-				textview_result = (TextView) convertView.findViewById(R.id.item_search_result_adapter_text);
+				holder.textView_tile = (TextView) convertView.findViewById(R.id.item_search_result_adapter_text);
+				holder.textView_catergory = (TextView) convertView.findViewById(R.id.text_catergory);
+				holder.imageView = (ImageView) convertView.findViewById(R.id.imageview);
+				convertView.setTag(holder);
 			}else {
-				textview_result = (TextView) convertView.findViewById(R.id.item_search_result_adapter_text);
+				holder = (ViewHolder) convertView.getTag();
 			}
-			textview_result.setText(list_AppSearchEntity.get(position).getTitle());
+			AppSearchEntity searchEntity = list_AppSearchEntity.get(position);
+			//Log.e("TAG", "-------------->"+searchEntity.toString());
+			holder.textView_tile.setText(searchEntity.getTitle());
+			String model = "";
+			switch (searchEntity.getModel()){
+				case "Play":
+					model = "同步视频";
+					break;
+				case "Shiyan":
+					model = "实验";
+					break;
+				case "Mingshi":
+					model = "名师讲谈";
+					break;
+				case "Chuangke":
+					model = "创客";
+					break;
+			}
+			holder.textView_catergory.setText(model);
+			String url = "http://www.shiyan360.cn"+searchEntity.getImg();
+
+			com.nostra13.universalimageloader.core.ImageLoader.getInstance().displayImage(url, holder.imageView);
 			return convertView;
+		}
+		class ViewHolder{
+			ImageView imageView;
+			TextView textView_tile;
+			TextView textView_catergory;
 		}
 	}
 

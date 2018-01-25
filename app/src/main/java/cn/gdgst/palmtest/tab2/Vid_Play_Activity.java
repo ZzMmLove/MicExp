@@ -18,6 +18,7 @@ import cn.com.video.venvy.param.JjVideoView;
 import cn.com.video.venvy.param.OnJjBufferCompleteListener;
 import cn.com.video.venvy.param.OnJjBufferStartListener;
 import cn.com.video.venvy.param.OnJjBufferingUpdateListener;
+import cn.com.video.venvy.param.OnJjCompletionListener;
 import cn.com.video.venvy.param.OnJjOpenStartListener;
 import cn.com.video.venvy.param.OnJjOpenSuccessListener;
 import cn.com.video.venvy.param.OnJjOutsideLinkClickListener;
@@ -25,13 +26,18 @@ import cn.com.video.venvy.param.VideoJjMediaContoller;
 import cn.gdgst.palmtest.R;
 
 public class Vid_Play_Activity extends Activity {
+	/**播放视频的视频路径*/
 	private String path = null;
+	/**播放视频的空件*/
 	private JjVideoView mVideoView;
+	/**加载缓冲视频的视图*/
 	private View mLoadBufferView;
 	private TextView mLoadBufferTextView;
+	/**加载视频的进度视频*/
 	private View mLoadView;
 	private TextView mLoadText;
 	private File file_native_video_path;
+	/**用于判断是否是本地视频*/
 	private boolean isNativeVideo;
 	private File file1;
 
@@ -49,8 +55,10 @@ public class Vid_Play_Activity extends Activity {
 
 		//http://www.shiyan360.cn/Public/Uploads/Video/20170109/5872ed61d0d5a.mp4
 		String fileName1 = path.substring(23);//   /Public/Uploads/Video/20170109/5872ed61d0d5a.mp4
+		//判断是否具有SD卡的读写权限
 		if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) || !Environment.isExternalStorageRemovable()) {
 			file1 = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/PalmTest"+fileName1);
+			//判断是否存在此文件
 			if (file1.exists()) {
 				Log.d("Vid_Play_Activity", "测试本地化资源的视频的第一条视频路径输出:"+file1.getAbsolutePath());
 				isNativeVideo = true;
@@ -61,6 +69,7 @@ public class Vid_Play_Activity extends Activity {
 
 		/*//从URL中获取视频的文件名
 		String fileName = path.substring(path.lastIndexOf("/")+1);
+		if (Environment.getExternalStorageState().
 		if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) || !Environment.isExternalStorageRemovable()) {
 			File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/PalmTest");
 			if (file.exists()) {
@@ -75,9 +84,9 @@ public class Vid_Play_Activity extends Activity {
 			}
 		}*/
 
+
 		String mTitle = intent.getStringExtra("video_name");
 		mVideoView = (JjVideoView) findViewById(R.id.JjvideoView);
-
 		mLoadView = findViewById(R.id.sdk_ijk_progress_bar_layout);//加载视图
 		mLoadText = (TextView) findViewById(R.id.sdk_ijk_progress_bar_text);//初始加载文字
 		mLoadBufferView = findViewById(R.id.sdk_load_layout); //缓冲加载视图
@@ -159,21 +168,28 @@ public class Vid_Play_Activity extends Activity {
 		}*/
 
 		if (isNativeVideo) {
-			Log.e("jenfee", "从本地播放视频");
+			Log.e("MoBingK", "从本地播放视频");
 			Toast.makeText(this, "从本地播放视频", Toast.LENGTH_SHORT).show();
 			mVideoView.setResourceVideo(file1.getAbsolutePath());// 开启播放
 		}else {
-			Log.e("jenfee", "从网络播放视频");
+			Log.e("MoBingK", "从网络播放视频");
 			Toast.makeText(this, "从网络播放视频", Toast.LENGTH_SHORT).show();
 			mVideoView.setResourceVideo(path);// 开启播放
 		}
 
 		//mVideoView.setResourceVideo(path1);// 开启播放
-		mVideoView.setVideoJjTitle(mTitle);// 设置视频标题
-		mVideoView.stopPlayback(); // 停止视频播放，并释放资源
-		mVideoView.setVideoJjSaveExitTime(true); // true 二次进入播放从上次退出位置开始播放 false
+		mVideoView.setVideoJjTitle(mTitle);// 设置视频的标题
+		mVideoView.stopPlayback(); // 停止播放视频并释放对象资源
+		mVideoView.setVideoJjSaveExitTime(true); // true 当第二次进入的时候从上次的位置开始播放 false
 		// 不记录退出位置
 		mVideoView.setMediaCodecEnabled(true); // 设置是否开启硬解
 	}
 
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (mVideoView.isPlaying()){
+			mVideoView = null;
+		}
+	}
 }

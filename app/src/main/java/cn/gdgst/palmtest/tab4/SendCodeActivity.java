@@ -5,12 +5,13 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import cn.gdgst.palmtest.R;
+
+import com.mob.MobSDK;
 import com.orhanobut.logger.Logger;
 import cn.gdgst.palmtest.utils.HttpUtil;
 import cn.gdgst.palmtest.utils.NetworkCheck;
 import cn.gdgst.palmtest.utils.NetworkCheckDialog;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -25,7 +26,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.FrameLayout.LayoutParams;
@@ -39,7 +39,6 @@ public class SendCodeActivity extends AppCompatActivity implements OnClickListen
 	// 获取验证码按钮  注册按钮  重置按钮
 	private Button btn_next,getcode;
 	int i = 30;
-	private String responseMsg = "";
 	private int error_codeMsg;
 	private ProgressBar mProBar = null;
 
@@ -63,7 +62,8 @@ public class SendCodeActivity extends AppCompatActivity implements OnClickListen
 		mProBar = this.createProgressBar();
 //			 启动短信验证sdk
 //			SMSSDK.initSDK(this, "您的appkey", "您的appsecret");
-		SMSSDK.initSDK(this, "11aee97e4d4ec", "8be3985767da866344b8d4ffa8bd173e");
+//		SMSSDK.initSDK(this, "11aee97e4d4ec", "8be3985767da866344b8d4ffa8bd173e");
+		MobSDK.init(this, "11aee97e4d4ec", "8be3985767da866344b8d4ffa8bd173e");
 		EventHandler eventHandler = new EventHandler(){
 			@Override
 			public void afterEvent(int event, int result, Object data) {
@@ -89,7 +89,8 @@ public class SendCodeActivity extends AppCompatActivity implements OnClickListen
 				// 1. 通过规则判断手机号
 				if (!judgePhoneNums(phoneNums)) {
 					return;
-				} // 2. 通过sdk发送短信验证
+				}
+				// 2. 通过sdk发送短信验证
 				SMSSDK.getVerificationCode("86", phoneNums);
 
 				// 3. 把按钮变成不可点击，并且显示倒计时（正在获取）
@@ -119,7 +120,7 @@ public class SendCodeActivity extends AppCompatActivity implements OnClickListen
 				if(!TextUtils.isEmpty(code_edit.getText().toString())){
 //					SMSSDK.submitVerificationCode("86", phoneNums, code_edit.getText().toString());//将验证码提交至SMSSDK服务器
 					mProBar.setVisibility(View.VISIBLE);
-//					createProgressBar();
+					createProgressBar();
 					Thread SendcodeThread = new Thread(new SendcodeThread());
 					SendcodeThread.start();
 				}
@@ -213,7 +214,6 @@ public class SendCodeActivity extends AppCompatActivity implements OnClickListen
 
 	/**
 	 * 判断手机号码是否合理
-	 *
 	 * @param phoneNums
 	 */
 	private boolean judgePhoneNums(String phoneNums) {
@@ -276,52 +276,41 @@ public class SendCodeActivity extends AppCompatActivity implements OnClickListen
 		public void run() {
 			String username = user_name_edit.getText().toString();
 			String smscode = code_edit.getText().toString();
-			//
-			boolean registerValidate = registerServer(username,smscode);
-			// System.out.println("----------------------------bool is :"+registerValidate+"----------response:"+responseMsg);
+
+			registerServer(username,smscode);
 
 			Message msg = handler.obtainMessage();
-			if (registerValidate) {
-				if (responseMsg.equals("true")) {
+
+				if (error_codeMsg == 0){
 					msg.what = 3;
 					handler.sendMessage(msg);
-				}
-
-			} else {
-				if (error_codeMsg==468) {
+				}else if (error_codeMsg==468) {
 					//验证码错误
 					msg.what = 1;
 					handler.sendMessage(msg);
-				}
-				else if(error_codeMsg==2){
+				} else if(error_codeMsg==2){
 					//手机已经注册
 					msg.what = 2;
 					handler.sendMessage(msg);
-				}
-				else if(error_codeMsg==467){
+				} else if(error_codeMsg==467){
 					//操作频繁
 					msg.what = 4;
 					handler.sendMessage(msg);
 				}
-
-			}
 		}
-
 	}
 
 	// 注册服务 方式二
-	private boolean registerServer(String username,String smscode) {
-		boolean loginValidate = false;
+	private void registerServer(String username,String smscode) {
 		// 使用apache HTTP客户端实现
 //					 String urlStr = "http://testphp7.114dg.cn/index.php/api/user_signup";
-		String urlStr = "http://www.shiyan360.cn/index.php/api/send_code";
-		username = user_name_edit.getText().toString().trim();
-		smscode = code_edit.getText().toString().trim();
+		String urlStr = "http://www.shiyan360.cn/index.php/api/check_code";
+//		username = user_name_edit.getText().toString().trim();
+//		smscode = code_edit.getText().toString().trim();
 		NetworkCheck check = new NetworkCheck(SendCodeActivity.this);
 		boolean isalivable = check.Network();
-		String code_type=String.valueOf(1);
+		String code_type = String.valueOf(1);
 		if (isalivable) {
-
 			// 封装请求参数
 			Map<String, String> rawParams = new HashMap<String, String>();
 			rawParams.put("user_name", username);
@@ -331,53 +320,22 @@ public class SendCodeActivity extends AppCompatActivity implements OnClickListen
 			Logger.i( username);
 			Logger.i( smscode);
 			Logger.i( code_type);
-
-			try {
 				// 设置请求参数项
 				// 发送请求返回json
 				String json = HttpUtil.postRequest(urlStr, rawParams);
 				Logger.json(json);
-
-
 				// 解析json数据
 				com.alibaba.fastjson.JSONObject jsonobj = JSON
 						.parseObject(json);
-				Boolean response = (Boolean) jsonobj.get("success");
 
-				int error_code=(int) jsonobj.get("error_code");
+				error_codeMsg =(int) jsonobj.get("error_code");
 
-				Logger.i( "error_code:"+error_code);
-
-				// com.alibaba.fastjson.JSONObject responsee = (JSONObject)
-				// jsonobj.get("success");
-				// String data = responsee.toJSONString();
-				// com.alibaba.fastjson.JSONObject response =
-				// JSON.parseObject(data);
-
-				// 判断是否请求成功 大情况：success为true
-				if (response) {
-					loginValidate = true;
-					// responseMsg = response.toString();\
-					responseMsg = response.toString();
-
-				}//大情况：success为false
-				else {
-					loginValidate = false;
-					error_codeMsg=error_code;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+				Logger.i( "error_code:"+error_codeMsg);
 
 		} else {
 			NetworkCheckDialog.dialog(SendCodeActivity.this);
 		}
-		return loginValidate;
 	}
-
-
-
-
 
 	@Override
 	protected void onDestroy() {

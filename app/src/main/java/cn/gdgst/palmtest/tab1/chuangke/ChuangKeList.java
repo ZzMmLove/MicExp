@@ -50,6 +50,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.gdgst.palmtest.utils.NetworkCheck;
+import cn.gdgst.palmtest.utils.NetworkCheckDialog;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -177,29 +179,29 @@ public class ChuangKeList extends Activity implements OnDismissListener, OnClick
         });
         actualListView.setAdapter(adapter);
         MSListview.setOnItemClickListener(new OnItemClickListener() {
-                                              @Override
-                                              public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                                  // TODO Auto-generated method stub
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // TODO Auto-generated method stub
 
-                                                  // 添加浏览记录
-                                                  final String videoid = ChuangKeList.get(position - 1).getId().toString();
-                                                  String model = "chuangke";
-                                                  try {
-                                                      HistoryService historyService = new HistoryService(ChuangKeList.this);
-                                                      historyService.addHistory(accessToken, videoid, model);
-                                                  } catch (Exception e) {
-                                                      e.printStackTrace();
-                                                  }
+                // 添加浏览记录
+                final String videoid = ChuangKeList.get(position - 1).getId().toString();
+                String model = "chuangke";
+                try {
+                    HistoryService historyService = new HistoryService(ChuangKeList.this);
+                    historyService.addHistory(accessToken, videoid, model);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                                                  String url = ChuangKeList.get(position - 1).getVideo_url();
-                                                  Intent myIntent3 = new Intent();
-                                                  myIntent3.putExtra("video_path", url);
-                                                  myIntent3.putExtra("video_name", ChuangKeList.get(position - 1).getName());
-                                                  myIntent3.setClass(ChuangKeList.this, Vid_Play_Activity.class);
-                                                  startActivity(myIntent3);
+                String url = ChuangKeList.get(position - 1).getVideo_url();
+                Intent myIntent3 = new Intent();
+                myIntent3.putExtra("video_path", url);
+                myIntent3.putExtra("video_name", ChuangKeList.get(position - 1).getName());
+                myIntent3.setClass(ChuangKeList.this, Vid_Play_Activity.class);
+                startActivity(myIntent3);
 
-                                              }
-                                          }
+            }
+        }
 
         );
     }
@@ -207,22 +209,28 @@ public class ChuangKeList extends Activity implements OnDismissListener, OnClick
     @Override
     public void onClick(View v) {
         // TODO Auto-generated method stub
-        switch (v.getId()) {
-            case R.id.ll_grade:
-                idx = 1;
-                icon1.setImageResource(R.mipmap.icon_up);
-                showPopupWindow(findViewById(R.id.ll_layout), 1);
-                break;
-            case R.id.ll_sorting_latest:
-                idx = 3;
-                icon3.setImageResource(R.mipmap.icon_up);
-                showPopupWindow(findViewById(R.id.ll_layout), 3);
-                break;
-            case R.id.iv_back:
-                this.finish();
-                break;
+        NetworkCheck check = new NetworkCheck(this);
+            switch (v.getId()) {
+                case R.id.ll_grade:
+                    idx = 1;
+                    icon1.setImageResource(R.mipmap.icon_up);
+                    if (check.Network()){
 
-        }
+                        showPopupWindow(findViewById(R.id.ll_layout), 1);
+                    }else NetworkCheckDialog.dialog(this);
+                    break;
+                case R.id.ll_sorting_latest:
+                    idx = 3;
+                    icon3.setImageResource(R.mipmap.icon_up);
+                    if (check.Network()){
+
+                        showPopupWindow(findViewById(R.id.ll_layout), 3);
+                    }else NetworkCheckDialog.dialog(this);
+                    break;
+                case R.id.iv_back:
+                    this.finish();
+                    break;
+            }
     }
 
 //    private void getExperimentList() {

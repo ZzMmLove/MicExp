@@ -1,5 +1,4 @@
-include ':app', ':library', ':appcompat', ':SMSSDK', ':videoJjlibrary', ':daogenerator'
+include ':app', ':library', ':appcompat', ':videoJjlibrary', ':daogenerator'
 project(':library').projectDir = new File('app/src/library')
 project(':appcompat').projectDir = new File('app/src/appcompat')
-project(':SMSSDK').projectDir = new File('app/src/SMSSDK')
 project(':videoJjlibrary').projectDir = new File('app/src/videoJjlibrary')

@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.WebSettings;
@@ -16,8 +17,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+
+import cn.gdgst.palmtest.API.APIWrapper;
 import cn.gdgst.palmtest.R;
 import cn.gdgst.palmtest.Entitys.WK_Detail_Entity;
+import cn.gdgst.palmtest.bean.HttpResult;
+import cn.gdgst.palmtest.bean.WenKuEntity;
 import cn.gdgst.palmtest.utils.HttpUtil;
 
 import com.orhanobut.logger.Logger;
@@ -25,6 +30,9 @@ import com.orhanobut.logger.Logger;
 import cn.gdgst.palmtest.rewrite.ProgressWheel;
 import cn.gdgst.palmtest.utils.NetworkCheck;
 import cn.gdgst.palmtest.utils.NetworkCheckDialog;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,8 +40,8 @@ import java.util.Map;
 public class WenKuDetail extends Activity implements OnClickListener {
 	private SharedPreferences sp;
 	private Long id = null;
-	private cn.gdgst.palmtest.Entitys.WK_Detail_Entity WK_Detail_Entity;
-	private TextView tv1, tv_title;
+	private cn.gdgst.palmtest.Entitys.WK_Detail_Entity wK_Detail_Entity;
+	private TextView tv_loading, tv_title;
 	private WebView webView;
 	private ImageView iv_back;
 	private String title = null;
@@ -55,13 +63,14 @@ public class WenKuDetail extends Activity implements OnClickListener {
 
 		webView.setVisibility(View.INVISIBLE);
 		progress_bar.spin();
-		getExperimentList();
+		//getExperimentList();
+		getExperimentListByRetrofit();
 
 	}
 
 	private void findview() {
 		// TODO Auto-generated method stub
-		// tv1 = (TextView) findViewById(R.id.tv1);
+		tv_loading = (TextView) findViewById(R.id.tv_loading);
 		webView = (WebView) findViewById(R.id.webView1);
 
 		WebSettings webSettings = webView.getSettings();
@@ -101,6 +110,38 @@ public class WenKuDetail extends Activity implements OnClickListener {
 		}
 	}
 
+
+	private void getExperimentListByRetrofit(){
+		NetworkCheck check = new NetworkCheck(WenKuDetail.this);
+		boolean isAlivable  = check.Network();
+		if (isAlivable){
+			APIWrapper.getInstance().getWenKuDetail(String.valueOf(id))
+					.subscribeOn(Schedulers.io())
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribe(new Subscriber<HttpResult<WK_Detail_Entity>>() {
+						@Override
+						public void onCompleted() {
+							if (wK_Detail_Entity == null){
+								mHandler.sendEmptyMessage(4);
+							}else {
+								mHandler.sendEmptyMessage(0);
+							}
+
+						}
+
+						@Override
+						public void onError(Throwable e) {
+
+						}
+
+						@Override
+						public void onNext(HttpResult<WK_Detail_Entity> wenKuEntityHttpResult) {
+							wK_Detail_Entity = wenKuEntityHttpResult.getData();
+						}
+					});
+		}
+	}
+
 	private void getExperimentList() {
 		// TODO Auto-generated method stub
 
@@ -134,7 +175,8 @@ public class WenKuDetail extends Activity implements OnClickListener {
 							String js = jsondata.toString();
 							Logger.json(js);
 							// Json解析出单个对象
-							WK_Detail_Entity = JSON.parseObject(js, WK_Detail_Entity.class);
+							wK_Detail_Entity = JSON.parseObject(js, WK_Detail_Entity.class);
+							Log.d("WenKuDetail", "Json解析出单个对象"+ wK_Detail_Entity.toString());
 
 							if (jsondata.equals("null")) {
 								mHandler.sendEmptyMessage(4);
@@ -166,8 +208,9 @@ public class WenKuDetail extends Activity implements OnClickListener {
 			switch (msg.what) {
 				case 0:
 					progress_bar.stopSpinning();
+					tv_loading.setVisibility(View.GONE);
 					StringBuilder sb = new StringBuilder();
-					sb.append(WK_Detail_Entity.getRemark());
+					sb.append(wK_Detail_Entity.getRemark());
 
 					webView.setVisibility(View.VISIBLE);
 					webView.loadDataWithBaseURL(null, sb.toString(), "text/html", "utf-8", null);
@@ -177,7 +220,8 @@ public class WenKuDetail extends Activity implements OnClickListener {
 					Toast.makeText(WenKuDetail.this, "获取列表失败,请先进行登录", Toast.LENGTH_SHORT).show();
 					break;
 				case 2:
-					getExperimentList();
+					//getExperimentList();
+					getExperimentListByRetrofit();
 					break;
 				case 3:
 					progress_bar.spin();

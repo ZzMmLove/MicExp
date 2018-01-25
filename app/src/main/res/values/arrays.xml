@@ -33,6 +33,17 @@
         <item>小四</item>
         <item>小三</item>
     </string-array>
+
+ <!--   <string-array name="sub_grade2">
+        <item>人教版</item>
+        <item>苏教版</item>
+        <item>北师大版</item>
+        <item>教科版</item>
+        <item>粤教版</item>
+        <item>泸教版</item>
+        <item>浙教版</item>
+    </string-array>-->
+
     <string-array name="sub_category">
         <item>不限</item>
         <item>高中</item>

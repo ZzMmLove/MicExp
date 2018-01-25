@@ -6,12 +6,30 @@ package cn.gdgst.palmtest.Entitys;
  */
 
 public class AppSearchEntity {
+
+    /**
+     * "id":"4207",
+     "model":"Play",
+     "title":"静电感应",
+     "url":"/Public/Uploads/Video/20170301/58b640472bab6.mp4",
+     "img":"/Public/Uploads/Video/20170301/thumb_58b6403c83c03.jpg"
+     */
+
     private String id;
     private String model;
     private String title;
     private String url;
+    private String img;
 
     public AppSearchEntity() {
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
     }
 
     public String getId() {
@@ -53,6 +71,7 @@ public class AppSearchEntity {
                 ", model='" + model + '\'' +
                 ", title='" + title + '\'' +
                 ", url='" + url + '\'' +
+                ", img='" + img + '\'' +
                 '}';
     }
 }

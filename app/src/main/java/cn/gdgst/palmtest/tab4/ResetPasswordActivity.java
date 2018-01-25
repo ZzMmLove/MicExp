@@ -1,6 +1,5 @@
 package cn.gdgst.palmtest.tab4;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,27 +8,27 @@ import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.FrameLayout.LayoutParams;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+
 import cn.gdgst.palmtest.R;
-import com.orhanobut.logger.Logger;
-import cn.gdgst.palmtest.utils.HttpUtil;
+
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
+import com.mob.MobSDK;
 import cn.gdgst.palmtest.utils.NetworkCheck;
 import cn.gdgst.palmtest.utils.NetworkCheckDialog;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import cn.gdgst.palmtest.utils.ToastUtil;
 import cn.smssdk.EventHandler;
 import cn.smssdk.SMSSDK;
 
@@ -37,184 +36,253 @@ public class ResetPasswordActivity extends AppCompatActivity implements OnClickL
 	// 手机号输入框    验证码输入框
 	private EditText user_name_edit,code_edit;
 	// 获取验证码按钮  注册按钮  重置按钮
-	private Button btn_next,getcode;
-	//
-	int i = 30;
-	private String responseMsg = "";
-	private int error_codeMsg;
+	private Button btnCode;
+	private Button btnNext;
+	private int i = 30;
+	private ProgressBar mProBar;
+	private EventHandler eventHandler;
+	private  String userName;
 
-	private ProgressBar mProBar = null;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_reset_password);
 		ActionBar actionBar = getSupportActionBar();
+		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setTitle("找回密码");
-		InitView();
-	}
-	private void InitView() {
-		user_name_edit=(EditText) findViewById(R.id.new_username);
-		code_edit = (EditText) findViewById(R.id.edt_code);
-		btn_next=(Button) findViewById(R.id.btn_next);
-		getcode = (Button) findViewById(R.id.btn_getcode);
-		btn_next.setOnClickListener(this);
-		getcode.setOnClickListener(this);
-
-		mProBar = this.createProgressBar();
-//			 启动短信验证sdk
-//			SMSSDK.initSDK(this, "您的appkey", "您的appsecret");
-		SMSSDK.initSDK(this, "11aee97e4d4ec", "8be3985767da866344b8d4ffa8bd173e");
-		EventHandler eventHandler = new EventHandler(){
-			@Override
-			public void afterEvent(int event, int result, Object data) {
-				Message msg = new Message();
-				msg.arg1 = event;
-				msg.arg2 = result;
-				msg.obj = data;
-				handler.sendMessage(msg);
-			}
-		};
-		//注册回调监听接口
-		SMSSDK.registerEventHandler(eventHandler);
+		actionBar.setTitle("忘记密码");
+		initView();
+		initSMSSDK();
 	}
 
-
-
-	@Override
-	public void onClick(View v) {
-		// TODO Auto-generated method stub
-		String phoneNums = user_name_edit.getText().toString();
-		switch (v.getId()) {
-			case R.id.btn_getcode:
-				// 1. 通过规则判断手机号
-				if (!judgePhoneNums(phoneNums)) {
-					return;
-				} // 2. 通过sdk发送短信验证
-				SMSSDK.getVerificationCode("86", phoneNums);
-
-				// 3. 把按钮变成不可点击，并且显示倒计时（正在获取）
-				getcode.setClickable(false);
-				getcode.setText("重新发送(" + i + ")");
-				getcode.setBackgroundColor(Color.GRAY);
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						for (; i > 0; i--) {
-							handler.sendEmptyMessage(-9);
-							if (i <= 0) {
-								break;
-							}
-							try {
-								Thread.sleep(1000);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-						handler.sendEmptyMessage(-8);
-					}
-				}).start();
-				break;
-
-			case R.id.btn_next:
-				if(!TextUtils.isEmpty(code_edit.getText().toString())){
-//					SMSSDK.submitVerificationCode("86", phoneNums, code_edit.getText().toString());//将验证码提交至SMSSDK服务器
-					mProBar.setVisibility(View.VISIBLE);
-//					createProgressBar();
-					Thread SendcodeThread = new Thread(new SendcodeThread());
-					SendcodeThread.start();
-				}
-				else {
-					Toast.makeText(this, "验证码不能为空", 1).show();
-				}
-
-				break;
-			default:
-				break;
-		}
-	}
-
-
-
-	/**
-	 *
-	 */
-	Handler handler = new Handler() {
+	Handler handler = new Handler(){
+		@Override
 		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+
 			switch (msg.what) {
 				case -9:
-					getcode.setText("重新发送(" + i + ")");
+					btnCode.setText("重新发送(" + i + ")");
 					break;
 				case -8:
-					getcode.setText("获取验证码");
-					getcode.setBackgroundColor(Color.parseColor("#70d0f8"));
-					getcode.setClickable(true);
+					btnCode.setText("获取验证码");
+					btnCode.setBackgroundColor(Color.parseColor("#70d0f8"));
+					btnCode.setClickable(true);
 					i = 30;
 					break;
 				case 0:
 					if (msg.what == -9) {
-						getcode.setText("重新发送(" + i + ")");
+						btnCode.setText("重新发送(" + i + ")");
 					} else if (msg.what == -8) {
-						getcode.setText("获取验证码");
-						getcode.setBackgroundColor(Color.parseColor("#70d0f8"));
-						getcode.setClickable(true);
+						btnCode.setText("获取验证码");
+						btnCode.setBackgroundColor(Color.parseColor("#70d0f8"));
+						btnCode.setClickable(true);
 						i = 30;
-					} else {
+					}
+                    /* else {
 						int event = msg.arg1;
 						int result = msg.arg2;
 						Object data = msg.obj;
+
+
 						Logger.e("event=" + event);
 						if (result == SMSSDK.RESULT_COMPLETE) {
 							if (event == SMSSDK.EVENT_GET_VERIFICATION_CODE) {
-								Toast.makeText(getApplicationContext(), "验证码已经发送",
-										Toast.LENGTH_SHORT).show();
+								Toast.makeText(getApplicationContext(), "验证码已经发送", Toast.LENGTH_SHORT).show();
+							}else if (event == SMSSDK.EVENT_SUBMIT_VERIFICATION_CODE){
+								Toast.makeText(getApplicationContext(), "验证通过", Toast.LENGTH_SHORT).show();
+								mProBar.setVisibility(View.GONE);
+								userName = user_name_edit.getText().toString().trim();
+								Intent intent = new Intent(ResetPasswordActivity.this, ResetPass.class);
+								intent.putExtra("user_name",userName );
+								startActivity(intent);
+								finish();
 							}
-						}else {
-							((Throwable) data).printStackTrace();
-							Toast.makeText(ResetPasswordActivity.this, "验证码错误", Toast.LENGTH_SHORT).show();
+						} else if (result == SMSSDK.RESULT_ERROR){
+							mProBar.setVisibility(View.GONE);
+							String jsonString = ((Throwable) data).getMessage();
+							JSONObject jsonObject = JSON.parseObject(jsonString);
+							String status = jsonObject.getString("status");
+							Log.e("TAG", ">>>>>"+status);
+							if (status.equals("468")){
+								Toast.makeText(getApplicationContext(), "验证码错误", Toast.LENGTH_SHORT).show();
+							}else if (status.equals("467")){
+								Toast.makeText(getApplicationContext(), "校验验证码请求频繁", Toast.LENGTH_SHORT).show();
+							}
 						}
-						Logger.i( ""+msg);
-					}
-					break;
-				case 3:
-					Bundle bundle = new Bundle();
-					bundle.putString("user_name", user_name_edit.getText()
-							.toString());
-					bundle.putString("smscode", code_edit.getText().toString());
-					Logger.v("传递的user_name:"+user_name_edit.getText().toString());
-					Logger.v("传递的code:"+code_edit.getText().toString());
-					Intent intent = new Intent();
-					intent.putExtras(bundle);
-					intent.setClass(ResetPasswordActivity.this, ResetPass.class);
-					startActivity(intent);
-					finish();
-					// 返回intent
-					setResult(RESULT_OK, intent);
-					Toast.makeText(ResetPasswordActivity.this, "发送成功", 1).show();
-					break;
-				case 2:
-					mProBar.setVisibility(View.GONE);
-					Toast.makeText(ResetPasswordActivity.this, "此手机已注册", 1).show();
-					break;
-				case 1:
-					mProBar.setVisibility(View.GONE);
-					Toast.makeText(ResetPasswordActivity.this, "验证码错误", 1).show();
-					break;
-				case 4:
-					mProBar.setVisibility(View.GONE);
-					Toast.makeText(ResetPasswordActivity.this, "操作频繁，请稍后再试", 1).show();
-					break;
-				default:
+						Logger.i("" + msg);
+					}*/
 					break;
 			}
 		}
 	};
 
 
+	/**
+	 * 初始化短信验证
+	 */
+	private void initSMSSDK() {
+//		SMSSDK.initSDK(this, "11aee97e4d4ec", "8be3985767da866344b8d4ffa8bd173e");
+        MobSDK.init(this, "11aee97e4d4ec", "8be3985767da866344b8d4ffa8bd173e");
+		eventHandler = new EventHandler(){
+			@Override
+			public void afterEvent(int event, int result, final Object data) {
+		/*		Message msg = new Message();
+				msg.arg1 = event;
+				msg.arg2 = result;
+				msg.obj = data;
+				handler.sendMessage(msg);*/
+
+
+                if (result == SMSSDK.RESULT_COMPLETE){
+                    //完成回调
+                    if (event == SMSSDK.EVENT_SUBMIT_VERIFICATION_CODE){
+                        //提交验证码成功
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "验证通过", Toast.LENGTH_SHORT).show();
+                                mProBar.setVisibility(View.GONE);
+                                userName = user_name_edit.getText().toString().trim();
+                                Intent intent = new Intent(ResetPasswordActivity.this, ResetPass.class);
+                                intent.putExtra("user_name",userName );
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }else if (event == SMSSDK.EVENT_GET_VERIFICATION_CODE){
+                        //获取验证码成功
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "验证码已经发送", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }else if (event == SMSSDK.EVENT_GET_SUPPORTED_COUNTRIES){
+                        //返回支持发送验证码的国家列表
+                    }
+                }else if (result == SMSSDK.RESULT_ERROR){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mProBar.setVisibility(View.GONE);
+                            String jsonString = ((Throwable) data).getMessage();
+                            JSONObject jsonObject = null;
+                            String status = "";
+                            try{
+                                jsonObject = JSON.parseObject(jsonString);
+                                status = jsonObject.getString("status");
+                            }catch (JSONException e){
+                                e.printStackTrace();
+                            }
+                            Log.e("TAG", ">>>>>"+status);
+                            if (status.equals("468")){
+                                Toast.makeText(getApplicationContext(), "验证码错误", Toast.LENGTH_SHORT).show();
+                            }else if (status.equals("467")){
+                                Toast.makeText(getApplicationContext(), "校验验证码请求频繁", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+                }
+
+			}
+		};
+		SMSSDK.registerEventHandler(eventHandler);
+	}
+
+	/**
+	 * 初始化视图空件
+	 */
+	private void initView() {
+		code_edit = (EditText) findViewById(R.id.reset_password_edt_code);
+		user_name_edit = (EditText) findViewById(R.id.reset_password_username);
+		btnCode = (Button) findViewById(R.id.btn_getcode);
+		btnNext = (Button) findViewById(R.id.btn_next);
+
+		btnNext.setOnClickListener(this);
+		btnCode.setOnClickListener(this);
+		mProBar = this.createProgressBar();
+	}
+
+	/**
+	 * 按钮单击事件
+	 * @param v
+	 */
+	@Override
+	public void onClick(View v) {
+		Log.e("TAG", "======1"+userName);
+		userName = user_name_edit.getText().toString().trim();
+		Log.e("TAG", "======2"+userName);
+		switch(v.getId()){
+			case R.id.btn_getcode:
+				getCode(userName);
+				break;
+			case R.id.btn_next:
+				String smsCode =code_edit.getText().toString().trim();
+
+				if(TextUtils.isEmpty(smsCode) || smsCode == ""){
+					ToastUtil.show("验证码不能为空！");
+				}else {
+					Log.i("RegisterActivity", "==userName=="+userName+"==smsCode=="+smsCode);
+					NetworkCheck check = new NetworkCheck(this);
+					if (check.Network()){
+						checkCode(userName, smsCode);
+					}else {
+						NetworkCheckDialog.dialog(this);
+					}
+				}
+				break;
+		}
+	}
+
+	/**
+	 * 根据请求结果验证完就下一步设置密码
+	 */
+	private void checkCode(String userName, String smsCode){
+		SMSSDK.submitVerificationCode("86", userName, smsCode);//将验证码提交至SMSSDK服务器
+		mProBar.setVisibility(View.VISIBLE);
+		createProgressBar();
+	}
+
+	/**
+	 * 获取验证码
+	 * @param userName
+	 */
+	private void getCode(String userName) {
+		// 1. 通过规则判断手机号
+		if (!judgePhoneNums(userName)) {
+			Toast.makeText(this, "手机号码输入有误！",Toast.LENGTH_SHORT).show();
+			return;
+		}
+		// 2. 通过sdk发送短信验证
+		SMSSDK.getVerificationCode("86", userName);
+
+		// 3. 把按钮变成不可点击，并且显示倒计时（正在获取）
+		btnCode.setClickable(false);
+		btnCode.setText("重新发送(" + i + ")");
+		btnCode.setBackgroundColor(Color.GRAY);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				for (; i > 0; i--) {
+					handler.sendEmptyMessage(-9);
+					if (i <= 0) break;
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				handler.sendEmptyMessage(-8);
+			}
+		}).start();
+	}
+
 
 	/**
 	 * 判断手机号码是否合理
-	 *
 	 * @param phoneNums
 	 */
 	private boolean judgePhoneNums(String phoneNums) {
@@ -256,14 +324,13 @@ public class ResetPasswordActivity extends AppCompatActivity implements OnClickL
 	}
 
 	/**
-	 * progressbar
-	 * @param sendCode
+	 * 自定义进度条
 	 * @return
 	 */
 	private ProgressBar createProgressBar() {
 		FrameLayout layout = (FrameLayout) findViewById(android.R.id.content);
 		FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
-				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+				FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
 		layoutParams.gravity = Gravity.CENTER;
 		ProgressBar mProBar = new ProgressBar(this);
 		mProBar.setLayoutParams(layoutParams);
@@ -272,119 +339,18 @@ public class ResetPasswordActivity extends AppCompatActivity implements OnClickL
 		return mProBar;
 	}
 
-	// SendCodeThread主线程类
-	class SendcodeThread implements Runnable {
-		@Override
-		public void run() {
-			String username = user_name_edit.getText().toString();
-			String smscode = code_edit.getText().toString();
-			//
-			boolean registerValidate = registerServer(username,smscode);
-			// System.out.println("----------------------------bool is :"+registerValidate+"----------response:"+responseMsg);
-
-			Message msg = handler.obtainMessage();
-			if (registerValidate) {
-				if (responseMsg.equals("true")) {
-					msg.what = 3;
-					handler.sendMessage(msg);
-				}
-
-			} else {
-				if (error_codeMsg==468) {
-					//验证码错误
-					msg.what = 1;
-					handler.sendMessage(msg);
-				}
-				else if(error_codeMsg==2){
-					//手机已经注册
-					msg.what = 2;
-					handler.sendMessage(msg);
-				}
-				else if(error_codeMsg==467){
-					//操作频繁
-					msg.what = 4;
-					handler.sendMessage(msg);
-				}
-
-			}
-		}
-
-	}
-
-	// 注册服务 方式二
-	private boolean registerServer(String username,String smscode) {
-		boolean loginValidate = false;
-		// 使用apache HTTP客户端实现
-//					 String urlStr = "http://testphp7.114dg.cn/index.php/api/user_signup";
-		String urlStr = "http://www.shiyan360.cn/index.php/api/send_code";
-		username = user_name_edit.getText().toString().trim();
-		smscode = code_edit.getText().toString().trim();
-		NetworkCheck check = new NetworkCheck(ResetPasswordActivity.this);
-		boolean isalivable = check.Network();
-		String code_type=String.valueOf(2);;
-		if (isalivable) {
-
-			// 封装请求参数
-			Map<String, String> rawParams = new HashMap<String, String>();
-			rawParams.put("user_name", username);
-			rawParams.put("sms_code", smscode);
-			rawParams.put("code_type",code_type);
-
-			Logger.i( username);
-			Logger.i(smscode);
-			Logger.i( "code_type:"+code_type);
-
-			try {
-				// 设置请求参数项
-				// 发送请求返回json
-				String json = HttpUtil.postRequest(urlStr, rawParams);
-				Logger.json(json);
-
-
-				// 解析json数据
-				com.alibaba.fastjson.JSONObject jsonobj = JSON
-						.parseObject(json);
-				Boolean response = (Boolean) jsonobj.get("success");
-
-				int error_code=(int) jsonobj.get("error_code");
-
-				Logger.i( "error_code:"+error_code);
-
-				// com.alibaba.fastjson.JSONObject responsee = (JSONObject)
-				// jsonobj.get("success");
-				// String data = responsee.toJSONString();
-				// com.alibaba.fastjson.JSONObject response =
-				// JSON.parseObject(data);
-
-				// 判断是否请求成功 大情况：success为true
-				if (response) {
-					loginValidate = true;
-					// responseMsg = response.toString();\
-					responseMsg = response.toString();
-
-				}//大情况：success为false
-				else {
-					loginValidate = false;
-					error_codeMsg=error_code;
-
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		} else {
-			NetworkCheckDialog.dialog(ResetPasswordActivity.this);
-		}
-		return loginValidate;
-	}
-
-
-
-
-
+	/**
+	 * 资源回收，防止OOM
+	 */
 	@Override
 	protected void onDestroy() {
-		SMSSDK.unregisterAllEventHandler();
+		SMSSDK.unregisterEventHandler(eventHandler);
 		super.onDestroy();
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		mProBar.setVisibility(View.GONE);
 	}
 }

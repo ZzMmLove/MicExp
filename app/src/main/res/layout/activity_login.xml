@@ -7,14 +7,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-         android:background="#ffffff"
+         android:background="#f0f0f0"
         android:orientation="vertical"
         android:padding="12dp" >
 
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="48dip"
-            android:layout_marginTop="20dp" >
+            android:layout_marginTop="20dp"
+            android:background="#fff">
 
             <AutoCompleteTextView
                 android:id="@+id/login_username"
@@ -40,7 +41,8 @@
 
         <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="48dp">
+            android:layout_height="48dp"
+            android:background="#fff">
 
             <EditText
                 android:id="@+id/login_password"
@@ -80,15 +82,30 @@
                         android:textSize="18sp" />
         </cn.gdgst.palmtest.rewrite.RippleView>
 
-        <TextView
-            android:id="@+id/tv_forget_pwd"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:layout_marginTop="10dp"
-            android:text="忘记密码？"
-            android:textColor="#576B95"
-            android:textSize="14sp" />
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:id="@+id/otherlogin"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="师生登录"
+                android:textColor="#576B95"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/tv_forget_pwd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="忘记密码？"
+                android:textColor="#576B95"
+                android:textSize="14sp" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

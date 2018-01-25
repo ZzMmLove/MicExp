@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
@@ -11,6 +12,7 @@
         android:id="@+id/exampaper_result_item_title"
         android:paddingTop="10dp"
         android:textColor="#353535"
+        android:textSize="16sp"
         android:paddingLeft="5dp" />
 
     <ImageView
@@ -19,7 +21,7 @@
         android:id="@+id/exampaper_result_item_imageView" />
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="5dp"
@@ -27,18 +29,21 @@
 
         <TextView
             android:text="你选择的是:"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:id="@+id/exampaper_result_item_selected"
             android:textColor="#353535"
+            android:layout_marginTop="5dp"
+
             android:layout_weight="1" />
 
         <TextView
             android:text="正确答案是:"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:id="@+id/exampaper_result_item_right"
             android:textColor="#353535"
+            android:layout_marginTop="5dp"
             android:layout_weight="1" />
     </LinearLayout>
 
@@ -48,6 +53,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/exampaper_result_item_A"
         android:textColor="#353535"
+        android:layout_marginTop="5dp"
         android:paddingLeft="5dp" />
 
     <TextView
@@ -56,6 +62,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/exampaper_result_item_B"
         android:paddingLeft="5dp"
+        android:layout_marginTop="5dp"
         android:textColor="#353535"/>
 
     <TextView
@@ -64,6 +71,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/exampaper_result_item_C"
         android:textColor="#353535"
+        android:layout_marginTop="5dp"
         android:paddingLeft="5dp" />
 
     <TextView
@@ -73,6 +81,7 @@
         android:id="@+id/exampaper_result_item_D"
         android:paddingLeft="5dp"
         android:textColor="#353535"
+        android:layout_marginTop="5dp"
         android:paddingBottom="5dp" />
 
     <TextView
@@ -81,7 +90,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/bright_foreground_disabled_material_dark"
         android:layout_marginLeft="5dp"
-        android:textSize="10sp"
+        android:textSize="16sp"
         android:id="@+id/textView"
         android:background="@color/button_material_dark"
         android:gravity="center" />

@@ -15,6 +15,15 @@ public class HuiZhan {
     private String video_url;
     private String content;
     private String time;
+    private long dateline;
+
+    public long getDateline() {
+        return dateline;
+    }
+
+    public void setDateline(long dateline) {
+        this.dateline = dateline;
+    }
 
     public HuiZhan() {
     }

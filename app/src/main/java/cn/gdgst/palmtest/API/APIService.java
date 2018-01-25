@@ -12,9 +12,20 @@ import cn.gdgst.entity.Video;
 import cn.gdgst.entity.WenKu;
 import cn.gdgst.entity.ZhuangBei;
 import cn.gdgst.entity.ZiXun;
+import cn.gdgst.palmtest.Entitys.AllSchool;
 import cn.gdgst.palmtest.Entitys.AppSearchEntity;
+import cn.gdgst.palmtest.Entitys.CollectEntity;
+import cn.gdgst.palmtest.Entitys.HistoryEntity;
+import cn.gdgst.palmtest.Entitys.PX_Cate_Entity;
+import cn.gdgst.palmtest.Entitys.PatyDetail;
+import cn.gdgst.palmtest.Entitys.UpdateInfo;
 import cn.gdgst.palmtest.Entitys.UserEntity;
+import cn.gdgst.palmtest.Entitys.UserVote;
+import cn.gdgst.palmtest.Entitys.VoteAction;
+import cn.gdgst.palmtest.Entitys.WK_Detail_Entity;
+import cn.gdgst.palmtest.Entitys.ZX_Detail_Entity;
 import cn.gdgst.palmtest.bean.CategoryList_Entity;
+import cn.gdgst.palmtest.bean.CollectionData;
 import cn.gdgst.palmtest.bean.HttpResult;
 import cn.gdgst.palmtest.bean.UpdateInfo_Entity;
 import cn.gdgst.palmtest.bean.VideoList_Entity;
@@ -28,7 +39,11 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
@@ -53,9 +68,9 @@ public interface APIService {
     //创客列表
     @POST("chuangke_list")
     Observable<HttpResult<List<ChuangKe>>> getChuangke_list(
-            @Query("desc_type") String desc_type,
-            @Query("category_id") String category_id,
-            @Query("page") String page);
+                                                            @Query("desc_type") String desc_type,
+                                                            @Query("category_id") String category_id,
+                                                            @Query("page") String page);
 
     //文库
     @POST("wenku_list")
@@ -65,7 +80,7 @@ public interface APIService {
 
     //文库详情
     @POST("wenku_detail")
-    Observable<HttpResult<WenKuEntity>> getWenKuDetail(@Query("id") String id);
+    Observable<HttpResult<WK_Detail_Entity>> getWenKuDetail(@Query("id") String id);
 
     //article_list  会展中心134    资讯99 文章类   装备135  培训学院139 （视频类）
     //    装备135
@@ -73,6 +88,14 @@ public interface APIService {
     Observable<HttpResult<List<ZhuangBei>>> getArticleList(@Query("desc_type") String desc_type,
                                                            @Query("category_id") String category_id,
                                                            @Query("page") String page);
+
+    /**
+     * 获得实验装备的分类列表
+     * @param id
+     * @return
+     */
+    @POST("article_category_sub")
+    Observable<HttpResult<List<PX_Cate_Entity>>> getZhuangBeiCarteray(@Query("id") String id);
 
     //    培训139
     @POST("article_list")
@@ -83,15 +106,15 @@ public interface APIService {
     @POST("article_list")
     Observable<HttpResult<List<ZiXun>>> getArticleListzx(@Query("category_id") String category_id,
                                                          @Query("page") String page);
-    //   会展中心134
-    @POST("article_list")
-    Observable<HttpResult<List<HuiZhan>>> getArticleListhz(@Query("category_id") String category_id,
+    //   会展中心134  http://shiyan360.cn/api/news?page=1（动态新闻）
+    @POST("news")//article_list
+    Observable<HttpResult<List<HuiZhan>>> getArticleListhz(                                     //@Query("category_id") String category_id,
                                                            @Query("page") String page);
 
 
-    //article_detail     会展中心134    资讯99 文章类
+    //article_detail    http://shiyan360.cn/api/news?id=1204(新闻动态详情页
     @POST("article_detail")
-    Observable<HttpResult<ZiXunEntity>> getArtDetail(@Query("id") String id);
+    Observable<HttpResult<ZX_Detail_Entity>> getArtDetail(@Query("id") String id);
 
     //同步视频  学科视频
     @POST("video_list")
@@ -128,19 +151,21 @@ public interface APIService {
                                                               @Query("page") String page);
 
     //登陆
-    @POST("user_login")
+    @GET("user_login")
     Observable<HttpResult<UserEntity>> login(@Query("user_name") String user_name,
-                                             @Query("user_pass") String user_pass);
+                                             @Query("user_pass") String user_pass,
+                                             @Query("table") String table);
 
     //注册
     @POST("user_signup")
     Observable<HttpResult> register(@Query("user_name") String user_name,
-                                         @Query("user_code") String user_code,
-                                         @Query("user_pass") String user_pass);
+                                    @Query("user_email") String user_code,
+                                    @Query("user_pass") String user_pass);
 
 
     //发送验证码 code_type 1为注册 2为改密码
-    @POST("send_code")
+    //@FormUrlEncoded      //将会自动将请求参数的类型调整为application/x-www-form-urlencoded.但至少要有一个@filed注解
+    @POST("check_code")
     Observable<HttpResult> getSendCode(@Query("user_name") String user_name,
                                        @Query("sms_code") String sms_code,
                                        @Query("code_type") String code_type);
@@ -150,6 +175,12 @@ public interface APIService {
     Observable<HttpResult> getChangePass(@Query("accessToken") String accessToken,
                                          @Query("old_pass") String old_pass,
                                          @Query("new_pass") String new_pass);
+
+    //重置密码
+    @POST("find_pass")
+    Observable<HttpResult> getResetPass(@Query("user_name") String userName,
+                                        @Query("user_code") String userCode,
+                                        @Query("user_pass") String userNewPass);
 
     //修改个人资料
     @POST("user_profile_update")
@@ -168,26 +199,26 @@ public interface APIService {
 
     //收藏
     @POST("user_collect")
-    Observable<HttpResult<List<VideoList_Entity>>> getCollect(@Query("accessToken") String accessToken,
-                                                              @Query("page") String page,
-                                                              @Query("model") String model);
+    Observable<HttpResult<List<CollectEntity>>> getCollect(@Query("accessToken") String accessToken,
+                                                           //@Query("page") String page,
+                                                           @Query("model") String model);
 
     //删除收藏
     @POST("user_collect_delete")
-    Observable<HttpResult> getDeleteInfo(@Query("accessToken") String accessToken,
+    Observable<HttpResult> getDeleteCollection(@Query("accessToken") String accessToken,
                                          @Query("id") String id,
                                          @Query("model") String model);
 
     //增加收藏
     @POST("user_collect_add")
-    Observable<HttpResult> getAddInfo(@Query("accessToken") String accessToken,
-                                      @Query("id") String id,
-                                      @Query("model") String model);
+    Observable<HttpResult<List<CollectionData>>> getAddCollection(@Query("accessToken") String accessToken,
+                                                                  @Query("model") String model,
+                                                                  @Query("id") String id);
 
     //浏览记录
     @POST("user_history")
-    Observable<HttpResult<List<VideoList_Entity>>> getHistoryList(@Query("accessToken") String accessToken,
-                                                                  @Query("page") String page);
+    Observable<HttpResult<List<HistoryEntity>>> getHistoryList(@Query("accessToken") String accessToken,
+                                                               @Query("page") String page);
 
     //添加浏览记录
     @POST("user_history_add")
@@ -201,7 +232,17 @@ public interface APIService {
 
     //获取试卷列表
     @POST("examinPaperList")
+    Observable<HttpResult<List<ExamPaper>>> examinPaperList(@Query("page") int page,
+                                                           // @Query("cid") int cid,
+                                                            @Query("school") String school,
+                                                            @Query("banji") String banji,
+                                                            @Query("nj") String nj,
+                                                            @Query("id") String id);
+
+    @POST("examinPagerList")
     Observable<HttpResult<List<ExamPaper>>> examinPaperList(@Query("page") int page, @Query("cid") int cid);
+
+
 
     //获取指定详细Id的试卷内容
    // @POST("examinPaperDetail")
@@ -234,11 +275,90 @@ public interface APIService {
     Call<ResponseBody> uploadAvatarToNet(@Part("attribute") RequestBody requestBody, @Part MultipartBody.Part part);
 
     /**
+     * 上传仿真视频的录制视频到服务器上
+     * @param requestBody
+     * @param part
+     * @return
+     */
+    @Multipart
+    @POST("http://www.shiyan360.cn/index.php/api/.....")
+    Observable<ResponseBody> uploadScreemVedioToNet(@Part("...") RequestBody requestBody, @Part MultipartBody.Part part);
+
+    /**
      * APP搜索
      * @param keyword 要搜索的关键字
      * @param p 分页
      * @return
      */
     @POST("appsearch")
-    Observable<HttpResult<List<AppSearchEntity>>> appSearch(@Query("keyword") String keyword, @Query("p") int p);
+    Observable<HttpResult<List<AppSearchEntity>>> appSearch(@Query("keyword") String keyword,
+                                                            @Query("p") int p);
+
+    /**
+     * 检查版本信息
+     * @param version_code
+     * @return
+     */
+    @POST("check_version")
+    Observable<HttpResult<UpdateInfo>> updataInfoRemark(@Query("version_code") String version_code);
+
+    /**
+     * 获取所有学校的名称和数据库表名
+     * @return
+     */
+    //http://shiyan360.cn/api/getAllSchool
+    @GET("getAllSchool")
+    Observable<HttpResult<List<AllSchool>>> getAllSchool();
+
+    /**
+     * 获取投票选手信息
+     * @param page
+     * @return
+     */
+    //http://shiyan360.cn/api/vote_video?page=1
+    @GET("vote_video")
+    Observable<HttpResult<List<UserVote>>> getUserVote(@Query("page") int page);
+
+    /**
+     * 获取活动内容详情
+     * @return
+     */
+    //http://shiyan360.cn/api/activity
+    @GET("activity")
+    Observable<PatyDetail> getPatyDetail();
+
+    /**
+     * 投票接口，传一个id，返回当前总票数
+     * @return
+     */
+    //http://shiyan360.cn/api/vote_setinc?id=3975
+    @GET("vote_setinc")
+    Observable<HttpResult<VoteAction>> getVoteActionResult(@Query("id") String _id);
+
+    /**
+     * 搜索接口，传一个关键，返回搜索结果。数据库找不到返回一个错误,默认第1页
+     * @param keyword
+     * @param page
+     * @return
+     */
+    //http://shiyan360.cn/api/vote_search?keyword=66&page=1
+    @GET("vote_search")
+    Observable<HttpResult<List<UserVote>>> getSearchUserVote(@Query("keyword") String keyword,
+                                                         @Query("page") int page);
+
+    //http://shiyan360.cn/api/result_desc?page=1
+    @GET("result_desc")
+    Observable<HttpResult<List<UserVote>>> getSortResult(@Query("page") int page);
+
+
+/*    @Multipart
+    @POST("AppYuFaKu/uploadHeadImg")
+    Observable<baseresultentity<uploadresulte>> uploadImage(@Part("uid") RequestBody uid,
+                                                            @Part("auth_key") RequestBody  auth_key,
+                                                            @Part MultipartBody.Part file);*/
+
+
+
+
+
 }

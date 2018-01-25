@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MicExp.iml" filepath="$PROJECT_DIR$/MicExp.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/src/SMSSDK/SMSSDK.iml" filepath="$PROJECT_DIR$/app/src/SMSSDK/SMSSDK.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/src/appcompat/appcompat.iml" filepath="$PROJECT_DIR$/app/src/appcompat/appcompat.iml" />
       <module fileurl="file://$PROJECT_DIR$/daogenerator/daogenerator.iml" filepath="$PROJECT_DIR$/daogenerator/daogenerator.iml" />

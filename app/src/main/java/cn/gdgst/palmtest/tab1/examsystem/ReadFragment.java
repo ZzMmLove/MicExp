@@ -1,7 +1,6 @@
 package cn.gdgst.palmtest.tab1.examsystem;
 
 
-import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -28,8 +27,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cn.gdgst.entity.ExamTopic;
 import cn.gdgst.palmtest.R;
+import cn.gdgst.palmtest.bean.ExamTopic;
 import cn.gdgst.palmtest.bean.TExamTopic;
 
 /**
@@ -39,6 +38,7 @@ import cn.gdgst.palmtest.bean.TExamTopic;
  */
 public class ReadFragment extends Fragment{
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private int fragmentId;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String ARG_PARAM3 = "param3";
@@ -62,6 +62,10 @@ public class ReadFragment extends Fragment{
     private View view;
     private String selected;
     private HashMap<Integer, String> hashMapResult = new HashMap<>();
+    /**
+     * 记录当前fragment的状态，选择、填空、解答
+     */
+    private int currentFragmentState;
 
     public ReadFragment() {
         // Required empty public constructor
@@ -122,12 +126,20 @@ public class ReadFragment extends Fragment{
         ListView listView_answer = (ListView) view.findViewById(R.id.fragment_read_ListView);
 
         if (content ==1 ) {
+            currentFragmentState = 1;
             if (selected != null) {
                 textView_Selected_Show.setText("已选:("+selected+")");
             }
             textView_title.setText(String.valueOf(examTopic.getId())+". "+Html.fromHtml(examTopic.getTitle()));
             Log.d("ReadFragment", "打印要缓存图片的路径"+examTopic.toString());
-            loadImage(examTopic.getImg(), imageView);
+
+            if (examTopic.getImg().equals("") || examTopic.getImg() == null){
+                imageView.setVisibility(View.GONE);
+            }else {
+                imageView.setVisibility(View.VISIBLE);
+                loadImage(examTopic.getImg(), imageView);
+            }
+
             listView_answer.setAdapter(new AnswerAdapter(getActivity(), examTopic));
             listView_answer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -153,9 +165,17 @@ public class ReadFragment extends Fragment{
                 }
             });
         } else if (content == 2) {
+            currentFragmentState = 2;
             textView_title.setText(tExamTopic.getTitle());
             textView_Selected_Show.setVisibility(View.GONE);
             listView_answer.setVisibility(View.GONE);
+            if ("".equals(tExamTopic.getImg()) || tExamTopic.getImg() == null){
+                imageView.setVisibility(View.GONE);
+            }else {
+                imageView.setVisibility(View.VISIBLE);
+                loadImage(tExamTopic.getImg(), imageView);
+            }
+
             LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.fragment_read_LinearLayout_container);
             editTextCount = getBracketCount(tExamTopic.getTitle());
             Log.d("ReadFragment", "要创建的EditText的数量:"+editTextCount);
@@ -163,6 +183,7 @@ public class ReadFragment extends Fragment{
             for (int a = 0; a < editTextCount; a ++) {
                 final EditText editText = new EditText(getActivity());
                 editText.setId(a + 1);
+                editText.setBackgroundResource(R.drawable.bg_edit_answe);
                 editText.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -190,11 +211,20 @@ public class ReadFragment extends Fragment{
                 }
             }
         } else if (content == 3) {
+            currentFragmentState = 3;
             textView_title.setText(jExamTopic.getTitle());
             textView_Selected_Show.setVisibility(View.GONE);
+            if ("".equals(jExamTopic.getImg()) || jExamTopic.getImg() == null){
+                imageView.setVisibility(View.GONE);
+            }else {
+                imageView.setVisibility(View.VISIBLE);
+                loadImage(jExamTopic.getImg(), imageView);
+            }
+
             LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.fragment_read_LinearLayout_container);
             EditText editTextJContent = new EditText(getActivity());
             editTextJContent.setWidth(700);
+            editTextJContent.setBackgroundResource(R.drawable.bg_edit_answe);
             editTextJContent.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -258,12 +288,8 @@ public class ReadFragment extends Fragment{
         return count;
     }
 
-    public void setSaveTAnswer(boolean isSaveTAnswer) {
-        this.isSaveTAnswer = isSaveTAnswer;
-        for (int c = 0; c < editTextCount; c ++) {
-            arrayListT.add(listEditText.get(c).getText().toString());
-            Log.d("ReadFragment", "保存答案输出:"+listEditText.get(c).getText().toString());
-        }
+    public List<EditText> getListEditText() {
+        return listEditText;
     }
 
     public String getSelected_result() {
@@ -278,4 +304,15 @@ public class ReadFragment extends Fragment{
         return stringAnswer;
     }
 
+    public int getCurrentFragmentState(){
+        return currentFragmentState;
+    }
+
+    public int getFragmentId() {
+        return fragmentId;
+    }
+
+    public void setFragmentId(int fragmentId) {
+        this.fragmentId = fragmentId;
+    }
 }

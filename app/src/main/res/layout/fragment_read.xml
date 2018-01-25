@@ -1,9 +1,10 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#fff"
+    android:scrollbars="none"
     tools:context=".tab1.examsystem.ReadFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -21,11 +22,15 @@
             android:textSize="13sp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
+            android:padding="5dp"
+            android:background="@drawable/bg_edit_answe"
             android:id="@+id/fragment_read_textView_title" />
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="100dp"
+            android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:id="@+id/fragment_read_imageView" />
 
         <TextView
@@ -34,12 +39,15 @@
             android:layout_height="wrap_content"
             android:id="@+id/fragment_read_textView_selected"
             android:layout_marginLeft="10dp"
+            android:layout_marginTop="15dp"
             android:textColor="@color/black"
-            android:background="@color/red" />
+            android:padding="2dp"
+            android:background="@drawable/bg_check_answe" />
 
         <FrameLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp">
 
             <ListView
                 android:layout_width="match_parent"
@@ -55,4 +63,4 @@
         </FrameLayout>
 
     </LinearLayout>
-</FrameLayout>
+</ScrollView>

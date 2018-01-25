@@ -51,6 +51,7 @@ public class WenKuAdapter extends BaseAdapter {
 			vd=new viewholder();
 
 			vd.tv_wenku=(TextView) view.findViewById(R.id.tv_wenku);
+			vd.tv_time = (TextView) view.findViewById(R.id.tv_updatetime);
 			view.setTag(vd);// 给View添加一个格外的数据
 		}
 		else {
@@ -60,6 +61,7 @@ public class WenKuAdapter extends BaseAdapter {
 
 
 		vd.tv_wenku.setText(expitem.getTitle()); //  exp_tv设置文本
+		vd.tv_time.setText("更新时间："+expitem.getTime());
 
 
 		return view;
@@ -67,6 +69,7 @@ public class WenKuAdapter extends BaseAdapter {
 	//视图控件内部类
 	public class viewholder{
 		private TextView tv_wenku;
+		private TextView tv_time;
 	}
 
 }

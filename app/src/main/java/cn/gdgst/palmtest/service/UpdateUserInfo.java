@@ -17,7 +17,7 @@ public class UpdateUserInfo {
 
 	}
 	public Boolean getUpdateUserInfo(Map<String, String> rawParams) {
-		String urlStr="http://www.shiyan360.cn/index.php/api/user_profile_update";
+		String urlStr="http://shiyan360.cn/index.php/api/user_profile_update";
 
 		Set<String> get = rawParams.keySet();
 		for (String test:get) {

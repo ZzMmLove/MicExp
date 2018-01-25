@@ -60,7 +60,7 @@ public class Logic {
 				}
 
 				public void onFinish() { // 完成后调用，失败，成功，都要掉
-				};
+				}
 
 			});
 		} catch (Exception e) {

@@ -21,6 +21,10 @@ import android.widget.EditText;
 public class DeletableEditText extends EditText{
     private Drawable mRightDrawable;
     private boolean isHasFocus;
+    private static String[] keywords = new String[] { "中考热点", "实验解密", "高考热点",
+            "高考指点", "高考指南", "有机化合物", "离子方程", "中考分析指南", "元素周期律", "基因工程", "有丝分裂", "运动与力",
+            "高考迷津指点", "中学高分指南", "中学知识宝典", "物态变化", "光合作用", " 呼吸作用", " 速成自学", "自学宝典",
+            "欧姆定律", "初中物理", "电磁作用", "氧化反应", "染色体变异", "化合作用" };
 
     public DeletableEditText(Context context) {
         super(context);
@@ -78,6 +82,8 @@ public class DeletableEditText extends EditText{
                 if (isClean) {
                     setText("");
                 }
+
+
                 break;
 
             default:

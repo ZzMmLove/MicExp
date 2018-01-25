@@ -1,5 +1,6 @@
 package cn.gdgst.palmtest.main;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -15,6 +16,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Gravity;
@@ -33,12 +36,16 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.orhanobut.logger.Logger;
+import com.tbruyelle.rxpermissions.RxPermissions;
 
+import cn.gdgst.palmtest.API.APIWrapper;
 import cn.gdgst.palmtest.BuildConfig;
 import cn.gdgst.palmtest.R;
 import cn.gdgst.palmtest.Entitys.UpdateInfo;
 import cn.gdgst.palmtest.Entitys.UserEntity;
 import cn.gdgst.palmtest.base.AppConstant;
+import cn.gdgst.palmtest.bean.HttpResult;
+import cn.gdgst.palmtest.service.UpdateAppService;
 import cn.gdgst.palmtest.service.UpdateInfoService;
 import cn.gdgst.palmtest.tab4.AboutActivity;
 import cn.gdgst.palmtest.tab4.FeedBackActivity;
@@ -49,6 +56,9 @@ import cn.gdgst.palmtest.tab4.shoucang.GetCollectListActivity;
 import cn.gdgst.palmtest.utils.HttpUtil;
 import cn.gdgst.palmtest.utils.NetworkCheck;
 import cn.gdgst.palmtest.utils.NetworkCheckDialog;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import org.afinal.simplecache.ACache;
 import org.apache.http.HttpEntity;
@@ -75,11 +85,17 @@ public class Tab4Activity extends Activity implements OnClickListener {
      */
     private SharedPreferences sp = null;
     // 登录url
-    private String urlStr = "http://www.shiyan360.cn/index.php/api/user_login";
+    private String urlStr = "http://shiyan360.cn/index.php/api/user_login";
     private String accessToken;
     // 更新版本要用到的一些信息
     private UpdateInfo info;
     private ProgressDialog pBar;
+    private static int REQUESTPERMISSION = 110;
+    /**
+     * 更新版本
+     */
+    private Intent updateServiceIntent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +147,7 @@ public class Tab4Activity extends Activity implements OnClickListener {
              */
             case R.id.rl_account_manager:
                 sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
-                String accessToken = sp.getString("accessToken", null);
+                String accessToken = sp.getString("accessToken", "");
                 if (accessToken == null || accessToken.equals("")) {
                     Intent intent = new Intent();
                     intent.setClass(Tab4Activity.this, LoginActivity.class);
@@ -140,7 +156,7 @@ public class Tab4Activity extends Activity implements OnClickListener {
                     Intent intent = new Intent(Tab4Activity.this, UserInfoActivity.class);
                     startActivity(intent);
                 }
-                /*boolean autologin = sp.getBoolean("autoLogin", false);
+           /*     boolean autologin = sp.getBoolean("autoLogin", false);
                 Logger.v("autologin:" + autologin);
                 if (autologin == true) {
                     //开启线程去自动登录
@@ -152,31 +168,33 @@ public class Tab4Activity extends Activity implements OnClickListener {
                     startActivity(intent);
                 }*/
                 break;
+
             case R.id.rl_switch_about:
                 Intent intent1 = new Intent();
                 intent1.setClass(Tab4Activity.this, AboutActivity.class);
                 startActivity(intent1);
-
                 break;
+
             case R.id.rl_feedback:
                 Intent intent2 = new Intent();
                 intent2.setClass(Tab4Activity.this, FeedBackActivity.class);
                 startActivity(intent2);
-
                 break;
+
             case R.id.rl_switch_collect:
                 Intent intent3 = new Intent();
                 intent3.setClass(Tab4Activity.this, GetCollectListActivity.class);
                 startActivity(intent3);
                 break;
+
             case R.id.rl_switch_cache:
                 showDialog();
-
                 break;
+
             case R.id.rl_shared:
                 showQrcode();
-
                 break;
+
             case R.id.rl_history:
 				Intent intent4 = new Intent();
 				intent4.setClass(Tab4Activity.this, HistoryList.class);
@@ -189,12 +207,11 @@ public class Tab4Activity extends Activity implements OnClickListener {
 //                intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, sizeLimit);
 //                intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 60);
 //                startActivityForResult(intent, 3333);
-
-
                 break;
+
             case R.id.rl_update:
                 Toast.makeText(Tab4Activity.this, "正在检查更新", Toast.LENGTH_SHORT).show();
-                new Thread() {
+              /* new Thread() {
                     public void run() {
                         try {
                             Thread.sleep(500);
@@ -211,21 +228,47 @@ public class Tab4Activity extends Activity implements OnClickListener {
                             e.printStackTrace();
                         }
                     }
+                }.start();*/
 
-                }.start();
+               String version_code = BuildConfig.VERSION_NAME;
+                APIWrapper.getInstance().updateInfoRemark(version_code).
+                        subscribeOn(Schedulers.io()).
+                        observeOn(AndroidSchedulers.mainThread()).
+                        subscribe(new Subscriber<HttpResult<UpdateInfo>>() {
+                            @Override
+                            public void onCompleted() {
+                                //获取完成更新信息后发送一个消息通知主线程开始做更新操作
+                                handler.sendEmptyMessage(0);
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+
+                            }
+
+                            @Override
+                            public void onNext(HttpResult<UpdateInfo> listHttpResult) {
+                                info = new UpdateInfo();
+                                boolean success = listHttpResult.getSuccess();
+                                if (success){
+                                    info = listHttpResult.getData();
+                                    Log.d("Application1","通过Retrofit访问"+info.toString());
+                                }
+                            }
+                        });
                 break;
             default:
                 break;
         }
-
     }
+
 
     // autoLoginThread线程类
     class autoLoginThread implements Runnable {
 
         @Override
         public void run() {
-            autoLogin();
+            //autoLogin();
         }
     }
 
@@ -349,6 +392,9 @@ public class Tab4Activity extends Activity implements OnClickListener {
         builder.create().show();
     }
 
+    /**
+     * 分享
+     */
     private void showQrcode() {
         LinearLayout layout = new LinearLayout(this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);  //image的布局方式
@@ -378,7 +424,7 @@ public class Tab4Activity extends Activity implements OnClickListener {
         builder.create().show();
     }
 
-    // 广告移动处理
+    // 在主线程处理更新视图
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -398,7 +444,6 @@ public class Tab4Activity extends Activity implements OnClickListener {
     //更新版本
     private void showUpdateDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//					builder.setTitle("请升级APP至版本" + info.getVersion());
         builder.setCancelable(false);
         builder.setTitle("检测到有新的版本");
         builder.setMessage(info.getUpgrade_remark());
@@ -411,7 +456,8 @@ public class Tab4Activity extends Activity implements OnClickListener {
 
                 if (Environment.getExternalStorageState().equals(
                         Environment.MEDIA_MOUNTED)) {
-                    downFile(info.getUpgrade_url());
+                        //downFile(info.getUpgrade_url());
+                        upDate();
                 } else {
                     Toast.makeText(Tab4Activity.this, "SD卡不可用，请插入SD卡",
                             Toast.LENGTH_SHORT).show();
@@ -430,8 +476,7 @@ public class Tab4Activity extends Activity implements OnClickListener {
 
     private boolean isNeedUpdate() {
 
-        int v = info.getIs_upgrade(); // 最新版本的版本号
-//					Toast.makeText(Tab1Activity.this, v, Toast.LENGTH_SHORT).show();
+        int v = info.getIs_upgrade(); // 最新版本的版本号（服务器上面的版本号）
         if (v == 0) {
             return false;
         } else {
@@ -452,8 +497,8 @@ public class Tab4Activity extends Activity implements OnClickListener {
         }
     }
 
-    void downFile(final String url) {
-        pBar = new ProgressDialog(Tab4Activity.this);    //进度条，在下载的时候实时更新进度，提高用户友好度
+    private void downFile(final String url) {
+        pBar = new ProgressDialog(Tab4Activity.this);    //进度条，在下载的时候实时更新进度
         pBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         pBar.setTitle("正在下载");
         pBar.show();
@@ -466,8 +511,8 @@ public class Tab4Activity extends Activity implements OnClickListener {
                 try {
                     response = client.execute(get);
                     HttpEntity entity = response.getEntity();
-                    int length = (int) entity.getContentLength();   //获取文件大小
-//			                                        pBar.setMax(length);                            //设置进度条的总长度
+                    //int length = (int) entity.getContentLength();   //获取文件大小
+			        //pBar.setMax(length);                            //设置进度条的总长度
                     InputStream is = entity.getContent();
                     FileOutputStream fileOutputStream = null;
                     if (is != null) {
@@ -485,7 +530,6 @@ public class Tab4Activity extends Activity implements OnClickListener {
                             process += ch;
                             pBar.setProgress(process / (1024 * 100));       //这里就是关键的实时更新进度了！
                         }
-
                     }
                     fileOutputStream.flush();
                     if (fileOutputStream != null) {
@@ -498,26 +542,90 @@ public class Tab4Activity extends Activity implements OnClickListener {
                     e.printStackTrace();
                 }
             }
-
         }.start();
     }
 
-    void down() {
+    private void down() {
         handler.post(new Runnable() {
             public void run() {
                 pBar.cancel();
-                update();
+                //update();
             }
         });
     }
 
-    void update() {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(new File(Environment
-                        .getExternalStorageDirectory(), "MicExp.apk")),
-                "application/vnd.android.package-archive");
-        startActivity(intent);
+//    /**
+//     * 下载完成apk安装包后自动打开安装包安装
+//     */
+//    private void update() {
+//        Intent intent = new Intent();
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        intent.setAction(Intent.ACTION_VIEW);
+//        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//        try{
+//            intent.setDataAndType(Uri.fromFile(new File(Environment
+//                            .getExternalStorageDirectory(), "MicExp.apk")),
+//                    "application/vnd.android.package-archive");
+//            startActivity(intent);
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
+//    }
+
+
+    private void upDate(){
+
+        RxPermissions.getInstance(Tab4Activity.this).request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .subscribe(new Subscriber<Boolean>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Boolean aBoolean) {
+                        if (aBoolean) {
+                            updateServiceIntent = new Intent(Tab4Activity.this, UpdateAppService.class);
+                            updateServiceIntent.putExtra("url", info.getUpgrade_url());
+                            Toast.makeText(Tab4Activity.this, "正在下载中", Toast.LENGTH_SHORT).show();
+                            startService(updateServiceIntent);
+                        } else {
+                            Toast.makeText(Tab4Activity.this, "SD卡下载权限被拒绝", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+//        updateServiceIntent = new Intent(Tab4Activity.this, UpdateAppService.class);
+//        updateServiceIntent.putExtra("url", info.getUpgrade_url());
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+//            //申请权限
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUESTPERMISSION);
+//           Toast.makeText(this, "请允许下载权限", Toast.LENGTH_LONG).show();
+//            startService(updateServiceIntent);
+//        }else {
+//            startService(updateServiceIntent);
+//        }
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode==REQUESTPERMISSION){
+            if(Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])){
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    if(updateServiceIntent!=null)
+                        startService(updateServiceIntent);
+                }else{
+                    //提示没有权限，安装不了咯
+                    Toast.makeText(this, "没有权限，无法安装", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
 }

@@ -14,10 +14,21 @@ import cn.gdgst.entity.ZhuangBei;
 import cn.gdgst.entity.ZiXun;
 import cn.gdgst.palmtest.BuildConfig;
 import cn.gdgst.palmtest.API.util.RetrofitUtil;
+import cn.gdgst.palmtest.Entitys.AllSchool;
 import cn.gdgst.palmtest.Entitys.AppSearchEntity;
+import cn.gdgst.palmtest.Entitys.CollectEntity;
+import cn.gdgst.palmtest.Entitys.HistoryEntity;
+import cn.gdgst.palmtest.Entitys.PX_Cate_Entity;
+import cn.gdgst.palmtest.Entitys.PatyDetail;
+import cn.gdgst.palmtest.Entitys.UpdateInfo;
 import cn.gdgst.palmtest.Entitys.UserEntity;
+import cn.gdgst.palmtest.Entitys.UserVote;
+import cn.gdgst.palmtest.Entitys.VoteAction;
+import cn.gdgst.palmtest.Entitys.WK_Detail_Entity;
+import cn.gdgst.palmtest.Entitys.ZX_Detail_Entity;
 import cn.gdgst.palmtest.bean.ApiException;
 import cn.gdgst.palmtest.bean.CategoryList_Entity;
+import cn.gdgst.palmtest.bean.CollectionData;
 import cn.gdgst.palmtest.bean.HttpResult;
 import cn.gdgst.palmtest.bean.UpdateInfo_Entity;
 import cn.gdgst.palmtest.bean.VideoList_Entity;
@@ -42,8 +53,8 @@ public class APIWrapper extends RetrofitUtil {
 
     private static APIWrapper mAPIWrapper;
 
-    public APIWrapper() {
-    }
+    /**单例获取APIWrapper的实例*/
+    private APIWrapper() {}
 
     public static APIWrapper getInstance() {
         if (mAPIWrapper == null) {
@@ -79,8 +90,8 @@ public class APIWrapper extends RetrofitUtil {
     }
 
     //文库详情
-    public Observable<HttpResult<WenKuEntity>> getWenKuDetail(String id) {
-        Observable<HttpResult<WenKuEntity>> observable = getAPIService().getWenKuDetail(id);
+    public Observable<HttpResult<WK_Detail_Entity>> getWenKuDetail(String id) {
+        Observable<HttpResult<WK_Detail_Entity>> observable = getAPIService().getWenKuDetail(id);
         return observable;
     }
 
@@ -90,6 +101,13 @@ public class APIWrapper extends RetrofitUtil {
         Observable<HttpResult<List<ZhuangBei>>> observable = getAPIService().getArticleList(desc_type, category_id, page);
         return observable;
     }
+
+    //获得实验装备的分类列表
+    public Observable<HttpResult<List<PX_Cate_Entity>>> getZhuangBeiCarteray(String id){
+        Observable<HttpResult<List<PX_Cate_Entity>>> observable = getAPIService().getZhuangBeiCarteray(id);
+        return observable;
+    }
+
 //    培训学院139
     public Observable<HttpResult<List<PeiXun>>> getArticleListpx(String desc_type, String category_id, String page) {
         Observable<HttpResult<List<PeiXun>>> observable = getAPIService().getArticleListpx(desc_type, category_id, page);
@@ -101,14 +119,14 @@ public class APIWrapper extends RetrofitUtil {
         return observable;
     }
     //    会展中心134
-    public Observable<HttpResult<List<HuiZhan>>> getArticleListhz(String category_id, String page) {
-        Observable<HttpResult<List<HuiZhan>>> observable = getAPIService().getArticleListhz(category_id, page);
+    public Observable<HttpResult<List<HuiZhan>>> getArticleListhz( String page) {       //String category_id,
+        Observable<HttpResult<List<HuiZhan>>> observable = getAPIService().getArticleListhz(page);
         return observable;
     }
 
     //article_detail  会展中心134    资讯99 文章类
-    public Observable<HttpResult<ZiXunEntity>> getArtDetail(String id) {
-        Observable<HttpResult<ZiXunEntity>> observable = getAPIService().getArtDetail(id);
+    public Observable<HttpResult<ZX_Detail_Entity>> getArtDetail(String id) {
+        Observable<HttpResult<ZX_Detail_Entity>> observable = getAPIService().getArtDetail(id);
         return observable;
     }
 
@@ -143,13 +161,13 @@ public class APIWrapper extends RetrofitUtil {
     }
 
     /**
-     * 登录 // FIXME: 2017/2/9 JenfeeMa
+     * 登录 // FIXME: 2017/2/9
      * @param user_name
      * @param user_pass
      * @return
      */
-    public Observable<HttpResult<UserEntity>> login(String user_name, String user_pass) {
-        Observable<HttpResult<UserEntity>> observable = getAPIService().login(user_name, user_pass);
+    public Observable<HttpResult<UserEntity>> login(String user_name, String user_pass, String table) {
+        Observable<HttpResult<UserEntity>> observable = getAPIService().login(user_name, user_pass, table);
         return observable;
     }
 
@@ -166,7 +184,7 @@ public class APIWrapper extends RetrofitUtil {
     }
     //发送验证码 code_type 1为注册 2为改密码  未测试
     public Observable<HttpResult> getSendCode(String user_name, String sms_code,String code_type) {
-        Observable<HttpResult> observable = getAPIService().getSendCode(user_name,sms_code, code_type);
+        Observable<HttpResult> observable = getAPIService().getSendCode(user_name, sms_code, code_type);
         return observable;
     }
     //改密码
@@ -179,29 +197,36 @@ public class APIWrapper extends RetrofitUtil {
         Observable<HttpResult> observable = getAPIService().getChangeProfile(accessToken,nickname, school,name);
         return observable;
     }
+
+    //重置密码
+    public Observable<HttpResult> getResetPass(String userName, String userCode, String userNewPass){
+        Observable<HttpResult> observable = getAPIService().getResetPass(userName, userCode, userNewPass);
+        return observable;
+    }
+
     //反馈  未测试
     public Observable<HttpResult> getGuestbook(String content, String name,String tel,String email,String qq) {
         Observable<HttpResult> observable = getAPIService().getGuestbook(content,name, tel,email,qq);
         return observable;
     }
     //收藏
-    public Observable<HttpResult<List<VideoList_Entity>>> getCollect(String accessToken, String page, String model) {
-        Observable<HttpResult<List<VideoList_Entity>>> observable = getAPIService().getCollect(accessToken,page, model);
+    public Observable<HttpResult<List<CollectEntity>>> getCollect(String accessToken, String model) {
+        Observable<HttpResult<List<CollectEntity>>> observable = getAPIService().getCollect(accessToken, model);
         return observable;
     }
     //删除收藏
-    public Observable<HttpResult> getDeleteInfo(String accessToken,String id,String model) {
-        Observable<HttpResult> observable = getAPIService().getDeleteInfo(accessToken,id,model);
+    public Observable<HttpResult> getDeleteCollection(String accessToken,String id,String model) {
+        Observable<HttpResult> observable = getAPIService().getDeleteCollection(accessToken,id,model);
         return observable;
     }
     //增加收藏
-    public Observable<HttpResult> getAddInfo(String accessToken,String id,String model) {
-        Observable<HttpResult> observable = getAPIService().getAddInfo(accessToken,id,model);
+    public Observable<HttpResult<List<CollectionData>>> getAddCollection(String accessToken,  String model,String id) {
+        Observable<HttpResult<List<CollectionData>>> observable = getAPIService().getAddCollection(accessToken,model,id);
         return observable;
     }
     //浏览记录
-    public Observable<HttpResult<List<VideoList_Entity>>> getHistoryList(String accessToken, String page) {
-        Observable<HttpResult<List<VideoList_Entity>>> observable = getAPIService().getHistoryList(accessToken,page);
+    public Observable<HttpResult<List<HistoryEntity>>> getHistoryList(String accessToken, String page) {
+        Observable<HttpResult<List<HistoryEntity>>> observable = getAPIService().getHistoryList(accessToken,page);
         return observable;
     }
     //添加浏览记录
@@ -215,6 +240,11 @@ public class APIWrapper extends RetrofitUtil {
         return observable;
     }
 
+    public Observable<HttpResult<List<ExamPaper>>> examinPaperList (int page, String school, String banji, String nj, String id) {
+        Observable<HttpResult<List<ExamPaper>>> observable = getAPIService().examinPaperList(page, school, banji, nj, id);
+        return observable;
+    }
+
     public Observable<HttpResult<List<ExamPaper>>> examinPaperList (int page, int cid) {
         Observable<HttpResult<List<ExamPaper>>> observable = getAPIService().examinPaperList(page, cid);
         return observable;
@@ -222,6 +252,16 @@ public class APIWrapper extends RetrofitUtil {
 
     public Observable<HttpResult> submitPaper(Map<Integer, String> map_result, String username, String studentId) {
         Observable<HttpResult> observable = getAPIService().submit_Paper(map_result, username, studentId);
+        return observable;
+    }
+
+    /**
+     * 检查是否要更新版本
+     * @param version_code
+     * @return
+     */
+    public Observable<HttpResult<UpdateInfo>> updateInfoRemark(String version_code){
+        Observable<HttpResult<UpdateInfo>> observable = getAPIService().updataInfoRemark(version_code);
         return observable;
     }
 
@@ -259,6 +299,47 @@ public class APIWrapper extends RetrofitUtil {
         return getAPIService().appSearch(keyword, p);
     }
 
+    /**
+     * 获取所有学校
+     * @return
+     */
+    public Observable<HttpResult<List<AllSchool>>> getAllSchool(){
+        return getAPIService().getAllSchool();
+    }
+
+    /**
+     * 获取所有的参与选手的信息
+     * @param page
+     * @return
+     */
+    public Observable<HttpResult<List<UserVote>>> getUserVote(int page){
+        return getAPIService().getUserVote(page);
+    }
+
+    /**
+     * 获取活动的内容详情
+     * @return
+     */
+    public Observable<PatyDetail> getPatryDetail(){
+        return getAPIService().getPatyDetail();
+    }
+
+    /**
+     *投票接口，传一个id，返回当前总票数
+     * @return
+     */
+    public Observable<HttpResult<VoteAction>> getVoteActionResult(String _id){
+        return getAPIService().getVoteActionResult(_id);
+    }
+
+    public Observable<HttpResult<List<UserVote>>> getSearchUserVote(String keyword, int page){
+        return getAPIService().getSearchUserVote(keyword, page);
+    }
+
+    public  Observable<HttpResult<List<UserVote>>> getSortResult(int page){
+        return getAPIService().getSortResult(page);
+    }
+
     public <T> void toSubscribe(Observable<T> o, Subscriber<T> s) {
         o.subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
@@ -281,4 +362,5 @@ public class APIWrapper extends RetrofitUtil {
             return response.getData();
         }
     }
+
 }

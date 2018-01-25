@@ -1,6 +1,6 @@
 [
     {
-        "outputFile": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-xlarge-land-v4\\values-xlarge-land-v4.xml",
+        "outputFile": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-xlarge-land-v4\\values-xlarge-land-v4.xml",
         "map": [
             {
                 "to": {
@@ -11,7 +11,7 @@
                     "endOffset": 114
                 },
                 "from": {
-                    "file": "E:\\JenfeeMa\\MicExp1\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\values-xlarge-land-v4\\values-xlarge-land-v4.xml",
+                    "file": "D:\\Android\\AndroidStudioProjects\\MicExp\\app\\src\\appcompat\\build\\intermediates\\bundles\\debug\\res\\values-xlarge-land-v4\\values-xlarge-land-v4.xml",
                     "position": {
                         "startLine": 2,
                         "startColumn": 4,

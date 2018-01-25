@@ -15,17 +15,18 @@ import android.widget.Toast;
 
 import cn.gdgst.entity.ZhuangBei;
 import cn.gdgst.palmtest.R;
+
+import com.mob.MobSDK;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.orhanobut.logger.Logger;
 import cn.gdgst.palmtest.service.CollectService;
+import cn.sharesdk.onekeyshare.OnekeyShare;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.sharesdk.framework.ShareSDK;
-import cn.sharesdk.onekeyshare.OnekeyShare;
 
 public class ZhuangBeiAdapter extends BaseAdapter {
 	private List<ZhuangBei> ChuangKeList;
@@ -210,8 +211,6 @@ public class ZhuangBeiAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				ShareSDK.initSDK(context);
-
 				OnekeyShare oks = new OnekeyShare();
 				//关闭sso授权
 				oks.disableSSOWhenAuthorize();
@@ -225,6 +224,7 @@ public class ZhuangBeiAdapter extends BaseAdapter {
 				oks.setText(expitem.getTitle()+expitem.getVideo_url());
 				//设置分享照片的url地址，如果没有可以不设置
 				oks.setImageUrl(expitem.getImg_url());
+				oks.setImagePath("/sdcard/test.jpg");
 				// url仅在微信（包括好友和朋友圈）中使用
 				oks.setUrl(expitem.getVideo_url());
 				// comment是我对这条分享的评论，仅在人人网和QQ空间使用

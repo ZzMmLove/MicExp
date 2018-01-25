@@ -22,13 +22,6 @@
     <color name="click">#F5F5F5</color>
     <color name="defult">#ffffff</color>
     
-     
-    
-
-    
-    
-    
-    
         <drawable name="brackground">#ffffff</drawable>
     <color name="yin">#BCBBBB</color>
     <color name="transparency">#00000000</color>
@@ -41,5 +34,4 @@
          <color name="btn_nomol">#70d0f8</color>
          <color name="btn_press">#26bbf9</color>
 
-         
 </resources>

@@ -94,4 +94,18 @@ public class VideoList_Entity {
         return this.time;
     }
 
+    @Override
+    public String toString() {
+        return "VideoList_Entity{" +
+                "id='" + id + '\'' +
+                ", cateid='" + cateid + '\'' +
+                ", name='" + name + '\'' +
+                ", img_url='" + img_url + '\'' +
+                ", img_url_s='" + img_url_s + '\'' +
+                ", video_url='" + video_url + '\'' +
+                ", view_count='" + view_count + '\'' +
+                ", remark='" + remark + '\'' +
+                ", time='" + time + '\'' +
+                '}';
+    }
 }

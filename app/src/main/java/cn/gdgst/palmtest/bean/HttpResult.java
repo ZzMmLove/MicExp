@@ -36,4 +36,16 @@ public class HttpResult<T> {
     public T getData(){
         return this.data;
     }
+
+    @Override
+    public String toString() {
+        return "HttpResult{" +
+                "success=" + success +
+                ", error_code=" + error_code +
+                ", message='" + message + '\'' +
+                ", data=" + data +
+                '}';
+    }
+
+
 }

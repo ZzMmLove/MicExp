@@ -32,6 +32,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import cn.gdgst.palmtest.R;
+import cn.gdgst.palmtest.base.AppConstant;
 import cn.gdgst.palmtest.tab2.Vid_Play_Activity;
 import cn.gdgst.palmtest.tab3.MyAdapter;
 import cn.gdgst.palmtest.utils.HttpUtil;
@@ -80,7 +81,7 @@ public class GetCollectListActivity extends AppCompatActivity implements OnDismi
 
 		if (accessToken.isEmpty()) {
 			Toast.makeText(GetCollectListActivity.this, "获取列表失败,请先进行登录", Toast.LENGTH_SHORT).show();
-//			progress_bar.setVisibility(View.GONE);
+			progress_bar.setVisibility(View.GONE);
 			progress_bar.stopSpinning();
 			tv_loading.setVisibility(View.GONE);
 			MSListview.setEmptyView(findViewById(R.id.empty));
@@ -104,7 +105,7 @@ public class GetCollectListActivity extends AppCompatActivity implements OnDismi
 		// 布局
 		ll_grade = (LinearLayout) findViewById(R.id.ll_grade);
 
-		ll_grade.setOnClickListener((OnClickListener) this);
+		ll_grade.setOnClickListener(this);
 		// 图片
 		icon1 = (ImageView) findViewById(R.id.icon1);
 		//iv_back = (ImageView) findViewById(R.id.iv_back);
@@ -120,7 +121,7 @@ public class GetCollectListActivity extends AppCompatActivity implements OnDismi
 
 	private void initListView() {
 		// TODO Auto-generated method stub
-		sp = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+		sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
 		accessToken = sp.getString("accessToken", "");
 		adapter = new ShouCangAdapter(this, CollectList);
 
@@ -202,18 +203,17 @@ public class GetCollectListActivity extends AppCompatActivity implements OnDismi
 
 	private void getExperimentList() {
 		// TODO Auto-generated method stub
-		sp = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+		sp = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
 		accessToken = sp.getString("accessToken", "");
-		String paged = String.valueOf(page);
 		new Thread() {
 			public void run() {
 				String paged = String.valueOf(page);
-				String url = "http://www.shiyan360.cn/index.php/api/user_collect";
+				String url = "http://shiyan360.cn/index.php/api/user_collect";
 				NetworkCheck check = new NetworkCheck(GetCollectListActivity.this);
 				boolean isalivable = check.Network();
 				if (isalivable) {
 					// 封装请求参数
-					Map<String, String> rawParams = new HashMap<String, String>();
+					Map<String, String> rawParams = new HashMap<>();
 					rawParams.put("accessToken", accessToken);
 					rawParams.put("page", paged);
 					rawParams.put("model", model);
@@ -236,9 +236,7 @@ public class GetCollectListActivity extends AppCompatActivity implements OnDismi
 							CollectListEntities = JSON.parseArray(array, CollectEntity.class);
 							if (!CollectListEntities.isEmpty()) {
 								mHandler.sendEmptyMessage(0);
-
 							}
-
 						} else {
 							mHandler.sendEmptyMessage(1);
 						}
@@ -246,11 +244,9 @@ public class GetCollectListActivity extends AppCompatActivity implements OnDismi
 						e.printStackTrace();
 						mHandler.sendEmptyMessage(4);
 					}
-
 				} else {
 					NetworkCheckDialog.dialog(GetCollectListActivity.this);
 				}
-
 			}
 
 		}.start();
@@ -418,9 +414,7 @@ public class GetCollectListActivity extends AppCompatActivity implements OnDismi
 							String name = (String) parent.getAdapter().getItem(position);
 							setHeadText(idx, name);
 							popupWindow.dismiss();
-
 							break;
-
 					}
 				}
 

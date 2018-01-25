@@ -6,10 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.media.projection.MediaProjection;
-import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -41,13 +38,11 @@ import cn.gdgst.palmtest.DB.DbService;
 import cn.gdgst.palmtest.Entitys.GradeEntity;
 import cn.gdgst.palmtest.Entitys.Sub;
 import cn.gdgst.palmtest.bean.HttpResult;
-import cn.gdgst.palmtest.recorder.ScreenRecorder;
 import cn.gdgst.palmtest.rewrite.ProgressWheel;
 import cn.gdgst.palmtest.servers.GetSortList;
 
 import org.afinal.simplecache.ACache;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,13 +52,24 @@ import cn.gdgst.palmtest.tab3.ExperimentAdapter;
 import cn.gdgst.palmtest.tab3.MyAdapter;
 import cn.gdgst.palmtest.tab3.SubAdapter;
 import cn.gdgst.palmtest.tab3.SimulationPlayActivity;
+import cn.gdgst.palmtest.utils.NetworkCheck;
+import cn.gdgst.palmtest.utils.NetworkCheckDialog;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+/**
+ * 仿真实验
+ */
 public class Tab3Activity extends Activity implements OnDismissListener, OnClickListener {
 	private PullToRefreshListView ExpListview;
-	private List<Experiment> ExperimentList = new ArrayList<Experiment>();
+	/**
+	 *存放传到适配器中的数据集合，就是从网络获取数据的封装后
+	 */
+	private List<Experiment> experimentList = new ArrayList<Experiment>();
+	/**
+	 *
+	 */
 	private List<Experiment> experiment_ListEntities = new ArrayList<Experiment>();
 	private Experiment experiment_ListEntity;
 	private SharedPreferences sp;
@@ -104,7 +110,7 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 				this.getResources().getStringArray(R.array.sub_junicate),
 				this.getResources().getStringArray(R.array.sub_primcate) };
 
-		ExperimentList.clear();
+		experimentList.clear();
 		//getCacheCollectdata();
 		readExpDB();
 		// adapter.notifyDataSetChanged();
@@ -139,7 +145,7 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 
 	private void initListView() {
 		// View headerView =LinearLayout.inflate(this, R.id., null);
-		adapter = new ExperimentAdapter(this, ExperimentList);
+		adapter = new ExperimentAdapter(this, experimentList);
 		ExpListview.setMode(Mode.BOTH); // 两端刷新
 
 		ListView actualListView = ExpListview.getRefreshableView();
@@ -149,7 +155,7 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 			@Override
 			public void onPullDownToRefresh(PullToRefreshBase refreshView) {
 				page = 1;
-				ExperimentList.clear();
+				experimentList.clear();
 				//getExperimentList();
 				getExpList();
 				getSubList();
@@ -188,9 +194,11 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				String url = ExperimentList.get(position - 1).getHtml5_url();
+				String url = experimentList.get(position -  1).getHtml5_url();
+				String name = experimentList.get(position - 1).getName();
 				Intent myIntent3 = new Intent();
 				myIntent3.putExtra("url", url);
+				myIntent3.putExtra("name", name);
 				myIntent3.setClass(Tab3Activity.this, SimulationPlayActivity.class);
 				startActivity(myIntent3);
 			}
@@ -199,23 +207,27 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 
 	@Override
 	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.ll_grade:
-				idx = 1;
-				icon1.setImageResource(R.mipmap.icon_up);
-				showPopupWindow(findViewById(R.id.ll_layout), 1);
-				break;
-			case R.id.ll_category:
-				idx = 2;
-				icon2.setImageResource(R.mipmap.icon_up);
-				showPopupWindow(findViewById(R.id.ll_layout), 2);
-				break;
-			case R.id.ll_sorting_latest:
-				idx = 3;
-				icon3.setImageResource(R.mipmap.icon_up);
-				showPopupWindow(findViewById(R.id.ll_layout), 3);
-				break;
-
+		NetworkCheck check = new NetworkCheck(this);
+		if (check.Network()) {
+			switch (v.getId()) {
+				case R.id.ll_grade:
+					idx = 1;
+					icon1.setImageResource(R.mipmap.icon_up);
+					showPopupWindow(findViewById(R.id.ll_layout), 1);
+					break;
+				case R.id.ll_category:
+					idx = 2;
+					icon2.setImageResource(R.mipmap.icon_up);
+					showPopupWindow(findViewById(R.id.ll_layout), 2);
+					break;
+				case R.id.ll_sorting_latest:
+					idx = 3;
+					icon3.setImageResource(R.mipmap.icon_up);
+					showPopupWindow(findViewById(R.id.ll_layout), 3);
+					break;
+			}
+		}else {
+			NetworkCheckDialog.dialog(this);
 		}
 
 	}
@@ -262,7 +274,7 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 								lv1_layout.getLayoutParams().width = 0; // 年级分类
 								if (position == 0) {
 									gradeid = "0";
-									ExperimentList.clear();
+									experimentList.clear();
 									ExpListview.setAdapter(adapter);
 //									getExperimentList();
 									getExpList();
@@ -270,7 +282,7 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 								} else {
 									gradeid = GradeList.get(position - 1).getId();
 									Logger.i( ":" + gradeid);
-									ExperimentList.clear();
+									experimentList.clear();
 									ExpListview.setAdapter(adapter);
 //									getExperimentList();
 									getExpList();
@@ -288,7 +300,7 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 								switch (position) {
 									case 0:
 										categoryid = "0";
-										ExperimentList.clear();
+										experimentList.clear();
 										ExpListview.setAdapter(adapter);
 //										getExperimentList();
 										getExpList();
@@ -311,14 +323,14 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 											public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 												if (position == 0) {
 													categoryid = "368";// 高中
-													ExperimentList.clear();
+													experimentList.clear();
 													ExpListview.setAdapter(adapter);
 //													getExperimentList();
 													getExpList();
 													adapter.notifyDataSetChanged();
 												} else {
 													categoryid = highList.get(position - 1);
-													ExperimentList.clear();
+													experimentList.clear();
 													ExpListview.setAdapter(adapter);
 //													getExperimentList();
 													getExpList();
@@ -342,14 +354,14 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 											public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 												if (position == 0) {
 													categoryid = "369";// 初中
-													ExperimentList.clear();
+													experimentList.clear();
 													ExpListview.setAdapter(adapter);
 //													getExperimentList();
 													getExpList();
 													adapter.notifyDataSetChanged();
 												} else {
 													categoryid = juniList.get(position - 1);
-													ExperimentList.clear();
+													experimentList.clear();
 													ExpListview.setAdapter(adapter);
 //													getExperimentList();
 													getExpList();
@@ -373,14 +385,14 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 											public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 												if (position == 0) {
 													categoryid = "370";// 小学
-													ExperimentList.clear();
+													experimentList.clear();
 													ExpListview.setAdapter(adapter);
 //													getExperimentList();
 													getExpList();
 													adapter.notifyDataSetChanged();
 												} else {
 													categoryid = primList.get(position - 1);
-													ExperimentList.clear();
+													experimentList.clear();
 													ExpListview.setAdapter(adapter);
 //													getExperimentList();
 													getExpList();
@@ -403,7 +415,7 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 								switch (position) {
 									case 0:
 										desctype = 0;
-										ExperimentList.clear();
+										experimentList.clear();
 										ExpListview.setAdapter(adapter);
 //										getExperimentList();
 										getExpList();
@@ -411,7 +423,7 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 										break;
 									case 1:
 										desctype = 2; // 按访问记录 2
-										ExperimentList.clear();
+										experimentList.clear();
 										ExpListview.setAdapter(adapter);
 //										getExperimentList();
 										getExpList();
@@ -420,7 +432,7 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 										break;
 									case 2:
 										desctype = 3; // 按最多评论 3
-										ExperimentList.clear();
+										experimentList.clear();
 										ExpListview.setAdapter(adapter);
 //										getExperimentList();
 										getExpList();
@@ -522,13 +534,22 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 				case 0:
-
 					for (int i = 0; i < experiment_ListEntities.size(); i++) {
 						experiment_ListEntity = new Experiment();
 						experiment_ListEntity.setImg_url(experiment_ListEntities.get(i).getImg_url().trim());
+
+						//Log.d("setHtml5_url", experiment_ListEntities.get(i).toString());
+
 						experiment_ListEntity.setName(experiment_ListEntities.get(i).getName());
 						experiment_ListEntity.setHtml5_url(experiment_ListEntities.get(i).getHtml5_url().trim());
-						ExperimentList.add(experiment_ListEntity);
+						if(experiment_ListEntities.get(i).getTime() != null){
+							experiment_ListEntity.setTime(experiment_ListEntities.get(i).getTime().trim());
+						}else {
+							experiment_ListEntity.setTime("无时间记录");
+
+						}
+						experimentList.add(experiment_ListEntity);
+
 
 					}
 					ExpListview.post(new Runnable() {
@@ -681,6 +702,7 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 			com.alibaba.fastjson.JSONArray jsondata = jsonobj.getJSONArray("data");
 			String array = JSON.toJSONString(jsondata);
 			experiment_ListEntities = JSON.parseArray(array, Experiment.class);
+
 			mHandler.sendEmptyMessage(0);
 		} else {
 //			getExperimentList();
@@ -720,6 +742,9 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 					@Override
 					public void onNext(HttpResult<List<Experiment>> listHttpResult) {
 						experiment_ListEntities = listHttpResult.getData();
+
+						//Log.d("Tab3Activity", "返回来的数据有："+listHttpResult.getData().toString());
+
 //						ACache mCache = ACache.get(ChuangKeList.this);
 //						mCache.put("ChuangKeList", listHttpResult.getData().toString());
 					}
@@ -737,6 +762,13 @@ public class Tab3Activity extends Activity implements OnDismissListener, OnClick
 			experiment.setImg_url_s(experiment_ListEntities.get(i).getImg_url_s());
 			experiment.setHtml5_url(experiment_ListEntities.get(i).getHtml5_url());
 			experiment.setCateid(experiment_ListEntities.get(i).getCateid());
+			if (experiment_ListEntities.get(i).getTime() != null){
+				experiment.setTime(experiment_ListEntities.get(i).getTime());
+			}else {
+				experiment.setTime("无记录时间");
+
+			}
+
 			list.add(experiment);
 		}
 		db.saveExpLists(list);

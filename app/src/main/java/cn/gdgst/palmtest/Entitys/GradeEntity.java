@@ -10,38 +10,74 @@ import java.util.List;
  */
 public class GradeEntity implements Serializable {
 	/**
-	 *
+	 *"sub":[
+	 {
+	 "id":"371",
+	 "diyname":"gaozhongwuli",
+	 "name":"高中物理",
+	 "imgurl":"",
+	 "pid":"368",
+	 "sort":"100",
+	 "total":null,
+	 "ishot":"1",
+	 "isnew":"0",
+	 "pagetitle":"高中物理",
+	 "pagekey":"高中物理",
+	 "pagedec":"高中物理",
+	 "remark":"",
+	 "deep":1,
+	 "key":"0_100_368__368_100_371_",
+	 "sub":[
+
+	 ],
+	 "subcount":0
+	 },
 	 */
 	private static final long serialVersionUID = -5199493050193364587L;
 
+	/**科目ID，比如：371是表示物理*/
 	private String id;
 
+	/**年级的名称，拼音状态*/
 	private String diyname;
 
+	/**年级中文名称*/
 	private String name;
 
+	/***/
 	private String imgurl;
 
+	/**属于哪个年级的ID 如：368表示高中*/
 	private String pid;
 
+	/**排序ID*/
 	private String sort;
 
+	/**是否排序*/
 	private String ishot;
 
+	/**总名称*/
 	private String pagetitle;
 
+	/***/
 	private String pagekey;
 
+	/***/
 	private String pagedec;
 
+	/***/
 	private String remark;
 
+	/***/
 	private int deep;
 
+	/***/
 	private String key;
 
+	/***/
 	private List<Sub> sub ;
 
+	/***/
 	private int subcount;
 
 	public GradeEntity(String id, String diyname, String name, String imgurl, String pid, String sort, String ishot,

@@ -378,7 +378,7 @@ public class TabMainActivity extends NetworkBaseActivity {
 		SharedPreferences sharedPreferences = getSharedPreferences(AppConstant.SHARED_PREFERENCES_USER, Context.MODE_PRIVATE);
 		String username = sharedPreferences.getString("phoneNumber", null);
 		String password = sharedPreferences.getString("password", null);
-		Observable<HttpResult<UserEntity>> observable = APIWrapper.getInstance().login(username, password);
+		Observable<HttpResult<UserEntity>> observable = APIWrapper.getInstance().login(username, password, "");
 		 observable.subscribeOn(Schedulers.io())
 		 .observeOn(AndroidSchedulers.mainThread())
 		 .subscribe(new Subscriber<HttpResult<UserEntity>>() {

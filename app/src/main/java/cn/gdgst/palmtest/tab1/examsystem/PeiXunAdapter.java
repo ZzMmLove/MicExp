@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import cn.gdgst.entity.ExamPaper;
 import cn.gdgst.palmtest.R;
+import cn.gdgst.palmtest.utils.TimeUtil;
 
 import java.util.List;
 
@@ -55,6 +56,7 @@ public class PeiXunAdapter extends BaseAdapter {
 			view = LayoutInflater.from(context).inflate(R.layout.wenku_list_item, null);
 			vd = new Viewholder();
 			vd.tv_wenku = (TextView) view.findViewById(R.id.tv_wenku);
+			vd.tv_updatetime = (TextView) view.findViewById(R.id.tv_updatetime);
 			view.setTag(vd);// 给View添加一个格外的数据
 		} else {
 			vd=(Viewholder) view.getTag();// 把数据取出来
@@ -62,6 +64,7 @@ public class PeiXunAdapter extends BaseAdapter {
 		if (examPaperList !=null || examPaperList.size() > 0) {
 			ExamPaper examPaperItem = examPaperList.get(position);
 			vd.tv_wenku.setText(examPaperItem.getPaper()); //  exp_tv设置文本
+			vd.tv_updatetime.setText("更新日期:"+ TimeUtil.getChatTime(examPaperItem.getAddtime())); //设置更新时间,需要转换格式
 			return view;
 		}
 		return null;
@@ -69,6 +72,7 @@ public class PeiXunAdapter extends BaseAdapter {
 	//视图控件内部类
 	public class Viewholder{
 		private TextView tv_wenku;
+		private TextView tv_updatetime;
 	}
 
 }

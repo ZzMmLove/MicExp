@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical">
 
     <android.support.v4.widget.DrawerLayout
@@ -17,7 +17,7 @@
             <include
                 android:id="@+id/layout_head"
                 layout="@layout/view_head_ad"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1" />
 
@@ -48,7 +48,7 @@
                     android:background="#eeeeee"/>
 
                 <Button
-                    android:text="仿真实验"
+                    android:text="实验文库"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:id="@+id/tab1_button_simulation_test"
@@ -113,7 +113,7 @@
                     android:background="#eeeeee"/>
 
                 <Button
-                    android:text="实验文库"
+                    android:text="实验装备"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:id="@+id/tab1_button_test_library"
@@ -177,7 +177,7 @@
                     android:background="#eeeeee"/>
 
                 <Button
-                    android:text="实验装备"
+                    android:text="活动赛事"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:id="@+id/tab1_button_test_equepment"
@@ -195,7 +195,7 @@
                     android:background="#eeeeee"/>
 
                 <Button
-                    android:text="会展中心"
+                    android:text="新闻动态"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:id="@+id/tab1_button_exhibition_center"

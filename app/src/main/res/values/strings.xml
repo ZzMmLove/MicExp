@@ -5,7 +5,7 @@
     <!-- Tab动画 -->
     <string name="app_name_tab_failed"></string>
     <string name="layout_activitymain_query">实验首页</string>
-    <string name="layout_activitymain_more">更多设置 </string>
+    <string name="layout_activitymain_more">个人中心 </string>
     <string name="layout_activitymain_profile">仿真实验</string>
     <string name="layout_activitymain_course">同步视频</string>
     <string name="xlistview_header_hint_normal">下拉刷新</string>

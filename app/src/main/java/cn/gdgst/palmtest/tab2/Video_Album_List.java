@@ -143,7 +143,7 @@ public class Video_Album_List extends Activity implements  OnClickListener{
 		// TODO Auto-generated method stub
 		new Thread() {
 			public void run() {
-				String urlStr = "http://www.shiyan360.cn/index.php/api/video_album";
+				String urlStr = "http://shiyan360.cn/index.php/api/video_album";
 
 				NetworkCheck check = new NetworkCheck(Video_Album_List.this);
 				boolean isalivable = check.Network();

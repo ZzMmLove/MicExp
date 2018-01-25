@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import cn.gdgst.entity.ExamTopic;
+import cn.gdgst.palmtest.bean.ExamTopic;
 import cn.gdgst.palmtest.bean.TExamTopic;
 
 /**
@@ -45,10 +45,13 @@ public class ReaderViewPagerAdapter extends FragmentPagerAdapter {
 
         if (i+1 <= list_XExamTopic.size()) {
             readFragment = ReadFragment.newInstance(list_XExamTopic.get(i), null, null, 1);
+            readFragment.setFragmentId(i);
         } else if ((i+1) > list_XExamTopic.size() && (i+1) <= ahead) {
             readFragment = ReadFragment.newInstance(null, list_TExamTopic.get(i - list_XExamTopic.size()), null, 2);
+            readFragment.setFragmentId(i);
         } else if (i+1 > ahead) {
             readFragment = ReadFragment.newInstance(null, null, list_JExamTopic.get(i - ahead), 3);
+            readFragment.setFragmentId(i);
         }
         hashMap_ReadFragment.put(i, readFragment);
         return readFragment;

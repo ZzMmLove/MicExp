@@ -97,4 +97,17 @@ public class WenKu {
         this.time = time;
     }
 
+    @Override
+    public String toString() {
+        return "WenKu{" +
+                "id=" + id +
+                ", gid='" + gid + '\'' +
+                ", cateid='" + cateid + '\'' +
+                ", title='" + title + '\'' +
+                ", img_url='" + img_url + '\'' +
+                ", img_url_s='" + img_url_s + '\'' +
+                ", file_url='" + file_url + '\'' +
+                ", time='" + time + '\'' +
+                '}';
+    }
 }
